@@ -2,11 +2,11 @@
 *.class
 /build
 /out
-
+libs/
 # IntelliJ IDEA
 .idea
-.iml
-
+*.iml
+.gradle
 # Log file
 *.log
 
