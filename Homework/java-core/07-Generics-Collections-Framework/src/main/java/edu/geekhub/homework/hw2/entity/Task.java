@@ -5,7 +5,6 @@ import java.util.Objects;
 public class Task {
     private final String name;
     private final String description;
-
     private final int priority;
 
     public Task(String name, String description, int priority) {
