@@ -1,4 +1,4 @@
-package org.example.lambda;
+package edu.geekhub.example.lambda;
 
 public class CheckIfHopper extends Object implements CheckTrait {
     public boolean test(Animal a) {

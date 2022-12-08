@@ -1,4 +1,4 @@
-package org.example.optional;
+package edu.geekhub.example.optional;
 
 import java.util.Optional;
 

@@ -1,4 +1,4 @@
-package org.example.stream;
+package edu.geekhub.example.stream;
 
 import java.util.ArrayList;
 import java.util.Collections;

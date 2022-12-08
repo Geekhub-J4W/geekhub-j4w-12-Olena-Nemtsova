@@ -1,4 +1,4 @@
-package org.example.references;
+package edu.geekhub.example.references;
 
 import java.util.Arrays;
 import java.util.List;

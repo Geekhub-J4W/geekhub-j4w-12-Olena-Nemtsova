@@ -1,4 +1,4 @@
-package org.example.hw;
+package edu.geekhub.homework;
 
 import java.util.Map;
 import java.util.stream.Collectors;

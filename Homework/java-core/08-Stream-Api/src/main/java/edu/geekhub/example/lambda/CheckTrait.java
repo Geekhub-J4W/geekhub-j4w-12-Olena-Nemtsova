@@ -1,4 +1,4 @@
-package org.example.lambda;
+package edu.geekhub.example.lambda;
 
 @FunctionalInterface
 public interface CheckTrait {
