@@ -1,9 +1,11 @@
 package edu.geekhub.homework.task2;
 
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static edu.geekhub.homework.util.NotImplementedException.TODO_TYPE;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -33,10 +35,15 @@ class LosesInWarParserTest {
 
     private LosesInWarParser losesInWarParser;
 
+    @BeforeEach
+    void setUp() {
+        losesInWarParser = new LosesInWarParser();
+    }
+
     @Test
     void failed_parse_null_input() {
         assertThrows(
-            TODO_TYPE("Put most suitable exception"),
+            NullPointerException.class,
             () -> losesInWarParser.parseLosesStatistic(null)
         );
     }
@@ -44,7 +51,7 @@ class LosesInWarParserTest {
     @Test
     void failed_parse_empty_input() {
         assertThrows(
-            TODO_TYPE("Put most suitable exception"),
+            IllegalArgumentException.class,
             () -> losesInWarParser.parseLosesStatistic("")
         );
     }
@@ -178,7 +185,7 @@ class LosesInWarParserTest {
     @Test
     @DisplayName(
         "verification that of toString is implemented used only to teach that this method is important " +
-        "for debuging puprouses during development and writing of tests"
+            "for debuging puprouses during development and writing of tests"
     )
     void check_that_toString_is_implemented_for_debug_purpouses() {
         var statistic = losesInWarParser.parseLosesStatistic(STATISTIC_INPUT);

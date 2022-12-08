@@ -3,7 +3,7 @@ package edu.geekhub.storage;
 import edu.geekhub.exceptions.ConnectionInterruptedException;
 import edu.geekhub.models.User;
 
-public interface Repository {
+public sealed interface Repository permits MemoryStorage {
 
     void tryToAdd(User user) throws ConnectionInterruptedException;
 

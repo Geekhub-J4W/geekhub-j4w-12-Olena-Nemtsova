@@ -6,16 +6,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TankTest {
-    @Test
-    void can_build_tank() {
-        new Tank();
-    }
 
     @Test
     void default_tank_price_is_3_000_000() {
         Tank tank = new Tank();
 
         assertEquals(3_000_000, tank.getPrice());
+    }
+
+    @Test
+    void tank_price_can_differ_to_default() {
+        Tank tank = new Tank(4_000_000);
+
+        assertEquals(4_000_000, tank.getPrice());
     }
 
     @Test

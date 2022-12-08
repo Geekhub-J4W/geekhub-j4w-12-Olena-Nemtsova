@@ -1,6 +1,6 @@
 package edu.geekhub.homework.task2;
 
-import static edu.geekhub.homework.util.NotImplementedException.TODO_TYPE;
+
 
 public class LosesStatistic {
 
@@ -55,19 +55,19 @@ public class LosesStatistic {
      */
     public String asPrintVersion() {
         return "Втрати російської армії в Україні: " +
-               "Танки - " + tanks +
-               ", Бойові броньовані машини (різних типів) - " + armouredFightingVehicles +
-               ", Гармати - " + cannons +
-               ", Реактивні системи залпового вогню - " + multipleRocketLaunchers +
-               ", Засоби ППО - " + antiAirDefenseDevices +
-               ", Літаки - " + planes +
-               ", Гелікоптери - " + helicopters +
-               ", Безпілотні літальні апарати (оперативно-тактичного рівня) - " + drones +
-               ", Крилаті ракети - " + cruiseMissiles +
-               ", Кораблі (катери) - " + shipsOrBoats +
-               ", Автомобілі та автоцистерни - " + carsAndTankers +
-               ", Спеціальна техніка - " + specialEquipment +
-               ", Особовий склад - близько " + personnel + " осіб"
+            "Танки - " + tanks +
+            ", Бойові броньовані машини (різних типів) - " + armouredFightingVehicles +
+            ", Гармати - " + cannons +
+            ", Реактивні системи залпового вогню - " + multipleRocketLaunchers +
+            ", Засоби ППО - " + antiAirDefenseDevices +
+            ", Літаки - " + planes +
+            ", Гелікоптери - " + helicopters +
+            ", Безпілотні літальні апарати (оперативно-тактичного рівня) - " + drones +
+            ", Крилаті ракети - " + cruiseMissiles +
+            ", Кораблі (катери) - " + shipsOrBoats +
+            ", Автомобілі та автоцистерни - " + carsAndTankers +
+            ", Спеціальна техніка - " + specialEquipment +
+            ", Особовий склад - близько " + personnel + " осіб"
             ;
     }
 
@@ -77,7 +77,7 @@ public class LosesStatistic {
      * @return an "empty object" instance
      */
     public static LosesStatistic empty() {
-        return TODO_TYPE("Return an Empty Object");
+        return null;
     }
 
     public static LosesStatisticBuilder newStatistic() {
@@ -168,7 +168,75 @@ public class LosesStatistic {
         }
 
         public LosesStatistic build() {
-            return TODO_TYPE();
+            return new LosesStatistic(tanks, armouredFightingVehicles, cannons,
+                multipleRocketLaunchers, antiAirDefenseDevices, planes, helicopters,
+                drones, cruiseMissiles, shipsOrBoats, carsAndTankers, specialEquipment, personnel);
         }
+
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+
+        if (object == null || object.getClass() != getClass()) {
+            return false;
+        }
+
+        LosesStatistic losesStatistic = (LosesStatistic) object;
+        return losesStatistic.tanks == tanks &&
+            losesStatistic.armouredFightingVehicles == armouredFightingVehicles &&
+            losesStatistic.cannons == cannons &&
+            losesStatistic.multipleRocketLaunchers == multipleRocketLaunchers &&
+            losesStatistic.antiAirDefenseDevices == antiAirDefenseDevices &&
+            losesStatistic.planes == planes &&
+            losesStatistic.helicopters == helicopters &&
+            losesStatistic.drones == drones &&
+            losesStatistic.cruiseMissiles == cruiseMissiles &&
+            losesStatistic.shipsOrBoats == shipsOrBoats &&
+            losesStatistic.carsAndTankers == carsAndTankers &&
+            losesStatistic.specialEquipment == specialEquipment &&
+            losesStatistic.personnel == personnel;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + tanks;
+        result = 31 * result + armouredFightingVehicles;
+        result = 31 * result + cannons;
+        result = 31 * result + multipleRocketLaunchers;
+        result = 31 * result + antiAirDefenseDevices;
+        result = 31 * result + planes;
+        result = 31 * result + helicopters;
+        result = 31 * result + drones;
+        result = 31 * result + cruiseMissiles;
+        result = 31 * result + shipsOrBoats;
+        result = 31 * result + carsAndTankers;
+        result = 31 * result + specialEquipment;
+        result = 31 * result + personnel;
+
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Втрати російської армії в Україні: " + System.lineSeparator() +
+            "Танки - " + tanks + System.lineSeparator() +
+            "Бойові броньовані машини (різних типів) - " + armouredFightingVehicles + System.lineSeparator() +
+            "Гармати - " + cannons + System.lineSeparator() +
+            "Реактивні системи залпового вогню - " + multipleRocketLaunchers + System.lineSeparator() +
+            "Засоби ППО - " + antiAirDefenseDevices + System.lineSeparator() +
+            "Літаки - " + planes + System.lineSeparator() +
+            "Гелікоптери - " + helicopters + System.lineSeparator() +
+            "Безпілотні літальні апарати (оперативно-тактичного рівня) - " + drones + System.lineSeparator() +
+            "Крилаті ракети - " + cruiseMissiles + System.lineSeparator() +
+            "Кораблі (катери) - " + shipsOrBoats + System.lineSeparator() +
+            "Автомобілі та автоцистерни - " + carsAndTankers + System.lineSeparator() +
+            "Спеціальна техніка - " + specialEquipment + System.lineSeparator() +
+            "Особовий склад - близько " + personnel + " осіб"
+            ;
     }
 }

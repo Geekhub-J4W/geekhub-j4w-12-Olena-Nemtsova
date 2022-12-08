@@ -19,6 +19,8 @@ public interface ToDoList<E extends Task> {
 
     boolean addTaskToTheStart(E task);
 
-    boolean deleteTaskByIndex(E task);
+    boolean deleteTaskByIndex(int index);
+
+    boolean deleteTask(E task);
 
 }

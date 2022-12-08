@@ -14,5 +14,4 @@ public class ApplicationStarter {
         for (Integer integer : integers)
             System.out.println(integer);
     }
-    // Write code here :)
 }

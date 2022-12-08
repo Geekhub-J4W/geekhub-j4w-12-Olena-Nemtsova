@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class OddIndexIterator<E> implements Iterator<E> {
-    private List<E> data;
+    private final List<E> data;
     int position = 1;
 
     public OddIndexIterator(List<E> data) {
@@ -13,15 +13,30 @@ public class OddIndexIterator<E> implements Iterator<E> {
 
     @Override
     public boolean hasNext() {
-        // write your code here
-        return true;
+        return validatePosition();
     }
 
     @Override
     public E next() {
-        //write your code here
-        E nextValue = null;
-        position = 0;
+        if (!validatePosition()) {
+            throw new IllegalArgumentException("Position is wrong");
+        }
+
+        E nextValue = data.get(position);
+        position += 2;
         return nextValue;
     }
+
+    private boolean validatePosition() {
+        return validateSizePosition() && validateOddPosition();
+    }
+
+    private boolean validateOddPosition() {
+        return position % 2 != 0;
+    }
+
+    private boolean validateSizePosition() {
+        return position < data.size() && position > 0;
+    }
+
 }

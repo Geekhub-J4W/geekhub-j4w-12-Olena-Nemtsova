@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class OddIndexIterable<T> implements Iterable<T> {
-    private List<T> values = new ArrayList<>();
+    private final List<T> values = new ArrayList<>();
 
     public void add(T value) {
         values.add(value);
@@ -13,6 +13,6 @@ public class OddIndexIterable<T> implements Iterable<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new OddIndexIterator<T>(values);
+        return new OddIndexIterator<>(values);
     }
 }
