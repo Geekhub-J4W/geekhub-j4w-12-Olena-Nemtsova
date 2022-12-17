@@ -1,9 +1,11 @@
 package edu.geekhub.homework.domain;
 
-import java.util.List;
+import edu.geekhub.homework.client.JsonConverter;
+import edu.geekhub.homework.client.LosesStatisticHttpClient;
 
-import static edu.geekhub.homework.util.NotImplementedException.TODO;
-import static edu.geekhub.homework.util.NotImplementedException.TODO_TYPE;
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Service should fetch loses statistic data as a {@link String} object, then convert it into a
@@ -14,27 +16,76 @@ import static edu.geekhub.homework.util.NotImplementedException.TODO_TYPE;
  */
 public class LosesStatisticService {
 
+    private final LosesStatisticHttpClient losesStatisticHttpClient;
+
     public LosesStatisticService() {
-        TODO("Implement service");
+        this(new LosesStatisticHttpClient());
+    }
+
+    public LosesStatisticService(LosesStatisticHttpClient losesStatisticHttpClient) {
+        this.losesStatisticHttpClient = losesStatisticHttpClient;
     }
 
     public List<LosesStatistic> getAll() {
-        return TODO_TYPE("Implement method");
+        String jsonData;
+        try {
+            jsonData = losesStatisticHttpClient.getAll();
+            JsonConverter converter = new JsonConverter();
+            return converter.convertToEntities(jsonData);
+        } catch (IOException | InterruptedException e) {
+            return getAll();
+        }
     }
 
     public LosesStatistic getById(Integer id) {
-        return TODO_TYPE("Implement method");
+        JsonConverter converter = new JsonConverter();
+        try {
+            String losesStatisticJson = losesStatisticHttpClient.getById(id);
+            return converter.convertToEntity(losesStatisticJson);
+        } catch (InterruptedException e) {
+            return getById(id);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Nothing found by id: " + id);
+        }
     }
 
     public void deleteAll() {
-        TODO("Implement method");
+        try {
+            losesStatisticHttpClient.deleteAll();
+        } catch (IOException | InterruptedException e) {
+            deleteAll();
+        }
     }
 
     public void deleteById(int id) {
-        TODO("Implement method");
+        try {
+            losesStatisticHttpClient.deleteById(id);
+        } catch (InterruptedException e) {
+            deleteById(id);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Nothing found by id: " + id);
+        }
     }
 
     public void create(LosesStatistic losesStatistic) {
-        TODO("Implement method");
+        JsonConverter converter = new JsonConverter();
+
+        List<LosesStatistic> losesStatisticList = getAll();
+        losesStatisticList.add(losesStatistic);
+        losesStatisticList.sort(Comparator.comparingInt(LosesStatistic::id));
+        StringBuilder jsonData = new StringBuilder();
+        jsonData.append('[');
+        for (var it : losesStatisticList) {
+            jsonData.append(converter.convertToJson(it));
+            jsonData.append(',');
+        }
+        jsonData.deleteCharAt(jsonData.length() - 1);
+        jsonData.append(']');
+
+        try {
+            losesStatisticHttpClient.create(jsonData.toString());
+        } catch (IOException | InterruptedException e) {
+            create(losesStatistic);
+        }
     }
 }

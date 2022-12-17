@@ -3,25 +3,21 @@ package edu.geekhub.homework;
 import edu.geekhub.homework.analytics.AnalyticsService;
 import edu.geekhub.homework.domain.LosesStatisticService;
 
-import static edu.geekhub.homework.util.NotImplementedException.TODO_TYPE;
-
 public class ApplicationStarter {
 
     public static void main(String[] args) {
-        // Write code here :)
-
         var losesStatisticService = new LosesStatisticService();
 
-        var losesStatistic = losesStatisticService.getById(TODO_TYPE());
+        var losesStatistic = losesStatisticService.getById(9);
+        losesStatisticService.deleteById(1);
         losesStatisticService.create(losesStatistic);
-        losesStatisticService.deleteById(losesStatistic.id());
 
         var analyticsService = new AnalyticsService();
 
-        print(analyticsService.totalCountOfLosesForStatistic(TODO_TYPE()));
-        print(analyticsService.totalCountOfLosesForAllStatistics(TODO_TYPE()));
-        print(analyticsService.findStatisticWithMinLosesAmounts(TODO_TYPE()));
-        print(analyticsService.findStatisticWithMaxLosesAmounts(TODO_TYPE()));
+        print(analyticsService.totalCountOfLosesForStatistic(losesStatisticService.getById(1)));
+        print(analyticsService.totalCountOfLosesForAllStatistics(losesStatisticService.getAll()));
+        print(analyticsService.findStatisticWithMinLosesAmounts(losesStatisticService.getAll()));
+        print(analyticsService.findStatisticWithMaxLosesAmounts(losesStatisticService.getAll()));
 
         losesStatisticService.deleteAll();
     }
