@@ -2,9 +2,6 @@ package edu.geekhub.homework.logging;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -15,7 +12,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(MockitoExtension.class)
+
 class MyLoggerTest {
     private static final String message = "Some message";
     MyLog expectedMyLog;
@@ -108,10 +105,10 @@ class MyLoggerTest {
 
     @Test
     void can_not_save_to_wrong_file() {
-        MyLogger.logFile = new File("some\\logList.txt");
+        MyLogger.logFile = new File("some", "logList.txt");
         MyLogger.saveToFile();
 
-        assertEquals("some\\logList.txt (The system cannot find the path specified)", MyLogger.getAll().get(0).message());
+        assertEquals(MyLogger.logFile.toString() + " (The system cannot find the path specified)", MyLogger.getAll().get(0).message());
     }
 
     @Test
@@ -134,7 +131,7 @@ class MyLoggerTest {
         String logs = String.join("", readFile());
 
         String expectedLogs = MyLogger.getAll().get(0).toString() + MyLogger.getAll().get(1);
-        deleteLastLogs();
+        deleteTestLogs();
         assertEquals(expectedLogs, logs);
     }
 
@@ -148,7 +145,7 @@ class MyLoggerTest {
         }
     }
 
-    void deleteLastLogs() throws IOException {
+    void deleteTestLogs() throws IOException {
         File logFile = new File("./src/main/resources/logList.txt");
         List<String> logList;
         try (Stream<String> lineStream = Files.lines(logFile.toPath())) {

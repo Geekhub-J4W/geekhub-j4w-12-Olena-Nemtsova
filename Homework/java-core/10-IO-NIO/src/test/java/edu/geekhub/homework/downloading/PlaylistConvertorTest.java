@@ -24,8 +24,7 @@ class PlaylistConvertorTest {
     void setUp() {
         MyLogger.cleanAll();
         playlistConvertor = new PlaylistConvertor();
-        song = new Song("\\Dir 1\\Dir 2\\Dir 3", "Name.mp3", "Link");
-
+        song = new Song(Path.of("Dir 1", "Dir 2", "Dir 3"), "Name.mp3", "Link");
     }
 
     @Test
@@ -137,10 +136,10 @@ class PlaylistConvertorTest {
     }
 
     @Test
-    void can_get_music_folder_path(){
-        String musicFolderPath=playlistConvertor.getMusicFolderPath();
+    void can_get_music_folder_path() {
+        String musicFolderPath = playlistConvertor.getMusicFolderPath();
 
-        String expectedMusicFolderPath= System.getProperty("user.home")+"\\"+"Music";
+        String expectedMusicFolderPath = Path.of(System.getProperty("user.home"), "Music").toString();
 
         assertEquals(expectedMusicFolderPath, musicFolderPath);
     }

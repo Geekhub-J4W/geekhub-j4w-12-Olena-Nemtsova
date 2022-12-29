@@ -27,7 +27,7 @@ class SongDownloaderTest {
     void setUp() {
         MyLogger.cleanAll();
         songDownloader = new SongDownloader(playlistConvertor);
-        song = new Song("\\Dir 1\\Dir 2\\Dir 3", "Name.mp3", "https://ia800300.us.archive.org/35/items/MetallicaMasterOfPuppets_0/02__Master_Of_Puppets_64kb.mp3");
+        song = new Song(Path.of("Dir 1", "Dir 2", "Dir 3"), "Name.mp3", "https://ia800300.us.archive.org/35/items/MetallicaMasterOfPuppets_0/02__Master_Of_Puppets_64kb.mp3");
     }
 
     @Test
@@ -62,7 +62,7 @@ class SongDownloaderTest {
         doNothing().when(songDownloader).createDirectoriesForSong(any());
         doNothing().when(songDownloader).validateFileIsNew(any(), any());
         Path tempFile = Files.createTempFile("Name", ".mp3");
-        doReturn(tempFile.toString()).when(songDownloader).getFullPath(any());
+        doReturn(tempFile).when(songDownloader).getFullPath(any());
 
         songDownloader.downloadSong(song);
         tempFile.toFile().deleteOnExit();
@@ -80,7 +80,7 @@ class SongDownloaderTest {
     @Test
     void can_not_download_song_contains_empty_path() {
         Song song = spy(this.song);
-        doReturn("").when(song).path();
+        doReturn(Path.of("")).when(song).path();
         songDownloader.downloadSong(song);
 
         assertEquals("Song contains blank data:" + song, MyLogger.getAll().get(0).message());
@@ -145,7 +145,7 @@ class SongDownloaderTest {
         SongDownloader songDownloader = spy(this.songDownloader);
         doNothing().when(songDownloader).createDirectoriesForSong(any());
         Path tempFile = Files.createTempFile("Name", ".mp3");
-        doReturn(tempFile.toString()).when(songDownloader).getFullPath(any());
+        doReturn(tempFile).when(songDownloader).getFullPath(any());
 
         songDownloader.downloadSong(song);
         tempFile.toFile().deleteOnExit();
@@ -154,9 +154,9 @@ class SongDownloaderTest {
 
     @Test
     void can_get_full_path_from_Song() {
-        String fullPath = songDownloader.getFullPath(song);
+        Path fullPath = songDownloader.getFullPath(song);
 
-        String expectedFullPath = song.path() + "\\" + song.name();
+        Path expectedFullPath = Path.of(song.path().toString(), song.name());
 
         assertEquals(expectedFullPath, fullPath);
     }
@@ -164,10 +164,10 @@ class SongDownloaderTest {
     @Test
     void can_create_directories_for_song() throws IOException {
         Path tempDir = Files.createTempDirectory("tempMusic");
-        String fullPath = tempDir.toString() + song.path();
+        Path fullPath = Path.of(tempDir.toString(), song.path().toString());
         songDownloader.createDirectoriesForSong(fullPath);
 
-        assertTrue(Files.exists(Path.of(fullPath)));
+        assertTrue(Files.exists(fullPath));
         tempDir.toFile().deleteOnExit();
     }
 }

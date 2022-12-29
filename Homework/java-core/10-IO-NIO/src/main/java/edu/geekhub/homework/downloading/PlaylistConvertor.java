@@ -51,14 +51,14 @@ public class PlaylistConvertor {
         }
 
         String musicFolderPath = getMusicFolderPath();
-        String path = String.join("\\", musicFolderPath, separatedInfo.get(0), separatedInfo.get(1), separatedInfo.get(2));
+        Path path = Path.of(musicFolderPath, separatedInfo.get(0), separatedInfo.get(1), separatedInfo.get(2));
         String name = String.join("", separatedInfo.get(3), ".mp3");
         return new Song(path, name, separatedInfo.get(4));
     }
 
     String getMusicFolderPath() {
         String userFolderPath = System.getProperty("user.home");
-        return String.join("\\", userFolderPath, "Music");
+        return Path.of(userFolderPath, "Music").toString();
     }
 
     List<String> getSeparatedFileLines() {

@@ -6,7 +6,7 @@ import edu.geekhub.homework.logging.MyLogger;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,11 +40,11 @@ public class SongDownloader {
             validateFileSize(url, song.correctEncodingName());
 
             createDirectoriesForSong(song.path());
-            String fullPath = getFullPath(song);
+            Path fullPath = getFullPath(song);
             validateFileIsNew(fullPath, song.correctEncodingName());
 
             int maxUnitUpload5KB = 5 * 1024;
-            try (FileOutputStream out = new FileOutputStream(fullPath);
+            try (FileOutputStream out = new FileOutputStream(fullPath.toFile());
                  InputStream in = url.openStream()) {
                 byte[] buffer = new byte[maxUnitUpload5KB];
                 int bytesRead;
@@ -62,12 +62,12 @@ public class SongDownloader {
         }
     }
 
-    void createDirectoriesForSong(String songPath) throws IOException {
-        Files.createDirectories(Paths.get(songPath));
+    void createDirectoriesForSong(Path songPath) throws IOException {
+        Files.createDirectories(songPath);
     }
 
-    String getFullPath(Song song) {
-        return String.join("\\", song.path(), song.name());
+    Path getFullPath(Song song) {
+        return Path.of(song.path().toString(), song.name());
     }
 
     private void validateFileSize(URL url, String songName) throws IOException {
@@ -79,8 +79,8 @@ public class SongDownloader {
         }
     }
 
-    void validateFileIsNew(String filePath, String songName) throws IllegalArgumentException {
-        if (Files.exists(Paths.get(filePath))) {
+    void validateFileIsNew(Path filePath, String songName) throws IllegalArgumentException {
+        if (Files.exists(filePath)) {
             throw new IllegalArgumentException("File already exist: " + songName);
         }
     }
@@ -88,7 +88,7 @@ public class SongDownloader {
     private void validateSong(Song song) throws IllegalArgumentException {
         Song song1 = Optional.ofNullable(song).orElseThrow(() -> new IllegalArgumentException("Song was null"));
 
-        if (song1.path().isBlank() || song1.name().isBlank() || song1.link().isBlank()) {
+        if (song1.path().toString().isBlank() || song1.name().isBlank() || song1.link().isBlank()) {
             throw new IllegalArgumentException("Song contains blank data:" + song);
         }
         if (!song1.link().endsWith(".mp3")) {
