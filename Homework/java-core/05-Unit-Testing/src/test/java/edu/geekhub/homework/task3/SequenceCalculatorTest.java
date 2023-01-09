@@ -32,7 +32,7 @@ class SequenceCalculatorTest {
     }
 
     @Test
-    void failed_calculate_input_without_numbers_in_() {
+    void failed_calculate_input_without_numbers() {
         assertThrows(
             IllegalArgumentException.class,
             () -> sequenceCalculator.calculate("some, without any numbers, input", ArithmeticOperation.ADD)
@@ -94,9 +94,9 @@ class SequenceCalculatorTest {
     @Test
     void calculate_input_with_spaces_around_values() {
         String input = "1 0 , 2 , 3 ";
-        var result = sequenceCalculator.calculate(input, ArithmeticOperation.ADD);
+        var result = sequenceCalculator.calculate(input, ArithmeticOperation.SUBTRACT);
 
-        int expectedResult = 15;
+        int expectedResult = 5;
 
         assertEquals(expectedResult, result);
     }

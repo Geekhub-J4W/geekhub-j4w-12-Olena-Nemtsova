@@ -8,6 +8,6 @@ public class ApplicationStarter {
         var s = new SequenceCalculator();
         var result = s.calculate(NUMBERS_INPUT, ArithmeticOperation.ADD);
 
-        System.out.println("Result = "+result);
+        System.out.println("Result = " + result);
     }
 }
