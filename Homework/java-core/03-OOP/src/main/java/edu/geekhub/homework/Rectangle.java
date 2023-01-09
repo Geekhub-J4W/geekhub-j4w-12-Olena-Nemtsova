@@ -1,7 +1,8 @@
 package edu.geekhub.homework;
 
 public class Rectangle extends Figure {
-    double width, height;
+    private final double width;
+    private final double height;
 
     public Rectangle(double width, double height) {
         super("Rectangle");
@@ -10,17 +11,17 @@ public class Rectangle extends Figure {
     }
 
     @Override
-    public double GetP() {
+    public double getP() {
         return (width + height) * 2;
     }
 
     @Override
-    public double GetS() {
+    public double getS() {
         return width * height;
     }
 
     @Override
     public String toString() {
-        return String.format("%s %n%s %nP = %.2f %nS = %.2f %nColor - %s %n", super.toString(), super.type, GetP(), GetS(), super.color);
+        return String.format("%s %n%s %nP = %.2f %nS = %.2f %nColor - %s %n", super.toString(), super.type, getP(), getS(), super.color);
     }
 }

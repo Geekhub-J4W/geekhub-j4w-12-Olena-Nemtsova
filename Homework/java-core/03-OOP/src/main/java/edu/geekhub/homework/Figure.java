@@ -1,23 +1,27 @@
 package edu.geekhub.homework;
 
 public abstract class Figure implements Colorful {
-    String color, type;
-    static int FigureNumber = 1;
-    int id;
+    protected String color;
+    protected String type;
+    private static int count = 1;
+    protected int id;
 
     Figure(String type) {
         this.type = type;
-        id = FigureNumber++;
-        color = GetColor();
+        id = count++;
     }
 
     public void setColor(String color) {
         this.color = color;
     }
 
-    public abstract double GetP();
+    public void setColor() {
+        color = getDefaultColor();
+    }
 
-    public abstract double GetS();
+    public abstract double getP();
+
+    public abstract double getS();
 
     @Override
     public String toString() {

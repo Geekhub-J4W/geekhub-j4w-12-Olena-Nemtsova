@@ -1,7 +1,7 @@
 package edu.geekhub.homework;
 
 public interface Colorful {
-    default String GetColor() {
+    default String getDefaultColor() {
         return "black";
     }
 }
