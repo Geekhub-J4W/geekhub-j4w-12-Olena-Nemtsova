@@ -7,8 +7,13 @@ import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class SongDownloader {
     private final PlaylistConvertor playlistConvertor;
@@ -21,18 +26,40 @@ public class SongDownloader {
         this.playlistConvertor = playlistConvertor;
     }
 
-    public void downloadAll() {
+    public void downloadAll() throws InterruptedException, ExecutionException {
         List<Song> songs = playlistConvertor.convertAll();
         if (songs.isEmpty()) {
             MyLogger.log(Level.ERROR, "No songs found");
         }
 
+        ExecutorService fixedThreadPool = Executors.newFixedThreadPool(5);
+        List<Future<?>> futures = new ArrayList<>();
+        Runnable runnable;
         for (Song song : songs) {
+            runnable = new SongDownloadingThread(song);
+            futures.add(fixedThreadPool.submit(runnable));
+        }
+
+        for (Future<?> future : futures) {
+            future.get();
+        }
+        fixedThreadPool.shutdown();
+    }
+
+    class SongDownloadingThread implements Runnable {
+        private final Song song;
+
+        public SongDownloadingThread(Song song) {
+            this.song = song;
+        }
+
+        @Override
+        public void run() {
             downloadSong(song);
         }
     }
 
-    void downloadSong(Song song) {
+    synchronized void downloadSong(Song song) {
         try {
             validateSong(song);
 

@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -37,7 +38,7 @@ class SongDownloaderTest {
     }
 
     @Test
-    void can_download_all_songs() {
+    void can_download_all_songs() throws InterruptedException, ExecutionException {
         when(playlistConvertor.convertAll()).thenReturn(List.of(song, song));
         SongDownloader songDownloader = spy(this.songDownloader);
         doNothing().when(songDownloader).downloadSong(song);
@@ -47,7 +48,7 @@ class SongDownloaderTest {
     }
 
     @Test
-    void can_not_download_all_songs_with_empty_list() {
+    void can_not_download_all_songs_with_empty_list() throws InterruptedException, ExecutionException {
         when(playlistConvertor.convertAll()).thenReturn(new ArrayList<>());
         SongDownloader songDownloader = spy(this.songDownloader);
         songDownloader.downloadAll();
