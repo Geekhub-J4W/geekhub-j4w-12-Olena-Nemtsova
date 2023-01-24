@@ -1,6 +1,6 @@
 package edu.geekhub.homework.model;
 
-import edu.geekhub.homework.track.Field;
+import edu.geekhub.homework.track.FieldController;
 import edu.geekhub.homework.track.Point;
 import edu.geekhub.homework.util.Course;
 import edu.geekhub.homework.util.WinnerChecker;
@@ -10,13 +10,13 @@ import java.util.logging.Level;
 
 public class Motorbike extends Transport {
 
-    public Motorbike(Field field) throws NoSuchAlgorithmException {
-        super(field);
+    public Motorbike(FieldController fieldController) throws NoSuchAlgorithmException {
+        super(fieldController);
         super.type = this.getClass().getSimpleName();
     }
 
     @Override
-    public synchronized void run() {
+    public void run() {
         String message;
         boolean isWinner = false;
 
@@ -30,21 +30,21 @@ public class Motorbike extends Transport {
                     break;
                 }
 
-                if (!field.isFieldPoint(pointToMove)) {
+                if (!fieldController.isFieldPoint(pointToMove)) {
                     message = String.join(" ", color.name(), type, "left the road");
                     logger.log(Level.INFO, message);
-                    field.releasePoint(point);
+                    fieldController.releasePoint(point);
                     break;
                 }
-                if (field.isPointOccupied(pointToMove)) {
-                    Transport transportAtPoint = field.getTransportAtPoint(pointToMove);
+                if (fieldController.isPointOccupied(pointToMove)) {
+                    Transport transportAtPoint = fieldController.getTransportAtPoint(pointToMove);
                     message = String.join(" ", color.name(), type, "crashed into", transportAtPoint.color.name(), transportAtPoint.type);
                     logger.log(Level.INFO, message);
                 }
 
-                field.occupyPoint(pointToMove, point, this);
+                fieldController.occupyPoint(pointToMove, point, this);
                 point = pointToMove;
-                if (field.isFinishPoint(point)) {
+                if (fieldController.isFinishPoint(point)) {
                     isWinner = true;
                 }
             } catch (NoSuchAlgorithmException | InterruptedException ex) {

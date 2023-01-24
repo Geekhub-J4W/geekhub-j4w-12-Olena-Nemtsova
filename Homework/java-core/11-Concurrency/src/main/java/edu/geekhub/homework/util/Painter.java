@@ -15,13 +15,13 @@ public class Painter extends JComponent {
 
     @Override
     public void paint(Graphics g) {
-        List<Point> startBlockPoints = field.getStartBlock().getPoints();
+        List<Point> startBlockPoints = field.startBlock().getPoints();
         drawRectanglesByPoints(g, startBlockPoints, java.awt.Color.GREEN);
 
-        List<Point> trackBlockPoints = field.getTrackBlocks().stream().map(Block::getPoints).flatMap(List::stream).toList();
+        List<Point> trackBlockPoints = field.trackBlocks().stream().map(Block::getPoints).flatMap(List::stream).toList();
         drawRectanglesByPoints(g, trackBlockPoints, java.awt.Color.GRAY);
 
-        List<Point> finishBlockPoints = field.getFinishBlock().getPoints();
+        List<Point> finishBlockPoints = field.finishBlock().getPoints();
         drawRectanglesByPoints(g, finishBlockPoints, java.awt.Color.BLACK);
     }
 

@@ -1,6 +1,6 @@
 package edu.geekhub.homework.model;
 
-import edu.geekhub.homework.track.Field;
+import edu.geekhub.homework.track.FieldController;
 import edu.geekhub.homework.track.Point;
 import edu.geekhub.homework.util.Course;
 import edu.geekhub.homework.util.WinnerChecker;
@@ -10,13 +10,13 @@ import java.util.logging.Level;
 
 public class Truck extends Transport {
 
-    public Truck(Field field) throws NoSuchAlgorithmException {
-        super(field);
+    public Truck(FieldController fieldController) throws NoSuchAlgorithmException {
+        super(fieldController);
         type = this.getClass().getSimpleName();
     }
 
     @Override
-    public synchronized void run() {
+    public void run() {
         String message;
         boolean isWinner = false;
 
@@ -29,29 +29,30 @@ public class Truck extends Transport {
                 if (WinnerChecker.getValue()) {
                     break;
                 }
-                if (!field.isFieldPoint(pointToMove)) {
+                if (!fieldController.isFieldPoint(pointToMove)) {
                     message = String.join(" ", color.name(), type, "left the road");
                     logger.log(Level.INFO, message);
-                    field.releasePoint(point);
+                    fieldController.releasePoint(point);
                     break;
                 }
 
-                while (field.isPointOccupied(pointToMove)) {
-                    Transport transportAtPoint = field.getTransportAtPoint(pointToMove);
+                while (fieldController.isPointOccupied(pointToMove)) {
+                    Transport transportAtPoint = fieldController.getTransportAtPoint(pointToMove);
                     message = String.join(" ", color.name(), type, "waiting for the way be clear");
                     logger.log(Level.INFO, message);
                     Thread.sleep(500);
 
-                    if (field.isPointOccupied(pointToMove) && transportAtPoint.type.equals(this.getClass().getSimpleName())) {
+                    if (fieldController.isPointOccupied(pointToMove) && transportAtPoint.type.equals(this.getClass().getSimpleName())) {
                         message = String.join(" ", color.name(), type, "and", transportAtPoint.color.name(), transportAtPoint.type, "were evacuated from the road");
                         logger.log(Level.INFO, message);
+                        fieldController.releasePoint(point);
                         throw new InterruptedException();
                     }
                 }
 
-                field.occupyPoint(pointToMove, point, this);
+                fieldController.occupyPoint(pointToMove, point, this);
                 point = pointToMove;
-                if (field.isFinishPoint(point)) {
+                if (fieldController.isFinishPoint(point)) {
                     isWinner = true;
                 }
             } catch (NoSuchAlgorithmException | InterruptedException ex) {

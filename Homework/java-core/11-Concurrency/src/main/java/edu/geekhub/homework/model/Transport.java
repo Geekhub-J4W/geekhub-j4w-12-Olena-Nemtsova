@@ -1,6 +1,6 @@
 package edu.geekhub.homework.model;
 
-import edu.geekhub.homework.track.Field;
+import edu.geekhub.homework.track.FieldController;
 import edu.geekhub.homework.track.Point;
 import edu.geekhub.homework.util.Color;
 
@@ -14,13 +14,13 @@ public abstract class Transport implements Runnable {
     protected Color color;
     protected int speed;
     protected Point point;
-    protected Field field;
+    protected FieldController fieldController;
     protected static Logger logger = Logger.getGlobal();
 
-    protected Transport(Field field) throws NoSuchAlgorithmException {
-        this.field = field;
+    protected Transport(FieldController fieldController) throws NoSuchAlgorithmException {
+        this.fieldController = fieldController;
         while (point == null) {
-            point = this.field.getRandomFreeStartPoint();
+            point = this.fieldController.occupyRandomFreeStartPoint(this);
         }
         color = Color.getRandomColor();
         Random rand = SecureRandom.getInstanceStrong();
