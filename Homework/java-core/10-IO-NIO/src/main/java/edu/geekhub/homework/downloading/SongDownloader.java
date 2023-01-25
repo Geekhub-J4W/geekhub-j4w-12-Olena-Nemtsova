@@ -36,7 +36,7 @@ public class SongDownloader {
         List<Future<?>> futures = new ArrayList<>();
         Runnable runnable;
         for (Song song : songs) {
-            runnable = new SongDownloadingThread(song);
+            runnable = () -> downloadSong(song);
             futures.add(fixedThreadPool.submit(runnable));
         }
 
@@ -46,20 +46,7 @@ public class SongDownloader {
         fixedThreadPool.shutdown();
     }
 
-    class SongDownloadingThread implements Runnable {
-        private final Song song;
-
-        public SongDownloadingThread(Song song) {
-            this.song = song;
-        }
-
-        @Override
-        public void run() {
-            downloadSong(song);
-        }
-    }
-
-    synchronized void downloadSong(Song song) {
+    void downloadSong(Song song) {
         try {
             validateSong(song);
 
