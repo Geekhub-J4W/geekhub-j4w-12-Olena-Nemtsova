@@ -1,16 +1,24 @@
 package com.geekhub;
 
 public class Student {
-    public static int COUNTER = 1;
+    private static int COUNTER = 0;
 
     private final int id;
     private final String firstName;
     private final String lastName;
 
     public Student(String firstName, String lastName) {
-        this.id = COUNTER++;
+        this(++COUNTER, firstName, lastName);
+    }
+
+    public Student(int id, String firstName, String lastName) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public static void setMaxId(int id) {
+        COUNTER = id;
     }
 
     public int getId() {
@@ -27,10 +35,10 @@ public class Student {
 
     @Override
     public String toString() {
-        return "Student{" +
+        return "Student{ " +
             "id=" + id +
             ", firstName='" + firstName + '\'' +
             ", lastName='" + lastName + '\'' +
-            '}';
+            " }";
     }
 }

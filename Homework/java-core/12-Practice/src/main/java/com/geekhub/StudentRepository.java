@@ -1,6 +1,7 @@
 package com.geekhub;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class StudentRepository {
@@ -9,6 +10,16 @@ public class StudentRepository {
 
     public void addStudent(Student student) {
         students.add(student);
+        setMaxStudentsId(students);
+    }
+
+    private void setMaxStudentsId(List<Student> students) {
+        int maxId = students.stream()
+            .map(Student::getId)
+            .max(Comparator.comparingInt(id -> id))
+            .orElse(1);
+
+        Student.setMaxId(maxId);
     }
 
     public void deleteStudent(int id) {
