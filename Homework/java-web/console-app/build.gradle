@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+    id 'checkstyle'
+}
+
+group 'edu.geekhub'
+
+repositories {
+    mavenCentral()
+}
+
+checkstyle {
+    toolVersion '10.7.0'
+    configFile file("${rootDir}/config/chekstyle-google-checks.xml")
+}
+
+checkstyleMain {
+    source = 'src/main/java'
+}
+
+checkstyleTest{
+    source = 'src/test/java'
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testImplementation 'org.assertj:assertj-core:3.23.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+
+    implementation 'org.tinylog:tinylog-api:2.6.0'
+    implementation 'org.tinylog:tinylog-impl:2.6.0'
+
+    implementation project(":Homework:java-web:domain")
+}
+
+test {
+    useJUnitPlatform()
+}
