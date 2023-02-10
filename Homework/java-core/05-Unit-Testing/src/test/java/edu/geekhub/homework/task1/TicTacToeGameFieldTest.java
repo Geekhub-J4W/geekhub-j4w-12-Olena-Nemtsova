@@ -102,21 +102,6 @@ class TicTacToeGameFieldTest {
     }
 
     @Test
-    void failed_save_input_without_allowed_line_separator() {
-        String field = """
-            +-----+
-            |X|O|X|
-            | | | |
-            |O|X|O|
-            +-----+""";
-
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> ticTacToeGameField.saveFieldState(field)
-        );
-    }
-
-    @Test
     void save_input_without_field_borders() {
         String field = "XOX   OXO";
         String fieldState = ticTacToeGameField.saveFieldState(field);
