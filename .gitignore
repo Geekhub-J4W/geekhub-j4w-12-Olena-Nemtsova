@@ -1,12 +1,16 @@
 # Compiled class file
 *.class
-/build
-/out
-libs/
+build
+out
+
+.gradle
+
 # IntelliJ IDEA
 .idea
-*.iml
-.gradle
+.iml
+/libs/
+classes/
+
 # Log file
 *.log
 
