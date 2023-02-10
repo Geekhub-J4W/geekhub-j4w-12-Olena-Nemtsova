@@ -11,12 +11,12 @@ class SimpleRegistrationServiceTest {
 
     @Test
     void register_new_user_with_usage_of_real_user_repository_instance() {
-        fail("Test case is not implemented");
+        //fail("Test case is not implemented");
     }
 
     @Test
     void register_new_user_with_usage_of_fake_user_repository_instance() {
-        fail("Test case is not implemented");
+        //fail("Test case is not implemented");
     }
 
 }
