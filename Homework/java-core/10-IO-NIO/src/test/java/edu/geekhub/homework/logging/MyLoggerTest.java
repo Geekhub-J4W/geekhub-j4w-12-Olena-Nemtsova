@@ -80,12 +80,10 @@ class MyLoggerTest {
     void can_sort_by_level() {
         MyLogger.log(Level.ERROR, message);
         MyLogger.log(Level.INFO, message);
-        List<MyLog> myLogList = MyLogger.getAll();
         MyLogger.sortByLevel();
         List<MyLog> myLogListSorted = MyLogger.getAll();
 
-        List<MyLog> expectedMyLogList = new ArrayList<>(List.of(new MyLog(myLogList.get(1).dateTime(), Level.INFO, message),
-            new MyLog(myLogList.get(0).dateTime(), Level.ERROR, message)));
+        List<MyLog> expectedMyLogList = new ArrayList<>(List.of(MyLogger.getOnlyINFO().get(0), MyLogger.getOnlyERROR().get(0)));
 
         assertEquals(expectedMyLogList, myLogListSorted);
     }
