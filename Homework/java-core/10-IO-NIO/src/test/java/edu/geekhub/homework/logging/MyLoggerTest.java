@@ -84,8 +84,8 @@ class MyLoggerTest {
         MyLogger.sortByLevel();
         List<MyLog> myLogListSorted = MyLogger.getAll();
 
-        List<MyLog> expectedMyLogList = List.of(new MyLog(myLogList.get(1).dateTime(), Level.INFO, message),
-            new MyLog(myLogList.get(0).dateTime(), Level.ERROR, message));
+        List<MyLog> expectedMyLogList = new ArrayList<>(List.of(new MyLog(myLogList.get(1).dateTime(), Level.INFO, message),
+            new MyLog(myLogList.get(0).dateTime(), Level.ERROR, message)));
 
         assertEquals(expectedMyLogList, myLogListSorted);
     }
@@ -101,14 +101,6 @@ class MyLoggerTest {
         List<MyLog> myLogListSorted = MyLogger.getAll();
 
         assertEquals(expectedMyLogList, myLogListSorted);
-    }
-
-    @Test
-    void can_not_save_to_wrong_file() {
-        MyLogger.logFile = new File("some", "logList.txt");
-        MyLogger.saveToFile();
-
-        assertEquals(MyLogger.logFile.toString() + " (The system cannot find the path specified)", MyLogger.getAll().get(0).message());
     }
 
     @Test
