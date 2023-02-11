@@ -30,12 +30,12 @@ public class FieldGenerator {
         }
     }
 
-    void generateStartBlock() {
+    protected void generateStartBlock() {
         Point startBlockCentralPoint = new Point(0, 0);
         startBlock = Block.generateBlock(startBlockCentralPoint);
     }
 
-    void generateTrackBlocks(int truckBlocksCount) throws NoSuchAlgorithmException {
+    protected void generateTrackBlocks(int truckBlocksCount) throws NoSuchAlgorithmException {
         Point trackBlockPoint = startBlock.getCentralPoint();
         trackBlocks = new ArrayList<>();
 
@@ -50,7 +50,7 @@ public class FieldGenerator {
         }
     }
 
-    void generateFinishBlock() throws NoSuchAlgorithmException {
+    protected void generateFinishBlock() throws NoSuchAlgorithmException {
         Point lastTrackBlockPoint = trackBlocks.get(trackBlocks.size() - 1).getCentralPoint();
 
         Point finishBlockCentralPoint = startBlock.getCentralPoint();
