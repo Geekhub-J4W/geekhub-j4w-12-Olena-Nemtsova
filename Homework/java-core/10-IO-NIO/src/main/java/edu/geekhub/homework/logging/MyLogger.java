@@ -8,7 +8,7 @@ import java.util.List;
 
 public class MyLogger {
     private static final List<MyLog> loggerList = new ArrayList<>();
-    static File logFile = new File("Homework/java-core/10-IO-NIO/src/main/resources/logList.txt");
+    protected static File logFile = new File("Homework/java-core/10-IO-NIO/src/main/resources/logList.txt");
 
     private MyLogger() {
     }

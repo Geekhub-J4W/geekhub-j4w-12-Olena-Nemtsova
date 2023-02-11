@@ -42,7 +42,7 @@ public class PlaylistConvertor {
         return songs;
     }
 
-    Song convertLineToSong(String line) throws IllegalArgumentException {
+    protected Song convertLineToSong(String line) throws IllegalArgumentException {
         List<String> separatedInfo = Arrays.stream(line.split("\\|"))
             .map(String::strip)
             .toList();
@@ -56,12 +56,12 @@ public class PlaylistConvertor {
         return new Song(path, name, separatedInfo.get(4));
     }
 
-    String getMusicFolderPath() {
+    protected String getMusicFolderPath() {
         String userFolderPath = System.getProperty("user.home");
         return Path.of(userFolderPath, "Music").toString();
     }
 
-    List<String> getSeparatedFileLines() {
+    protected List<String> getSeparatedFileLines() {
         try (Stream<String> lineStream = Files.lines(playlistFile)) {
             return lineStream.toList();
         } catch (IOException ex) {

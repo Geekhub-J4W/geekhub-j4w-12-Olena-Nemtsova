@@ -46,7 +46,7 @@ public class SongDownloader {
         fixedThreadPool.shutdown();
     }
 
-    void downloadSong(Song song) {
+    protected void downloadSong(Song song) {
         try {
             validateSong(song);
 
@@ -76,11 +76,11 @@ public class SongDownloader {
         }
     }
 
-    void createDirectoriesForSong(Path songPath) throws IOException {
+    protected void createDirectoriesForSong(Path songPath) throws IOException {
         Files.createDirectories(songPath);
     }
 
-    Path getFullPath(Song song) {
+    protected Path getFullPath(Song song) {
         return Path.of(song.path().toString(), song.name());
     }
 
@@ -93,7 +93,7 @@ public class SongDownloader {
         }
     }
 
-    void validateFileIsNew(Path filePath, String songName) throws IllegalArgumentException {
+    protected void validateFileIsNew(Path filePath, String songName) throws IllegalArgumentException {
         if (Files.exists(filePath)) {
             throw new IllegalArgumentException("File already exist: " + songName);
         }
