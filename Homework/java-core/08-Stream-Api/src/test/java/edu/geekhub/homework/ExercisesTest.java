@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ExercisesTest {
     private Exercises exercises;
-    Map<Integer, City> cities;
+    private Map<Integer, City> cities;
 
     @BeforeEach
     void setUp() {
