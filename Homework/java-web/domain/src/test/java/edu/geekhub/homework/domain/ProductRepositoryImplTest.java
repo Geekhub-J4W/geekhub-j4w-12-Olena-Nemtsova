@@ -22,23 +22,20 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class ProductRepositoryTest {
+class ProductRepositoryImplTest {
     private ProductRepository productRepository;
     @Mock
     private ProductValidator productValidator;
 
     @BeforeEach
-    void setUp() throws Exception {
-        productRepository = new ProductRepository();
-        Field field = ProductRepository.class.getDeclaredField("productValidator");
-        field.setAccessible(true);
-        field.set(productRepository, productValidator);
+    void setUp() {
+        productRepository = new ProductRepositoryImpl(new ArrayList<>(), productValidator);
     }
 
     @Test
     void can_get_products() throws Exception {
         List<Product> expectedProducts = List.of(new Product(1, "Milk", 45.6));
-        Field field = ProductRepository.class.getDeclaredField("products");
+        Field field = ProductRepositoryImpl.class.getDeclaredField("products");
         field.setAccessible(true);
         field.set(productRepository, expectedProducts);
 
@@ -107,7 +104,7 @@ class ProductRepositoryTest {
     void can_get_product() throws Exception {
         Product expectedProduct = new Product(1, "Milk", 45.6);
         List<Product> products = List.of(expectedProduct);
-        Field field = ProductRepository.class.getDeclaredField("products");
+        Field field = ProductRepositoryImpl.class.getDeclaredField("products");
         field.setAccessible(true);
         field.set(productRepository, products);
 
@@ -123,7 +120,7 @@ class ProductRepositoryTest {
     void can_delete_product_by_id() throws Exception {
         Product product = new Product(1, "Milk", 45.6);
         List<Product> products = new ArrayList<>(List.of(product));
-        Field field = ProductRepository.class.getDeclaredField("products");
+        Field field = ProductRepositoryImpl.class.getDeclaredField("products");
         field.setAccessible(true);
         field.set(productRepository, products);
 
@@ -143,7 +140,7 @@ class ProductRepositoryTest {
     @Test
     void can_update_product_by_id() throws Exception {
         List<Product> products = List.of(new Product(1, "Milk", 45.6));
-        Field field = ProductRepository.class.getDeclaredField("products");
+        Field field = ProductRepositoryImpl.class.getDeclaredField("products");
         field.setAccessible(true);
         field.set(productRepository, products);
 

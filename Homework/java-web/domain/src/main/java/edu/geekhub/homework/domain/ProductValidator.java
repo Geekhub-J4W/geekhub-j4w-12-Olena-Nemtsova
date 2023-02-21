@@ -1,5 +1,6 @@
 package edu.geekhub.homework.domain;
 
+
 public class ProductValidator {
 
     public void validate(Product product) {

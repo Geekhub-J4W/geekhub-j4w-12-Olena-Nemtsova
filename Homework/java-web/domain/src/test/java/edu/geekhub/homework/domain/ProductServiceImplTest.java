@@ -9,7 +9,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,22 +17,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class ProductServiceTest {
-    private ProductService productService;
+class ProductServiceImplTest {
+    private ProductServiceImpl productService;
     @Mock
     private ProductRepository productRepository;
     @Mock
     private ProductValidator productValidator;
 
     @BeforeEach
-    void setUp() throws Exception {
-        productService = new ProductService();
-        Field field = ProductService.class.getDeclaredField("productRepository");
-        field.setAccessible(true);
-        field.set(productService, productRepository);
-        field = ProductService.class.getDeclaredField("productValidator");
-        field.setAccessible(true);
-        field.set(productService, productValidator);
+    void setUp() {
+        productService = new ProductServiceImpl(productRepository, productValidator);
     }
 
     @Test
