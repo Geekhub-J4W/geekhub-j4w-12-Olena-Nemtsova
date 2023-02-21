@@ -18,7 +18,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup build
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/gradle-build-action@v2
 
       - name: Execute gradle assemble
         run: ./gradlew assemble
@@ -35,7 +35,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup gradle for tests
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/gradle-build-action@v2
 
       - name: Execute gradle test
         run: ./gradlew test
@@ -52,7 +52,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup gradle for checkstyle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/gradle-build-action@v2
 
       - name: Execute gradle checkstyleMain
         run: ./gradlew checkstyleMain
