@@ -32,6 +32,7 @@ dependencies {
 
     implementation 'org.tinylog:tinylog-api:2.6.0'
     implementation 'org.tinylog:tinylog-impl:2.6.0'
+    implementation libs.spring.context
 }
 
 test {
