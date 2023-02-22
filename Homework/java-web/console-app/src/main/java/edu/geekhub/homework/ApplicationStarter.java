@@ -2,8 +2,8 @@ package edu.geekhub.homework;
 
 import config.DomainConfig;
 import edu.geekhub.homework.config.AppConfig;
+import edu.geekhub.homework.controllers.BucketController;
 import edu.geekhub.homework.controllers.ProductsController;
-import edu.geekhub.homework.domain.BucketService;
 import java.util.List;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -22,9 +22,9 @@ public class ApplicationStarter {
             productController.addProduct(input);
         }
 
-        var bucketService = applicationContext.getBean(BucketService.class);
-        bucketService.addProduct(productController.getProducts().get(0));
-        bucketService.addProduct(productController.getProducts().get(2));
-        bucketService.checkout();
+        var bucketController = applicationContext.getBean(BucketController.class);
+        bucketController.addProduct(productController.getProducts().get(0));
+        bucketController.addProduct(productController.getProducts().get(2));
+        bucketController.checkout();
     }
 }
