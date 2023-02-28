@@ -62,16 +62,11 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public boolean deleteOrderById(int id) {
-        Order orderToDel = getOrderById(id);
-        if (orderToDel != null) {
-            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-                .addValue("id", id);
+    public void deleteOrderById(int id) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("id", id);
 
-            jdbcTemplate.update(DELETE_ORDER_BY_ID, mapSqlParameterSource);
-            return true;
-        }
-        return false;
+        jdbcTemplate.update(DELETE_ORDER_BY_ID, mapSqlParameterSource);
     }
 
     @Override
@@ -81,10 +76,10 @@ public class OrderRepositoryImpl implements OrderRepository {
 
         return jdbcTemplate.query(FETCH_ORDER_BY_ID, mapSqlParameterSource,
                 (resultSet, rowNum) -> new Order(
-                resultSet.getInt("id"),
-                resultSet.getTimestamp("date").toLocalDateTime(),
-                resultSet.getDouble("totalPrice")
-            ))
+                    resultSet.getInt("id"),
+                    resultSet.getTimestamp("date").toLocalDateTime(),
+                    resultSet.getDouble("totalPrice")
+                ))
             .stream()
             .findFirst()
             .orElse(null);
@@ -97,26 +92,21 @@ public class OrderRepositoryImpl implements OrderRepository {
 
         return jdbcTemplate.query(FETCH_ORDER_PRODUCTS, mapSqlParameterSource,
             (rs, rowNum) -> new Product(
-            rs.getInt("id"),
-            rs.getString("name"),
-            rs.getDouble("price"),
-            rs.getInt("productCategoryId"),
-            rs.getString("imagePath")
-        ));
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getDouble("price"),
+                rs.getInt("productCategoryId"),
+                rs.getString("imagePath")
+            ));
     }
 
     @Override
-    public boolean updateOrderPriceById(double newPrice, int id) {
-        Order orderToEdit = getOrderById(id);
-        if (orderToEdit != null) {
-            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-                .addValue("totalPrice", newPrice)
-                .addValue("id", id);
+    public void updateOrderPriceById(double newPrice, int id) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("totalPrice", newPrice)
+            .addValue("id", id);
 
-            jdbcTemplate.update(UPDATE_ORDER_BY_ID, mapSqlParameterSource);
-            return true;
-        }
-        return false;
+        jdbcTemplate.update(UPDATE_ORDER_BY_ID, mapSqlParameterSource);
     }
 }
 

@@ -6,11 +6,11 @@ import java.util.List;
 public interface CategoryRepository {
     List<Category> getCategories();
 
-    void addCategory(Category productCategory);
+    int addCategory(Category productCategory);
 
     Category getCategoryById(int id);
 
-    boolean deleteCategoryById(int id);
+    void deleteCategoryById(int id);
 
-    boolean updateCategoryById(Category category, int id);
+    void updateCategoryById(Category category, int id);
 }

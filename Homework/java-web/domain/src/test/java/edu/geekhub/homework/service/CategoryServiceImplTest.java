@@ -7,7 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import edu.geekhub.homework.domain.Category;
@@ -19,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataAccessException;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceImplTest {
@@ -67,7 +70,7 @@ class CategoryServiceImplTest {
     void can_add_category() {
         Category dairy = new Category(1, "Dairy");
         doNothing().when(categoryValidator).validate(any());
-        doNothing().when(categoryRepository).addCategory(any());
+        doReturn(1).when(categoryRepository).addCategory(any());
 
         boolean successfulAdded = categoryService.addCategory(dairy);
 
@@ -84,9 +87,21 @@ class CategoryServiceImplTest {
     }
 
     @Test
+    void can_not_add_category_not_added_to_repository() {
+        doNothing().when(categoryValidator).validate(any());
+        doReturn(-1).when(categoryRepository).addCategory(any());
+
+        boolean successfulAdded = categoryService.addCategory(null);
+
+        assertFalse(successfulAdded);
+    }
+
+    @Test
     void can_delete_category_by_id() {
         Category dairy = new Category(1, "Dairy");
-        when(categoryRepository.getCategoryById(anyInt())).thenReturn(dairy);
+        categoryService = spy(this.categoryService);
+        doReturn(dairy).when(categoryService).getCategoryById(anyInt());
+        doNothing().when(categoryRepository).deleteCategoryById(anyInt());
 
         boolean successfulDeleted = categoryService.deleteCategoryById(1);
 
@@ -95,7 +110,21 @@ class CategoryServiceImplTest {
 
     @Test
     void can_not_delete_product_by_not_existing_id() {
-        when(categoryRepository.getCategoryById(anyInt())).thenReturn(null);
+        categoryService = spy(this.categoryService);
+        doReturn(null).when(categoryService).getCategoryById(anyInt());
+
+        boolean successfulDeleted = categoryService.deleteCategoryById(1);
+
+        assertFalse(successfulDeleted);
+    }
+
+    @Test
+    void can_not_delete_category_not_deleted_at_repository() {
+        Category dairy = new Category(1, "Dairy");
+        categoryService = spy(this.categoryService);
+        doReturn(dairy).when(categoryService).getCategoryById(anyInt());
+        doThrow(new DataAccessException("") {})
+            .when(categoryRepository).deleteCategoryById(anyInt());
 
         boolean successfulDeleted = categoryService.deleteCategoryById(1);
 
@@ -104,8 +133,10 @@ class CategoryServiceImplTest {
 
     @Test
     void can_update_category_by_id() {
+        categoryService = spy(this.categoryService);
         doNothing().when(categoryValidator).validate(any());
-        when(categoryRepository.updateCategoryById(any(), anyInt())).thenReturn(true);
+        doReturn(new Category("Dairy")).when(categoryService).getCategoryById(anyInt());
+        doNothing().when(categoryRepository).updateCategoryById(any(), anyInt());
 
         boolean successfulUpdated = categoryService.updateCategoryById(null, 1);
 
@@ -123,8 +154,22 @@ class CategoryServiceImplTest {
 
     @Test
     void can_not_update_category_by_not_existing_id() {
+        categoryService = spy(this.categoryService);
         doNothing().when(categoryValidator).validate(any());
-        when(categoryRepository.updateCategoryById(any(), anyInt())).thenReturn(false);
+        doReturn(null).when(categoryService).getCategoryById(anyInt());
+
+        boolean successfulUpdated = categoryService.updateCategoryById(null, 1);
+
+        assertFalse(successfulUpdated);
+    }
+
+    @Test
+    void can_not_update_product_not_updated_at_repository() {
+        categoryService = spy(this.categoryService);
+        doNothing().when(categoryValidator).validate(any());
+        doReturn(new Category("Dairy")).when(categoryService).getCategoryById(anyInt());
+        doThrow(new DataAccessException("") {
+        }).when(categoryRepository).updateCategoryById(any(), anyInt());
 
         boolean successfulUpdated = categoryService.updateCategoryById(null, 1);
 

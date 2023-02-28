@@ -10,12 +10,12 @@ public interface OrderRepository {
 
     int addOrder(Order order);
 
-    boolean deleteOrderById(int id);
+    void deleteOrderById(int id);
 
     Order getOrderById(int id);
 
     List<Product> getOrderProducts(int id);
 
-    boolean updateOrderPriceById(double newPrice, int id);
+    void updateOrderPriceById(double newPrice, int id);
 }
 

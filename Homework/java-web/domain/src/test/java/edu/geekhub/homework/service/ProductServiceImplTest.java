@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import edu.geekhub.homework.domain.Category;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataAccessException;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
@@ -154,7 +156,10 @@ class ProductServiceImplTest {
 
     @Test
     void can_delete_product_by_id() {
-        when(productRepository.deleteProductById(anyInt())).thenReturn(true);
+        Product milk = new Product("Milk", 45.6, 1);
+        productService = spy(this.productService);
+        doReturn(milk).when(productService).getProductById(anyInt());
+        doNothing().when(productRepository).deleteProductById(anyInt());
 
         boolean successfulDeleted = productService.deleteProductById(1);
 
@@ -163,7 +168,20 @@ class ProductServiceImplTest {
 
     @Test
     void can_not_delete_product_by_not_existing_id() {
-        when(productRepository.deleteProductById(anyInt())).thenReturn(false);
+        productService = spy(this.productService);
+        doReturn(null).when(productService).getProductById(anyInt());
+
+        boolean successfulDeleted = productService.deleteProductById(1);
+
+        assertFalse(successfulDeleted);
+    }
+
+    @Test
+    void can_not_delete_product_not_deleted_at_repository() {
+        Product milk = new Product("Milk", 45.6, 1);
+        productService = spy(this.productService);
+        doReturn(milk).when(productService).getProductById(anyInt());
+        doThrow(new DataAccessException("") {}).when(productRepository).deleteProductById(anyInt());
 
         boolean successfulDeleted = productService.deleteProductById(1);
 
@@ -172,8 +190,10 @@ class ProductServiceImplTest {
 
     @Test
     void can_update_product_by_id() {
+        productService = spy(this.productService);
         doNothing().when(productValidator).validate(any());
-        when(productRepository.updateProductById(any(), anyInt())).thenReturn(true);
+        doReturn(new Product("Milk", 45.6, 1)).when(productService).getProductById(anyInt());
+        doNothing().when(productRepository).updateProductById(any(), anyInt());
 
         boolean successfulUpdated = productService.updateProductById(null, 1);
 
@@ -191,8 +211,22 @@ class ProductServiceImplTest {
 
     @Test
     void can_not_update_product_by_not_existing_id() {
+        productService = spy(this.productService);
         doNothing().when(productValidator).validate(any());
-        when(productRepository.updateProductById(any(), anyInt())).thenReturn(false);
+        doReturn(null).when(productService).getProductById(anyInt());
+
+        boolean successfulUpdated = productService.updateProductById(null, 1);
+
+        assertFalse(successfulUpdated);
+    }
+
+    @Test
+    void can_not_update_product_not_updated_at_repository() {
+        productService = spy(this.productService);
+        doNothing().when(productValidator).validate(any());
+        doReturn(new Product("Milk", 45.6, 1)).when(productService).getProductById(anyInt());
+        doThrow(new DataAccessException("") {})
+            .when(productRepository).updateProductById(any(), anyInt());
 
         boolean successfulUpdated = productService.updateProductById(null, 1);
 

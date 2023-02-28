@@ -7,5 +7,5 @@ public interface ProductOrderRepository {
 
     List<ProductOrder> getProductOrders();
 
-    void addProductOrder(ProductOrder productOrder);
+    int addProductOrder(ProductOrder productOrder);
 }

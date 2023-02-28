@@ -5,6 +5,7 @@ import edu.geekhub.homework.domain.CategoryValidator;
 import edu.geekhub.homework.repository.interfaces.CategoryRepository;
 import edu.geekhub.homework.service.interfaces.CategoryService;
 import java.util.List;
+import org.springframework.dao.DataAccessException;
 import org.tinylog.Logger;
 
 public class CategoryServiceImpl implements CategoryService {
@@ -27,48 +28,48 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public boolean addCategory(Category category) {
-        boolean successAdd = false;
         try {
             categoryValidator.validate(category);
-            categoryRepository.addCategory(category);
+            int newCategoryId = categoryRepository.addCategory(category);
+            if (newCategoryId == -1) {
+                throw new IllegalArgumentException("Unable to retrieve the generated key");
+            }
             Logger.info("Category was added:\n" + category);
-            successAdd = true;
-        } catch (IllegalArgumentException exception) {
+            return true;
+        } catch (IllegalArgumentException | DataAccessException exception) {
             Logger.warn("Category wasn't added: " + category + "\n" + exception.getMessage());
+            return false;
         }
-        return successAdd;
     }
 
     @Override
     public boolean deleteCategoryById(int id) {
-        Category productCategory = categoryRepository.getCategoryById(id);
-
-        if (productCategory != null) {
+        Category categoryToDel = getCategoryById(id);
+        try {
+            if (categoryToDel == null) {
+                throw new IllegalArgumentException("Category with id" + id + "not found");
+            }
             categoryRepository.deleteCategoryById(id);
-            Logger.info("Category was deleted:\n" + productCategory);
             return true;
-        } else {
-            Logger.warn("Category wasn't deleted:\nNo found category with id: " + id);
+        } catch (IllegalArgumentException | DataAccessException exception) {
+            Logger.warn("Product wasn't deleted: " + categoryToDel + "\n" + exception.getMessage());
+            return false;
         }
-        return false;
     }
 
     @Override
     public boolean updateCategoryById(Category category, int id) {
-        boolean successEditing = false;
         try {
             categoryValidator.validate(category);
-            successEditing = categoryRepository.updateCategoryById(category, id);
-
-            if (successEditing) {
-                Logger.info("Category was edited:\n" + category);
-            } else {
-                Logger.warn("Category wasn't edited:\nNo found  category with id: " + id);
+            if (getCategoryById(id) == null) {
+                throw new IllegalArgumentException("Category with id" + id + "not found");
             }
-        } catch (IllegalArgumentException exception) {
+            categoryRepository.updateCategoryById(category, id);
+            return true;
+        } catch (IllegalArgumentException | DataAccessException exception) {
             Logger.warn("Category wasn't edited: " + category + "\n" + exception.getMessage());
+            return false;
         }
-        return successEditing;
     }
 
     @Override

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +47,7 @@ class ProductOrderServiceImplTest {
     void can_add_productOrder_relation() {
         ProductOrder relation = new ProductOrder(1, 1);
         doNothing().when(productOrderValidator).validate(any());
-        doNothing().when(productOrderRepository).addProductOrder(any());
+        doReturn(1).when(productOrderRepository).addProductOrder(any());
 
         boolean successfulAdded = productOrderService.addProductOrder(relation);
 
@@ -57,6 +58,17 @@ class ProductOrderServiceImplTest {
     void can_not_add_not_valid_productOrder_relation() {
         ProductOrder relation = new ProductOrder(1, 1);
         doThrow(new IllegalArgumentException()).when(productOrderValidator).validate(any());
+
+        boolean successfulAdded = productOrderService.addProductOrder(relation);
+
+        assertFalse(successfulAdded);
+    }
+
+    @Test
+    void can_not_add_productOrder_relation_not_added_to_repository() {
+        ProductOrder relation = new ProductOrder(1, 1);
+        doNothing().when(productOrderValidator).validate(any());
+        doReturn(-1).when(productOrderRepository).addProductOrder(any());
 
         boolean successfulAdded = productOrderService.addProductOrder(relation);
 

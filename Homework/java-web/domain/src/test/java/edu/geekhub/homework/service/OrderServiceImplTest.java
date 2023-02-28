@@ -5,8 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -25,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataAccessException;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceImplTest {
@@ -79,14 +83,34 @@ class OrderServiceImplTest {
     @Test
     void can_add_order() {
         when(orderRepository.addOrder(any())).thenReturn(1);
-        int newOrderId = orderService.addOrder(new Order(null));
+        int newOrderId = orderService.addOrder(new Order(LocalDateTime.now()));
 
         assertEquals(1, newOrderId);
     }
 
     @Test
+    void can_not_add_order_without_getting_generated_id() {
+        when(orderRepository.addOrder(any())).thenReturn(-1);
+        int newOrderId = orderService.addOrder(new Order(LocalDateTime.now()));
+
+        assertEquals(-1, newOrderId);
+    }
+
+    @Test
+    void can_not_add_order_not_added_to_repository() {
+        doThrow(new DataAccessException("") {
+        }).when(orderRepository).addOrder(any());
+        int newOrderId = orderService.addOrder(new Order(LocalDateTime.now()));
+
+        assertEquals(-1, newOrderId);
+    }
+
+    @Test
     void can_delete_order_by_id() {
-        when(orderRepository.deleteOrderById(anyInt())).thenReturn(true);
+        Order order = new Order(LocalDateTime.now());
+        orderService = spy(orderService);
+        doReturn(order).when(orderService).getOrderById(anyInt());
+        doNothing().when(orderRepository).deleteOrderById(anyInt());
 
         boolean deleteStatus = orderService.deleteOrder(1);
 
@@ -95,7 +119,21 @@ class OrderServiceImplTest {
 
     @Test
     void can_not_delete_order_by_wrong_id() {
-        when(orderRepository.deleteOrderById(anyInt())).thenReturn(false);
+        orderService = spy(orderService);
+        doReturn(null).when(orderService).getOrderById(anyInt());
+
+        boolean deleteStatus = orderService.deleteOrder(1);
+
+        assertFalse(deleteStatus);
+    }
+
+    @Test
+    void can_not_delete_order_not_deleted_at_repository() {
+        Order order = new Order(LocalDateTime.now());
+        orderService = spy(orderService);
+        doReturn(order).when(orderService).getOrderById(anyInt());
+        doThrow(new DataAccessException("") {
+        }).when(orderRepository).deleteOrderById(anyInt());
 
         boolean deleteStatus = orderService.deleteOrder(1);
 
@@ -106,6 +144,7 @@ class OrderServiceImplTest {
     void can_update_order_totalPrice_by_id() {
         Order order = new Order(LocalDateTime.now());
         when(orderRepository.getOrderById(anyInt())).thenReturn(order);
+        doNothing().when(orderRepository).updateOrderPriceById(anyDouble(), anyInt());
 
         boolean successfulUpdated = orderService.updateOrderPriceById(10, 1);
 
@@ -115,6 +154,18 @@ class OrderServiceImplTest {
     @Test
     void can_not_update_order_totalPrice_by_wrong_id() {
         when(orderRepository.getOrderById(anyInt())).thenReturn(null);
+
+        boolean successfulUpdated = orderService.updateOrderPriceById(10, 1);
+
+        assertFalse(successfulUpdated);
+    }
+
+    @Test
+    void can_not_update_order_totalPrice_not_updated_at_repository() {
+        Order order = new Order(LocalDateTime.now());
+        when(orderRepository.getOrderById(anyInt())).thenReturn(order);
+        doThrow(new DataAccessException("") {
+        }).when(orderRepository).updateOrderPriceById(anyDouble(), anyInt());
 
         boolean successfulUpdated = orderService.updateOrderPriceById(10, 1);
 

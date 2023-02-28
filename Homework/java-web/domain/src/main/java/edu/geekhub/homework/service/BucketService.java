@@ -59,10 +59,8 @@ public class BucketService {
         order = order.changeId(orderService.addOrder(order));
 
         if (order.id() == -1) {
-            Logger.warn("Order wasn't added to order repository");
             return false;
         }
-        Logger.info("Order was added to order repository");
 
         if (!addProductsOrdersRelations(order)) {
             orderService.deleteOrder(order.id());

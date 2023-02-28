@@ -46,24 +46,24 @@ public class ProductRepositoryImpl implements ProductRepository {
     public List<Product> getProducts() {
         return jdbcTemplate.query(FETCH_ALL_PRODUCTS,
             (rs, rowNum) -> new Product(
-            rs.getInt("id"),
-            rs.getString("name"),
-            rs.getDouble("price"),
-            rs.getInt("categoryId"),
-            rs.getString("imagePath")
-        ));
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getDouble("price"),
+                rs.getInt("categoryId"),
+                rs.getString("imagePath")
+            ));
     }
 
     @Override
     public List<Product> getProductsRatingSorted() {
         return jdbcTemplate.query(FETCH_PRODUCTS_RATING_SORTED,
             (rs, rowNum) -> new Product(
-            rs.getInt("id"),
-            rs.getString("name"),
-            rs.getDouble("price"),
-            rs.getInt("categoryId"),
-            rs.getString("imagePath")
-        ));
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getDouble("price"),
+                rs.getInt("categoryId"),
+                rs.getString("imagePath")
+            ));
     }
 
     @Override
@@ -93,46 +93,36 @@ public class ProductRepositoryImpl implements ProductRepository {
 
         return jdbcTemplate.query(FETCH_PRODUCT_BY_ID, mapSqlParameterSource,
                 (resultSet, rowNum) -> new Product(
-                resultSet.getInt("id"),
-                resultSet.getString("name"),
-                resultSet.getDouble("price"),
-                resultSet.getInt("categoryId"),
-                resultSet.getString("imagePath")
-            ))
+                    resultSet.getInt("id"),
+                    resultSet.getString("name"),
+                    resultSet.getDouble("price"),
+                    resultSet.getInt("categoryId"),
+                    resultSet.getString("imagePath")
+                ))
             .stream()
             .findFirst()
             .orElse(null);
     }
 
     @Override
-    public boolean deleteProductById(int id) {
-        Product productToDel = getProductById(id);
-        if (productToDel != null) {
-            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-                .addValue("id", id);
+    public void deleteProductById(int id) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("id", id);
 
-            jdbcTemplate.update(DELETE_PRODUCT_BY_ID, mapSqlParameterSource);
-            return true;
-        }
-        return false;
+        jdbcTemplate.update(DELETE_PRODUCT_BY_ID, mapSqlParameterSource);
     }
 
     @Override
-    public boolean updateProductById(Product product, int id) {
-        Product productToEdit = getProductById(id);
-        if (productToEdit != null) {
-            productValidator.validate(product);
+    public void updateProductById(Product product, int id) {
+        productValidator.validate(product);
 
-            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-                .addValue("name", product.name())
-                .addValue("price", product.price())
-                .addValue("categoryId", product.categoryId())
-                .addValue("id", id)
-                .addValue("imagePath", product.imagePath());
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("name", product.name())
+            .addValue("price", product.price())
+            .addValue("categoryId", product.categoryId())
+            .addValue("id", id)
+            .addValue("imagePath", product.imagePath());
 
-            jdbcTemplate.update(UPDATE_PRODUCT_BY_ID, mapSqlParameterSource);
-            return true;
-        }
-        return false;
+        jdbcTemplate.update(UPDATE_PRODUCT_BY_ID, mapSqlParameterSource);
     }
 }

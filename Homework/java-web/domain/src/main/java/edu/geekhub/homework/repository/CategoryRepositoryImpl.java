@@ -6,6 +6,7 @@ import edu.geekhub.homework.repository.interfaces.CategoryRepository;
 import java.util.List;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 
 public class CategoryRepositoryImpl implements CategoryRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -41,13 +42,19 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     }
 
     @Override
-    public void addCategory(Category category) {
+    public int addCategory(Category category) {
         categoryValidator.validate(category);
 
+        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
             .addValue("name", category.name());
+        jdbcTemplate.update(INSERT_CATEGORY, mapSqlParameterSource, generatedKeyHolder);
 
-        jdbcTemplate.update(INSERT_CATEGORY, mapSqlParameterSource);
+        var keys = generatedKeyHolder.getKeys();
+        if (keys != null) {
+            return (int) keys.get("id");
+        }
+        return -1;
     }
 
     @Override
@@ -57,40 +64,30 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 
         return jdbcTemplate.query(FETCH_CATEGORY_BY_ID, mapSqlParameterSource,
                 (resultSet, rowNum) -> new Category(
-                resultSet.getInt("id"),
-                resultSet.getString("name")
-            ))
+                    resultSet.getInt("id"),
+                    resultSet.getString("name")
+                ))
             .stream()
             .findFirst()
             .orElse(null);
     }
 
     @Override
-    public boolean deleteCategoryById(int id) {
-        Category productToDel = getCategoryById(id);
-        if (productToDel != null) {
-            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-                .addValue("id", id);
+    public void deleteCategoryById(int id) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("id", id);
 
-            jdbcTemplate.update(DELETE_CATEGORY_BY_ID, mapSqlParameterSource);
-            return true;
-        }
-        return false;
+        jdbcTemplate.update(DELETE_CATEGORY_BY_ID, mapSqlParameterSource);
     }
 
     @Override
-    public boolean updateCategoryById(Category category, int id) {
-        Category productToEdit = getCategoryById(id);
-        if (productToEdit != null) {
-            categoryValidator.validate(category);
+    public void updateCategoryById(Category category, int id) {
+        categoryValidator.validate(category);
 
-            MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-                .addValue("name", category.name())
-                .addValue("id", id);
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("name", category.name())
+            .addValue("id", id);
 
-            jdbcTemplate.update(UPDATE_CATEGORY_BY_ID, mapSqlParameterSource);
-            return true;
-        }
-        return false;
+        jdbcTemplate.update(UPDATE_CATEGORY_BY_ID, mapSqlParameterSource);
     }
 }

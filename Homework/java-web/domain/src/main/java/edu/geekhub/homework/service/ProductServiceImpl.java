@@ -9,6 +9,7 @@ import edu.geekhub.homework.service.interfaces.ProductService;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import org.springframework.dao.DataAccessException;
 import org.tinylog.Logger;
 
 public class ProductServiceImpl implements ProductService {
@@ -39,12 +40,12 @@ public class ProductServiceImpl implements ProductService {
             productValidator.validate(product);
             int id = productRepository.addProduct(product);
             if (id == -1) {
-                throw new IllegalArgumentException("Database return null");
+                throw new IllegalArgumentException("Unable to retrieve the generated key");
             }
             product = product.changeId(id);
             Logger.info("Product was added:\n" + product);
             successAdd = true;
-        } catch (IllegalArgumentException exception) {
+        } catch (IllegalArgumentException | DataAccessException exception) {
             Logger.warn("Product wasn't added: " + product + "\n" + exception.getMessage());
         }
         return successAdd;
@@ -52,33 +53,32 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public boolean deleteProductById(int id) {
-        Product product = productRepository.getProductById(id);
-        boolean successDelete = productRepository.deleteProductById(id);
-
-        if (successDelete) {
-            Logger.info("Product was deleted:\n" + product);
-        } else {
-            Logger.warn("Product wasn't deleted:\nNo found product with id: " + id);
+        Product productToDel = getProductById(id);
+        try {
+            if (productToDel == null) {
+                throw new IllegalArgumentException("Product with id" + id + "not found");
+            }
+            productRepository.deleteProductById(id);
+            return true;
+        } catch (IllegalArgumentException | DataAccessException exception) {
+            Logger.warn("Product wasn't deleted: " + productToDel + "\n" + exception.getMessage());
+            return false;
         }
-        return successDelete;
     }
 
     @Override
     public boolean updateProductById(Product product, int id) {
-        boolean successEditing = false;
         try {
             productValidator.validate(product);
-            successEditing = productRepository.updateProductById(product, id);
-
-            if (successEditing) {
-                Logger.info("Product was edited:\n" + product);
-            } else {
-                Logger.warn("Product wasn't edited:\nNo found product with id: " + id);
+            if (getProductById(id) == null) {
+                throw new IllegalArgumentException("Product with id" + id + "not found");
             }
-        } catch (IllegalArgumentException exception) {
+            productRepository.updateProductById(product, id);
+            return true;
+        } catch (IllegalArgumentException | DataAccessException exception) {
             Logger.warn("Product wasn't edited: " + product + "\n" + exception.getMessage());
+            return false;
         }
-        return successEditing;
     }
 
     @Override

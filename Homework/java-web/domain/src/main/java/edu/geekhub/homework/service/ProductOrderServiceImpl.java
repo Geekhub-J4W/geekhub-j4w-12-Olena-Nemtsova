@@ -5,6 +5,7 @@ import edu.geekhub.homework.domain.ProductOrderValidator;
 import edu.geekhub.homework.repository.interfaces.ProductOrderRepository;
 import edu.geekhub.homework.service.interfaces.ProductOrderService;
 import java.util.List;
+import org.springframework.dao.DataAccessException;
 import org.tinylog.Logger;
 
 public class ProductOrderServiceImpl implements ProductOrderService {
@@ -24,16 +25,18 @@ public class ProductOrderServiceImpl implements ProductOrderService {
 
     @Override
     public boolean addProductOrder(ProductOrder productOrder) {
-        boolean successAdd = false;
         try {
             validator.validate(productOrder);
-            productOrderRepository.addProductOrder(productOrder);
-            successAdd = true;
-        } catch (IllegalArgumentException exception) {
+            int newRelationId = productOrderRepository.addProductOrder(productOrder);
+            if (newRelationId == -1) {
+                throw new IllegalArgumentException("Unable to retrieve the generated key");
+            }
+            return true;
+        } catch (IllegalArgumentException | DataAccessException exception) {
             Logger.warn("ProductOrder wasn't added: "
                         + productOrder + "\n"
                         + exception.getMessage());
+            return false;
         }
-        return successAdd;
     }
 }

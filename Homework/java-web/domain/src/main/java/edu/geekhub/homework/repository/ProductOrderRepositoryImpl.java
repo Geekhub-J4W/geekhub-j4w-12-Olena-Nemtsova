@@ -6,6 +6,7 @@ import edu.geekhub.homework.repository.interfaces.ProductOrderRepository;
 import java.util.List;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 
 public class ProductOrderRepositoryImpl implements ProductOrderRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -33,15 +34,19 @@ public class ProductOrderRepositoryImpl implements ProductOrderRepository {
     }
 
     @Override
-    public void addProductOrder(ProductOrder productOrder) {
+    public int addProductOrder(ProductOrder productOrder) {
         validator.validate(productOrder);
 
+        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
             .addValue("productId", productOrder.productId())
             .addValue("orderId", productOrder.orderId());
+        jdbcTemplate.update(INSERT_PRODUCT_ORDER, mapSqlParameterSource, generatedKeyHolder);
 
-        jdbcTemplate.update(INSERT_PRODUCT_ORDER, mapSqlParameterSource);
+        var keys = generatedKeyHolder.getKeys();
+        if (keys != null) {
+            return (int) keys.get("id");
+        }
+        return -1;
     }
-
-
 }

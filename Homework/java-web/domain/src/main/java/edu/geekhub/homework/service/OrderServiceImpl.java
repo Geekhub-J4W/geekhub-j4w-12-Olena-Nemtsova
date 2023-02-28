@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
+import org.springframework.dao.DataAccessException;
 import org.tinylog.Logger;
 
 public class OrderServiceImpl implements OrderService {
@@ -27,17 +28,32 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public int addOrder(Order order) {
-        return orderRepository.addOrder(order);
+        try {
+            int newOrderId = orderRepository.addOrder(order);
+            if (newOrderId == -1) {
+                throw new IllegalArgumentException("Unable to retrieve the generated key");
+            }
+            Logger.info("Order was added:\n" + order);
+            return newOrderId;
+        } catch (IllegalArgumentException | DataAccessException exception) {
+            Logger.warn("Order wasn't added: " + order + "\n" + exception.getMessage());
+            return -1;
+        }
     }
 
     @Override
     public boolean deleteOrder(int id) {
-        if (orderRepository.deleteOrderById(id)) {
-            Logger.info("Order with id '" + id + "' was deleted from repository");
+        Order orderToDel = getOrderById(id);
+        try {
+            if (orderToDel == null) {
+                throw new IllegalArgumentException("Order with id" + id + "not found");
+            }
+            orderRepository.deleteOrderById(id);
             return true;
+        } catch (IllegalArgumentException | DataAccessException exception) {
+            Logger.warn("Order wasn't deleted: " + orderToDel + "\n" + exception.getMessage());
+            return false;
         }
-        Logger.warn("Order with id '" + id + "' wasn't deleted from repository: not found");
-        return false;
     }
 
     @Override
@@ -57,15 +73,20 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean updateOrderPriceById(double newPrice, int id) {
         Order orderToEdit = getOrderById(id);
-        if (orderToEdit == null) {
-            Logger.warn("Order price wasn't updated: not found order with id " + id);
+        try {
+            if (orderToEdit == null) {
+                throw new IllegalArgumentException("Order with id" + id + "not found");
+            }
+
+            orderRepository.updateOrderPriceById(newPrice, id);
+            Logger.info("Order price was updated: "
+                        + orderToEdit + "\n"
+                        + "new price: " + newPrice);
+            return true;
+        } catch (IllegalArgumentException | DataAccessException exception) {
+            Logger.warn("Order wasn't edited: " + orderToEdit + "\n" + exception.getMessage());
             return false;
         }
-        orderRepository.updateOrderPriceById(newPrice, id);
-        Logger.info("Order price was updated: "
-                    + orderToEdit + "\n"
-                    + "new price: " + newPrice);
-        return true;
     }
 
     @Override

@@ -12,7 +12,7 @@ public interface ProductRepository {
 
     Product getProductById(int id);
 
-    boolean deleteProductById(int id);
+    void deleteProductById(int id);
 
-    boolean updateProductById(Product product, int id);
+    void updateProductById(Product product, int id);
 }
