@@ -1,9 +1,11 @@
-package edu.geekhub.homework.domain;
+package edu.geekhub.homework.service.interfaces;
 
+import edu.geekhub.homework.domain.Product;
 import java.util.List;
 
 public interface ProductService {
-    boolean containsProduct(Product product);
+
+    Product getProductById(int id);
 
     boolean addProduct(Product product);
 
@@ -16,4 +18,8 @@ public interface ProductService {
     List<Product> getSortedByNameProducts();
 
     List<Product> getSortedByPriceProducts();
+
+    List<Product> getProductsRatingSorted();
+
+    List<Product> getProductsRatingSortedByCategory(int categoryId);
 }

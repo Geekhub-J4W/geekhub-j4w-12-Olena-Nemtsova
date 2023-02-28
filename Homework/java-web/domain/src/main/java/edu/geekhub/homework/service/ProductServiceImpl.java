@@ -1,5 +1,11 @@
-package edu.geekhub.homework.domain;
+package edu.geekhub.homework.service;
 
+import edu.geekhub.homework.domain.Category;
+import edu.geekhub.homework.domain.Product;
+import edu.geekhub.homework.domain.ProductValidator;
+import edu.geekhub.homework.repository.interfaces.ProductRepository;
+import edu.geekhub.homework.service.interfaces.CategoryService;
+import edu.geekhub.homework.service.interfaces.ProductService;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -8,16 +14,22 @@ import org.tinylog.Logger;
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductValidator productValidator;
+    private final CategoryService categoryService;
 
     public ProductServiceImpl(ProductRepository productRepository,
-                              ProductValidator productValidator) {
+                              ProductValidator productValidator,
+                              CategoryService categoryService) {
         this.productRepository = productRepository;
         this.productValidator = productValidator;
+        this.categoryService = categoryService;
     }
 
     @Override
-    public boolean containsProduct(Product product) {
-        return productRepository.getProducts().contains(product);
+    public Product getProductById(int id) {
+        return getProducts().stream()
+            .filter(product -> product.id() == id)
+            .findFirst()
+            .orElse(null);
     }
 
     @Override
@@ -25,7 +37,11 @@ public class ProductServiceImpl implements ProductService {
         boolean successAdd = false;
         try {
             productValidator.validate(product);
-            productRepository.addProduct(product);
+            int id = productRepository.addProduct(product);
+            if (id == -1) {
+                throw new IllegalArgumentException("Database return null");
+            }
+            product = product.changeId(id);
             Logger.info("Product was added:\n" + product);
             successAdd = true;
         } catch (IllegalArgumentException exception) {
@@ -73,14 +89,33 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getSortedByNameProducts() {
         List<Product> sortedProducts = new ArrayList<>(getProducts());
-        sortedProducts.sort((Comparator.comparing(Product::getName)));
+        sortedProducts.sort((Comparator.comparing(Product::name)));
         return sortedProducts;
     }
 
     @Override
     public List<Product> getSortedByPriceProducts() {
         List<Product> sortedProducts = new ArrayList<>(getProducts());
-        sortedProducts.sort((Comparator.comparingDouble(Product::getPrice)));
+        sortedProducts.sort((Comparator.comparingDouble(Product::price)));
         return sortedProducts;
+    }
+
+    @Override
+    public List<Product> getProductsRatingSorted() {
+        return productRepository.getProductsRatingSorted();
+    }
+
+    @Override
+    public List<Product> getProductsRatingSortedByCategory(int categoryId) {
+        Category category = categoryService.getCategoryById(categoryId);
+        if (category == null) {
+            Logger.warn("Can't sort by not exists category with id " + categoryId);
+            return new ArrayList<>();
+        }
+
+        List<Product> products = getProductsRatingSorted();
+        return products.stream()
+            .filter(product -> product.categoryId() == categoryId)
+            .toList();
     }
 }

@@ -2,7 +2,7 @@ package edu.geekhub.homework.controllers;
 
 import edu.geekhub.homework.ProductConsoleParser;
 import edu.geekhub.homework.domain.Product;
-import edu.geekhub.homework.domain.ProductService;
+import edu.geekhub.homework.service.interfaces.ProductService;
 import java.util.List;
 
 public class ProductsController {
@@ -18,6 +18,10 @@ public class ProductsController {
     public boolean addProduct(String line) {
         Product product = productConsoleParser.parse(line);
         return productService.addProduct(product);
+    }
+
+    public Product getProductById(int id) {
+        return productService.getProductById(id);
     }
 
     public boolean deleteProduct(int id) {
@@ -38,5 +42,13 @@ public class ProductsController {
 
     public List<Product> getSortedByPriceProducts() {
         return productService.getSortedByPriceProducts();
+    }
+
+    public List<Product> getRatingSortedProducts() {
+        return productService.getProductsRatingSorted();
+    }
+
+    public List<Product> getRatingSortedByCategoryProducts(int categoryId) {
+        return productService.getProductsRatingSortedByCategory(categoryId);
     }
 }

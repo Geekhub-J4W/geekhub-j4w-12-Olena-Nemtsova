@@ -1,33 +1,35 @@
 package edu.geekhub.homework.domain;
 
+import edu.geekhub.homework.service.interfaces.ProductService;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Bucket {
     private final ProductService productService;
-    private final ProductRepository productRepository;
+    private final List<Product> products;
 
-    public Bucket(ProductService productService, ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    public Bucket(ProductService productService) {
+        products = new ArrayList<>();
         this.productService = productService;
     }
 
     public List<Product> getBucketProducts() {
-        return productRepository.getProducts();
+        return products;
     }
 
     public boolean addProduct(Product product) {
-        if (productService.containsProduct(product)) {
-            productRepository.addProduct(product);
+        if (productService.getProductById(product.id()) != null) {
+            products.add(product);
             return true;
         }
         return false;
     }
 
     public boolean deleteProduct(int id) {
-        return productRepository.deleteProductById(id);
+        return products.removeIf(product -> product.id() == id);
     }
 
     public void clearBucket() {
-        productRepository.getProducts().clear();
+        products.clear();
     }
 }

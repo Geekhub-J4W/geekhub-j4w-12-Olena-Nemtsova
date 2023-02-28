@@ -1,9 +1,12 @@
-package edu.geekhub.homework.domain;
+package edu.geekhub.homework.repository.interfaces;
 
+import edu.geekhub.homework.domain.Product;
 import java.util.List;
 
 public interface ProductRepository {
-    void addProduct(Product product);
+    List<Product> getProductsRatingSorted();
+
+    int addProduct(Product product);
 
     List<Product> getProducts();
 

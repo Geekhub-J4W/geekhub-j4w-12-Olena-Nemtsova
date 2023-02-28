@@ -12,10 +12,11 @@ public class ProductConsoleParser {
 
             String name = consoleInputParts[0].trim();
             double price = Double.parseDouble(consoleInputParts[1].trim());
+            int categoryId = Integer.parseInt(consoleInputParts[2].trim());
 
-            return new Product(name, price);
+            return new Product(name, price, categoryId);
         } catch (NumberFormatException exception) {
-            Logger.warn("Wrong price input: " + exception.getMessage());
+            Logger.warn("Wrong input: " + exception.getMessage());
         } catch (IllegalArgumentException exception) {
             Logger.warn(exception.getMessage());
         }
@@ -23,7 +24,7 @@ public class ProductConsoleParser {
     }
 
     private void validateConsoleInput(String[] consoleInputParts) {
-        if (consoleInputParts.length != 2) {
+        if (consoleInputParts.length != 3) {
             throw new IllegalArgumentException("Wrong input arguments count at '"
                 + String.join(", ", consoleInputParts)
                 + "'");

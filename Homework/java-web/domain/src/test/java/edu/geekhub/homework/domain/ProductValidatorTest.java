@@ -3,18 +3,27 @@ package edu.geekhub.homework.domain;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doReturn;
 
+import edu.geekhub.homework.repository.interfaces.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class ProductValidatorTest {
     private ProductValidator productValidator;
+    @Mock
+    private CategoryRepository categoryRepository;
 
     @BeforeEach
     void setUp() {
-        productValidator = new ProductValidator();
+        productValidator = new ProductValidator(categoryRepository);
     }
 
     @Test
@@ -34,7 +43,7 @@ class ProductValidatorTest {
         "p, Product name had wrong length",
     })
     void can_not_validate_product_with_wrong_name(String name, String expectedMessage) {
-        Product product = new Product(name, 0);
+        Product product = new Product(name, 0, 1);
 
         IllegalArgumentException thrown = assertThrows(
             IllegalArgumentException.class,
@@ -51,7 +60,7 @@ class ProductValidatorTest {
         "1.456, Product price had too much numbers after point",
     })
     void can_not_validate_product_with_wrong_price(Double price, String expectedMessage) {
-        Product product = new Product("Milk", price);
+        Product product = new Product("Milk", price, 1);
 
         IllegalArgumentException thrown = assertThrows(
             IllegalArgumentException.class,
@@ -62,8 +71,22 @@ class ProductValidatorTest {
     }
 
     @Test
+    void can_not_validate_product_with_not_exists_category() {
+        Product product = new Product("Milk", 1.67, 1);
+        doReturn(null).when(categoryRepository).getCategoryById(anyInt());
+
+        IllegalArgumentException thrown = assertThrows(
+            IllegalArgumentException.class,
+            () -> productValidator.validate(product)
+        );
+
+        assertEquals("Product had not exists category id", thrown.getMessage());
+    }
+
+    @Test
     void can_validate_correct_product() {
-        Product product = new Product("Milk", 1.67);
+        Product product = new Product("Milk", 1.67, 1);
+        doReturn(new Category(1, "Dairy")).when(categoryRepository).getCategoryById(anyInt());
         assertDoesNotThrow(
             () -> productValidator.validate(product)
         );

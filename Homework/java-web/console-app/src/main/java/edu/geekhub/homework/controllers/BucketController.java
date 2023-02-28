@@ -1,7 +1,7 @@
 package edu.geekhub.homework.controllers;
 
-import edu.geekhub.homework.domain.BucketService;
 import edu.geekhub.homework.domain.Product;
+import edu.geekhub.homework.service.BucketService;
 import java.util.List;
 
 public class BucketController {
