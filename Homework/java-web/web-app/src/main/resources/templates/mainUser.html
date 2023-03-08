@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Store</title>
+</head>
+<body>
+<div style="text-align: center;  height: 100%">
+    <div style="width: 100%; height: 10vh; background-color: lavender"><h2>Some shop</h2></div>
+    <div style="width: 100%; height: 5vh; text-align: right; font-size: 1.5em">
+        <span><a th:href="@{/}" style="text-decoration: none">log out</a></span>
+        <span style="margin-right: 5%; margin-left: 2%">
+            <a style="text-decoration: none" th:href="@{/bucket/{userId}(userId=${userId})}">🛒</a>
+        </span>
+    </div>
+    <div style="float: left; background-color: cadetblue; width: 30%;">
+        <table style="border-spacing: 1em">
+            <tr>
+                <th>Categories</th>
+            </tr>
+            <tr>
+                <td><a th:href="@{/mainUser/{userId}(userId=${userId})}">All</a></td>
+            </tr>
+            <tr th:each="category: ${categories}">
+                <td><a th:text="${category.name}"
+                       th:href="@{/mainUser/{userId}/{id}(id=${category.id}, userId=${userId})}"></a></td>
+            </tr>
+        </table>
+    </div>
+    <div style="float: right; width: 70%">
+        <div style="text-align: left; width: 200px; padding-left: 5%" id="sortBox">
+            <p>Select products sorting:</p>
+            <div style="width: 120px; height: 20px; border: solid gray 1px" onclick="showCustomSelect()"></div>
+            <div style="background-color: antiquewhite; position: absolute; display: none; width: 120px"
+                 id="optionsBox">
+                <p style="text-align: center">
+                    <a th:href="@{/mainUser/{sortType}/{categoryId}/{userId}(userId=${userId}, sortType='NAME', categoryId=${categoryId})}">Sort
+                        by name</a>
+                </p>
+                <p style="text-align: center">
+                    <a th:href="@{/mainUser/{sortType}/{categoryId}/{userId}(userId=${userId}, sortType='PRICE', categoryId=${categoryId})}">Sort
+                        by price</a>
+                </p>
+                <p style="text-align: center">
+                    <a th:href="@{/mainUser/{sortType}/{categoryId}/{userId}(userId=${userId}, sortType='RATING', categoryId=${categoryId})}">Sort
+                        by rating</a>
+                </p>
+            </div>
+        </div>
+        <hr>
+        <table style="border-spacing: 1em">
+            <tr>
+                <th colspan="3" th:text="${title}"></th>
+            </tr>
+            <tr th:each="product: ${products}">
+                <td><img style="width: 50px;" th:src="${product.imagePath}"></td>
+                <td th:text="${product.name}"></td>
+                <td th:text="${product.price}"></td>
+                <td><a style="text-decoration: none"
+                       th:href="@{/bucket/add/{userId}/{productId}(productId=${product.id}, userId=${userId})}">🧺</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<script>
+    function showCustomSelect() {
+        document.getElementById('optionsBox').style.display = 'inline';
+    }
+
+    document.addEventListener('click', function (event) {
+        if (!document.getElementById('sortBox').contains(event.target)) {
+            document.getElementById('optionsBox').style.display = 'none';
+        }
+    });
+
+</script>
+</body>
+</html>

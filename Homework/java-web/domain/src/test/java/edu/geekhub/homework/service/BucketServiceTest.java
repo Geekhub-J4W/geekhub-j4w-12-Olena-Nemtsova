@@ -2,14 +2,16 @@ package edu.geekhub.homework.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 
-import edu.geekhub.homework.domain.Bucket;
 import edu.geekhub.homework.domain.Product;
+import edu.geekhub.homework.repository.interfaces.BucketRepository;
 import edu.geekhub.homework.service.interfaces.OrderService;
 import edu.geekhub.homework.service.interfaces.ProductOrderService;
 import edu.geekhub.homework.service.interfaces.ProductService;
@@ -25,7 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class BucketServiceTest {
     private BucketService bucketService;
     @Mock
-    private Bucket bucket;
+    private BucketRepository bucketRepository;
     @Mock
     private OrderService orderService;
     @Mock
@@ -38,16 +40,16 @@ class BucketServiceTest {
         bucketService = new BucketService(productService,
             orderService,
             productOrderService,
-            bucket);
+            bucketRepository);
     }
 
     @Test
     void can_add_product() {
         Product milk = new Product(1, "Milk", 45.6, 1, null);
         doReturn(milk).when(productService).getProductById(anyInt());
-        doReturn(true).when(bucket).addProduct(any());
+        doReturn(1).when(bucketRepository).addBucketProduct(anyInt(), any());
 
-        boolean addStatus = bucketService.addProduct(milk);
+        boolean addStatus = bucketService.addProduct(milk, "userId1");
 
         assertTrue(addStatus);
     }
@@ -57,7 +59,7 @@ class BucketServiceTest {
         Product milk = new Product(1, "Milk", 45.6, 1, null);
         doReturn(null).when(productService).getProductById(anyInt());
 
-        boolean addStatus = bucketService.addProduct(milk);
+        boolean addStatus = bucketService.addProduct(milk, "userId1");
 
         assertFalse(addStatus);
     }
@@ -66,27 +68,27 @@ class BucketServiceTest {
     void can_not_add_product_not_added_to_bucket() {
         Product milk = new Product(1, "Milk", 45.6, 1, null);
         doReturn(milk).when(productService).getProductById(anyInt());
-        doReturn(false).when(bucket).addProduct(any());
+        doReturn(-1).when(bucketRepository).addBucketProduct(anyInt(), any());
 
-        boolean addStatus = bucketService.addProduct(milk);
+        boolean addStatus = bucketService.addProduct(milk, "userId1");
 
         assertFalse(addStatus);
     }
 
     @Test
     void can_delete_product_by_id() {
-        doReturn(true).when(bucket).deleteProduct(anyInt());
+        doReturn(1).when(bucketRepository).deleteUserBucketProductById(anyInt(), any());
 
-        boolean deleteStatus = bucketService.deleteProduct(1);
+        boolean deleteStatus = bucketService.deleteProduct(1, "userId1");
 
         assertTrue(deleteStatus);
     }
 
     @Test
     void can_not_delete_product_by_id_not_deleted_at_bucket() {
-        doReturn(false).when(bucket).deleteProduct(anyInt());
+        doReturn(0).when(bucketRepository).deleteUserBucketProductById(anyInt(), any());
 
-        boolean deleteStatus = bucketService.deleteProduct(1);
+        boolean deleteStatus = bucketService.deleteProduct(1, "userId1");
 
         assertFalse(deleteStatus);
     }
@@ -95,59 +97,110 @@ class BucketServiceTest {
     void can_get_bucket_products() {
         Product milk = new Product(1, "Milk", 45.6, 1, null);
         List<Product> products = List.of(milk);
-        doReturn(products).when(bucket).getBucketProducts();
+        doReturn(products).when(bucketRepository).getBucketProductsByUserId(any());
 
-        assertEquals(products, bucketService.getBucketProducts());
+        assertEquals(products, bucketService.getBucketProducts("userId1"));
     }
 
     @Test
     void can_checkout_by_bucket() {
         Product milk = new Product(1, "Milk", 45.6, 1, null);
         List<Product> products = List.of(milk);
-        doReturn(products).when(bucket).getBucketProducts();
+        doReturn(products).when(bucketRepository).getBucketProductsByUserId(any());
         doReturn(1).when(orderService).addOrder(any());
         doReturn(true).when(productOrderService).addProductOrder(any());
         doReturn(true).when(orderService).updateOrderPriceById(anyDouble(), anyInt());
-        doReturn(true).when(orderService).saveToFile(any());
+        doReturn("some check").when(orderService).saveToFile(any(), any());
 
-        boolean checkoutStatus = bucketService.checkout();
+        String gotCheckContent = bucketService.checkout("userId1");
 
-        assertTrue(checkoutStatus);
+        assertNotNull(gotCheckContent);
     }
 
     @Test
     void can_not_checkout_by_empty_bucket() {
         List<Product> emptyProducts = new ArrayList<>();
-        doReturn(emptyProducts).when(bucket).getBucketProducts();
+        doReturn(emptyProducts).when(bucketRepository).getBucketProductsByUserId(any());
 
-        boolean checkoutStatus = bucketService.checkout();
+        String gotCheckContent = bucketService.checkout("userId1");
 
-        assertFalse(checkoutStatus);
+        assertNull(gotCheckContent);
     }
 
     @Test
     void can_not_checkout_with_not_added_order_to_orderRepo() {
         Product milk = new Product(1, "Milk", 45.6, 1, null);
         List<Product> products = List.of(milk);
-        doReturn(products).when(bucket).getBucketProducts();
+        doReturn(products).when(bucketRepository).getBucketProductsByUserId(any());
         doReturn(-1).when(orderService).addOrder(any());
 
-        boolean checkoutStatus = bucketService.checkout();
+        String gotCheckContent = bucketService.checkout("userId1");
 
-        assertFalse(checkoutStatus);
+        assertNull(gotCheckContent);
     }
 
     @Test
     void can_not_checkout_with_not_added_productOrder_relations() {
         Product milk = new Product(1, "Milk", 45.6, 1, null);
         List<Product> products = List.of(milk);
-        doReturn(products).when(bucket).getBucketProducts();
+        doReturn(products).when(bucketRepository).getBucketProductsByUserId(any());
         doReturn(1).when(orderService).addOrder(any());
         doReturn(true).when(orderService).deleteOrder(anyInt());
         doReturn(false).when(productOrderService).addProductOrder(any());
 
-        boolean checkoutStatus = bucketService.checkout();
+        String gotCheckContent = bucketService.checkout("userId1");
 
-        assertFalse(checkoutStatus);
+        assertNull(gotCheckContent);
+    }
+
+    @Test
+    void can_add_product_by_id() {
+        Product milk = new Product(1, "Milk", 45.6, 1, null);
+        doReturn(milk).when(productService).getProductById(anyInt());
+        doReturn(1).when(bucketRepository).addBucketProduct(anyInt(), any());
+
+        boolean addStatus = bucketService.addProductById(1, "userId1");
+
+        assertTrue(addStatus);
+    }
+
+    @Test
+    void can_not_add_product_by_id_not_contains_at_product_service() {
+        Product milk = new Product(1, "Milk", 45.6, 1, null);
+        doReturn(null).when(productService).getProductById(anyInt());
+
+        boolean addStatus = bucketService.addProduct(milk, "userId1");
+
+        assertFalse(addStatus);
+    }
+
+    @Test
+    void can_not_add_product_by_id_not_added_to_bucket_repository() {
+        Product milk = new Product(1, "Milk", 45.6, 1, null);
+        doReturn(milk).when(productService).getProductById(anyInt());
+        doReturn(-1).when(bucketRepository).addBucketProduct(anyInt(), any());
+
+        boolean addStatus = bucketService.addProductById(1, "userId1");
+
+        assertFalse(addStatus);
+    }
+
+    @Test
+    void can_get_bucket_total_price_by_user_id() {
+        Product milk = new Product(1, "Milk", 45, 1, null);
+        doReturn(List.of(milk, milk)).when(bucketRepository).getBucketProductsByUserId(any());
+
+        double totalPrice = bucketService.getBucketTotalPrice("userId1");
+
+        assertEquals(90, totalPrice);
+    }
+
+    @Test
+    void can_get_zero_bucket_total_price_by_wrong_user_id() {
+        doReturn(new ArrayList<Product>()).when(bucketRepository).getBucketProductsByUserId(any());
+
+        double totalPrice = bucketService.getBucketTotalPrice("userId1");
+
+        assertEquals(0, totalPrice);
     }
 }

@@ -6,7 +6,7 @@ public class CategoryValidator {
         if (category == null) {
             throw new IllegalArgumentException("Category was null");
         }
-        validateName(category.name());
+        validateName(category.getName());
     }
 
     private void validateName(String name) {

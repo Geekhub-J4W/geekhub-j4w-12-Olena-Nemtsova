@@ -1,7 +1,9 @@
 package edu.geekhub.homework.service;
 
 import edu.geekhub.homework.domain.Order;
+import edu.geekhub.homework.domain.OrderStatus;
 import edu.geekhub.homework.domain.Product;
+import edu.geekhub.homework.domain.User;
 import edu.geekhub.homework.repository.interfaces.OrderRepository;
 import edu.geekhub.homework.service.interfaces.OrderService;
 import java.io.File;
@@ -71,6 +73,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public User getOrderCustomer(int id) {
+        return orderRepository.getOrderCustomer(id);
+    }
+
+    @Override
     public boolean updateOrderPriceById(double newPrice, int id) {
         Order orderToEdit = getOrderById(id);
         try {
@@ -90,21 +97,40 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public boolean saveToFile(Order order) {
-        if (order.id() == -1) {
-            Logger.warn("Can't save order with id -1 to file");
+    public boolean updateOrderStatusById(OrderStatus orderStatus, int id) {
+        Order orderToEdit = getOrderById(id);
+        try {
+            if (orderToEdit == null) {
+                throw new IllegalArgumentException("Order with id" + id + "not found");
+            }
+
+            orderRepository.updateOrderStatus(orderStatus, id);
+            Logger.info("Order status was updated: "
+                        + orderToEdit + "\n"
+                        + "new status: " + orderStatus);
+            return true;
+        } catch (IllegalArgumentException | DataAccessException exception) {
+            Logger.warn("Order wasn't edited: " + orderToEdit + "\n" + exception.getMessage());
             return false;
         }
+    }
 
-        try (FileOutputStream fos = new FileOutputStream(ordersFile, true);
+    @Override
+    public String saveToFile(Order order, List<Product> orderProducts) {
+        if (order.getId() == -1) {
+            Logger.warn("Can't save order with id -1 to file");
+            return null;
+        }
+
+        try (FileOutputStream fos = new FileOutputStream(ordersFile, false);
              PrintStream printStream = new PrintStream(fos)) {
 
-            printStream.println(order);
+            printStream.println(order.createCheck(orderProducts));
             Logger.info("Check of order was saved to file:\n" + this);
-            return true;
+            return order.createCheck(orderProducts);
         } catch (IOException ex) {
             Logger.warn(ex.getMessage());
-            return false;
+            return null;
         }
     }
 }

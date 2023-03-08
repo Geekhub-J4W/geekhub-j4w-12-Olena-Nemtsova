@@ -3,6 +3,7 @@ package edu.geekhub.homework.service;
 import edu.geekhub.homework.domain.Category;
 import edu.geekhub.homework.domain.Product;
 import edu.geekhub.homework.domain.ProductValidator;
+import edu.geekhub.homework.domain.ProductsSortType;
 import edu.geekhub.homework.repository.interfaces.ProductRepository;
 import edu.geekhub.homework.service.interfaces.CategoryService;
 import edu.geekhub.homework.service.interfaces.ProductService;
@@ -28,7 +29,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getProductById(int id) {
         return getProducts().stream()
-            .filter(product -> product.id() == id)
+            .filter(product -> product.getId() == id)
             .findFirst()
             .orElse(null);
     }
@@ -42,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
             if (id == -1) {
                 throw new IllegalArgumentException("Unable to retrieve the generated key");
             }
-            product = product.changeId(id);
+            product.setId(id);
             Logger.info("Product was added:\n" + product);
             successAdd = true;
         } catch (IllegalArgumentException | DataAccessException exception) {
@@ -59,6 +60,7 @@ public class ProductServiceImpl implements ProductService {
                 throw new IllegalArgumentException("Product with id" + id + "not found");
             }
             productRepository.deleteProductById(id);
+            Logger.info("Product was deleted:\n" + productToDel);
             return true;
         } catch (IllegalArgumentException | DataAccessException exception) {
             Logger.warn("Product wasn't deleted: " + productToDel + "\n" + exception.getMessage());
@@ -89,14 +91,14 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getSortedByNameProducts() {
         List<Product> sortedProducts = new ArrayList<>(getProducts());
-        sortedProducts.sort((Comparator.comparing(Product::name)));
+        sortedProducts.sort((Comparator.comparing(Product::getName)));
         return sortedProducts;
     }
 
     @Override
     public List<Product> getSortedByPriceProducts() {
         List<Product> sortedProducts = new ArrayList<>(getProducts());
-        sortedProducts.sort((Comparator.comparingDouble(Product::price)));
+        sortedProducts.sort((Comparator.comparingDouble(Product::getPrice)));
         return sortedProducts;
     }
 
@@ -106,16 +108,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getProductsRatingSortedByCategory(int categoryId) {
-        Category category = categoryService.getCategoryById(categoryId);
-        if (category == null) {
-            Logger.warn("Can't sort by not exists category with id " + categoryId);
-            return new ArrayList<>();
+    public List<Product> getSortedProducts(ProductsSortType sortType, int categoryId) {
+        List<Product> products;
+        switch (sortType) {
+            case NAME -> products = getSortedByNameProducts();
+            case PRICE -> products = getSortedByPriceProducts();
+            case RATING -> products = getProductsRatingSorted();
+            default -> products = getProducts();
         }
-
-        List<Product> products = getProductsRatingSorted();
-        return products.stream()
-            .filter(product -> product.categoryId() == categoryId)
-            .toList();
+        Category category = categoryService.getCategoryById(categoryId);
+        if (category != null) {
+            products = products.stream()
+                .filter(product -> product.getCategoryId() == categoryId)
+                .toList();
+        }
+        return products;
     }
 }

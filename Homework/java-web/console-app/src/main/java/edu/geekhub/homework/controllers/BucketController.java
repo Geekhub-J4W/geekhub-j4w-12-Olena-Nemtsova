@@ -11,19 +11,19 @@ public class BucketController {
         this.bucketService = bucketService;
     }
 
-    public boolean addProduct(Product product) {
-        return bucketService.addProduct(product);
+    public boolean addProduct(Product product, String userId) {
+        return bucketService.addProduct(product, userId);
     }
 
-    public boolean deleteProduct(int id) {
-        return bucketService.deleteProduct(id);
+    public boolean deleteProduct(int productId, String userId) {
+        return bucketService.deleteProduct(productId, userId);
     }
 
-    public List<Product> getBucketProducts() {
-        return bucketService.getBucketProducts();
+    public List<Product> getBucketProducts(String userId) {
+        return bucketService.getBucketProducts(userId);
     }
 
-    public boolean checkout() {
-        return bucketService.checkout();
+    public String checkout(String userId) {
+        return bucketService.checkout(userId);
     }
 }

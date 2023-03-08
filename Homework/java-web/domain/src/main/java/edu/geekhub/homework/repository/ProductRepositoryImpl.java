@@ -72,10 +72,10 @@ public class ProductRepositoryImpl implements ProductRepository {
 
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-            .addValue("name", product.name())
-            .addValue("price", product.price())
-            .addValue("categoryId", product.categoryId())
-            .addValue("imagePath", product.imagePath());
+            .addValue("name", product.getName())
+            .addValue("price", product.getPrice())
+            .addValue("categoryId", product.getCategoryId())
+            .addValue("imagePath", product.getImagePath());
 
         jdbcTemplate.update(INSERT_PRODUCT, mapSqlParameterSource, generatedKeyHolder);
 
@@ -117,11 +117,11 @@ public class ProductRepositoryImpl implements ProductRepository {
         productValidator.validate(product);
 
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-            .addValue("name", product.name())
-            .addValue("price", product.price())
-            .addValue("categoryId", product.categoryId())
+            .addValue("name", product.getName())
+            .addValue("price", product.getPrice())
+            .addValue("categoryId", product.getCategoryId())
             .addValue("id", id)
-            .addValue("imagePath", product.imagePath());
+            .addValue("imagePath", product.getImagePath());
 
         jdbcTemplate.update(UPDATE_PRODUCT_BY_ID, mapSqlParameterSource);
     }

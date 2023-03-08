@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Store</title>
+</head>
+<body>
+<div style="text-align: center;  height: 100%">
+    <div style="width: 100%; height: 10vh; background-color: lavender"><h2>Some shop</h2></div>
+    <div style="width: 100%; height: 5vh; text-align: right; font-size: 1.5em">
+         <span style="margin-right: 5%;">
+            <a th:href="@{/}" style="text-decoration: none">log out</a>
+        </span>
+    </div>
+    <div style="float: left; background-color: cadetblue; width: 30%;">
+        <table style="border-spacing: 1em">
+            <tr>
+                <td><a th:href="@{/mainAdmin/{userId}(userId=${userId})}">Products</a></td>
+            </tr>
+            <tr>
+                <td><a th:href="@{/categories/{userId}(userId=${userId})}">Categories</a></td>
+            </tr>
+            <tr>
+                <td><a th:href="@{/orders/{userId}(userId=${userId})}">Orders</a></td>
+            </tr>
+            <tr>
+                <td><a th:href="@{/users/{userId}(userId=${userId})}">Users</a></td>
+            </tr>
+        </table>
+    </div>
+    <div style="float: right; width: 70%">
+        <form th:action="@{/orders/newOrder/{userId}(userId=${userId})}" th:object="${order}" method="post">
+            <fieldset>
+                <legend>edit order status</legend>
+                <br>
+                <table>
+                    <tr>
+                        <td><label>Order date:</label></td>
+                        <td><input type="text" th:field="*{dateTime}" readonly></td>
+                    </tr>
+                    <tr>
+                        <td><label>Total price:</label></td>
+                        <td><input type="text" th:field="*{totalPrice}" readonly></td>
+                    </tr>
+                    <tr>
+                        <td><label>Status:</label></td>
+                        <td><select th:field="*{status}">
+                            <option th:each="orderStatus: ${orderStatuses}" th:value="${orderStatus}"
+                                    th:text="${orderStatus.name()}">
+                            </option>
+                        </select>
+                    </tr>
+                    <tr style="text-align: center;">
+                        <td><input type="submit" value="Edit"></td>
+                    </tr>
+                </table>
+                <input type="hidden" th:field="*{id}" th:value="${order.id}">
+                <input type="hidden" th:field="*{userId}" th:value="${order.userId}">
+            </fieldset>
+        </form>
+    </div>
+</div>
+</body>
+</html>

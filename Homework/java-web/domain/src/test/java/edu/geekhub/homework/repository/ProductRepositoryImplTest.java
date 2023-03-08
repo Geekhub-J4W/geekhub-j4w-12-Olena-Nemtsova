@@ -126,6 +126,7 @@ class ProductRepositoryImplTest {
     void can_get_products_list() {
         List<Product> products = List.of(product);
         doReturn(products).when(jdbcTemplate).query(anyString(), any(RowMapper.class));
+
         assertDoesNotThrow(
             () -> productRepository.getProducts()
         );
@@ -137,6 +138,7 @@ class ProductRepositoryImplTest {
         doReturn(List.of(product))
             .when(jdbcTemplate)
             .query(anyString(), (SqlParameterSource) any(), any(RowMapper.class));
+
         assertDoesNotThrow(
             () -> productRepository.getProductById(1)
         );
@@ -148,6 +150,7 @@ class ProductRepositoryImplTest {
         doReturn(new ArrayList<>())
             .when(jdbcTemplate)
             .query(anyString(), (SqlParameterSource) any(), any(RowMapper.class));
+
         assertDoesNotThrow(
             () -> productRepository.getProductById(1)
         );
@@ -156,8 +159,9 @@ class ProductRepositoryImplTest {
 
     @Test
     void can_get_products_rating_sorted() {
-        List<Product> products = List.of(product, product.changeId(2));
+        List<Product> products = List.of(product, product);
         doReturn(products).when(jdbcTemplate).query(anyString(), any(RowMapper.class));
+
         assertDoesNotThrow(
             () -> productRepository.getProductsRatingSorted()
         );

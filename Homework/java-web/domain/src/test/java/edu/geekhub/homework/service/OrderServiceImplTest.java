@@ -2,6 +2,7 @@ package edu.geekhub.homework.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,7 +15,9 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import edu.geekhub.homework.domain.Order;
+import edu.geekhub.homework.domain.OrderStatus;
 import edu.geekhub.homework.domain.Product;
+import edu.geekhub.homework.domain.User;
 import edu.geekhub.homework.repository.interfaces.OrderRepository;
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,6 +25,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +47,7 @@ class OrderServiceImplTest {
 
     @Test
     void can_get_orders() {
-        List<Order> expectedRelations = List.of(new Order(null));
+        List<Order> expectedRelations = List.of(new Order(null, null));
         when(orderRepository.getOrders()).thenReturn(expectedRelations);
 
         List<Order> relations = orderService.getOrders();
@@ -53,7 +57,7 @@ class OrderServiceImplTest {
 
     @Test
     void can_get_order_by_id() {
-        Order expectedOrder = new Order(null);
+        Order expectedOrder = new Order(null, null);
         when(orderRepository.getOrderById(anyInt())).thenReturn(expectedOrder);
 
         Order order = orderService.getOrderById(1);
@@ -83,7 +87,7 @@ class OrderServiceImplTest {
     @Test
     void can_add_order() {
         when(orderRepository.addOrder(any())).thenReturn(1);
-        int newOrderId = orderService.addOrder(new Order(LocalDateTime.now()));
+        int newOrderId = orderService.addOrder(new Order(LocalDateTime.now(), null));
 
         assertEquals(1, newOrderId);
     }
@@ -91,7 +95,7 @@ class OrderServiceImplTest {
     @Test
     void can_not_add_order_without_getting_generated_id() {
         when(orderRepository.addOrder(any())).thenReturn(-1);
-        int newOrderId = orderService.addOrder(new Order(LocalDateTime.now()));
+        int newOrderId = orderService.addOrder(new Order(LocalDateTime.now(), null));
 
         assertEquals(-1, newOrderId);
     }
@@ -100,14 +104,14 @@ class OrderServiceImplTest {
     void can_not_add_order_not_added_to_repository() {
         doThrow(new DataAccessException("") {
         }).when(orderRepository).addOrder(any());
-        int newOrderId = orderService.addOrder(new Order(LocalDateTime.now()));
+        int newOrderId = orderService.addOrder(new Order(LocalDateTime.now(), null));
 
         assertEquals(-1, newOrderId);
     }
 
     @Test
     void can_delete_order_by_id() {
-        Order order = new Order(LocalDateTime.now());
+        Order order = new Order(LocalDateTime.now(), null);
         orderService = spy(orderService);
         doReturn(order).when(orderService).getOrderById(anyInt());
         doNothing().when(orderRepository).deleteOrderById(anyInt());
@@ -129,7 +133,7 @@ class OrderServiceImplTest {
 
     @Test
     void can_not_delete_order_not_deleted_at_repository() {
-        Order order = new Order(LocalDateTime.now());
+        Order order = new Order(LocalDateTime.now(), null);
         orderService = spy(orderService);
         doReturn(order).when(orderService).getOrderById(anyInt());
         doThrow(new DataAccessException("") {
@@ -142,7 +146,7 @@ class OrderServiceImplTest {
 
     @Test
     void can_update_order_totalPrice_by_id() {
-        Order order = new Order(LocalDateTime.now());
+        Order order = new Order(LocalDateTime.now(), null);
         when(orderRepository.getOrderById(anyInt())).thenReturn(order);
         doNothing().when(orderRepository).updateOrderPriceById(anyDouble(), anyInt());
 
@@ -162,7 +166,7 @@ class OrderServiceImplTest {
 
     @Test
     void can_not_update_order_totalPrice_not_updated_at_repository() {
-        Order order = new Order(LocalDateTime.now());
+        Order order = new Order(LocalDateTime.now(), null);
         when(orderRepository.getOrderById(anyInt())).thenReturn(order);
         doThrow(new DataAccessException("") {
         }).when(orderRepository).updateOrderPriceById(anyDouble(), anyInt());
@@ -176,21 +180,23 @@ class OrderServiceImplTest {
     void can_save_order_to_file() throws IOException {
         File tempFile = createTempFile();
         orderService = new OrderServiceImpl(orderRepository, tempFile);
-        Order order = spy(new Order(null));
-        when(order.id()).thenReturn(1);
-        String expectedFileData = "Order{id=1, "
-                                  + "products=[Product{id=1, name='Milk', price=45.9}], "
-                                  + "totalPrice=45.9, "
-                                  + "dateTime=27.02.2023 21:59}";
-        doReturn(expectedFileData).when(order).toString();
+        Order order = spy(new Order(null, null));
+        when(order.getId()).thenReturn(1);
+        String expectedFileData = "Order #1 "
+                                  + "Products:"
+                                  + "Milk - 45.9"
+                                  + "totalPrice: 45.9"
+                                  + "date: 27.02.2023 21:59";
+        doReturn(expectedFileData).when(order).createCheck(any());
 
-        boolean saveToFileStatus = orderService.saveToFile(order);
+        String gotCheckContent = orderService.saveToFile(order,
+            List.of(new Product("Milk", 45.9, 1)));
 
         BufferedReader reader = new BufferedReader(new FileReader(tempFile));
         String fileData = reader.readLine();
         reader.close();
 
-        assertTrue(saveToFileStatus);
+        assertNotNull(gotCheckContent);
         assertEquals(expectedFileData, fileData);
     }
 
@@ -202,11 +208,53 @@ class OrderServiceImplTest {
 
     @Test
     void can_not_save_order_not_contains_at_repository_to_file() {
-        Order order = spy(new Order(null));
-        when(order.id()).thenReturn(-1);
+        Order order = spy(new Order(null, null));
+        when(order.getId()).thenReturn(-1);
 
-        boolean saveToFileStatus = orderService.saveToFile(order);
+        String gotCheckContent = orderService.saveToFile(order, new ArrayList<>());
 
-        assertFalse(saveToFileStatus);
+        assertNull(gotCheckContent);
+    }
+
+    @Test
+    void can_update_order_status_by_id() {
+        Order order = new Order(LocalDateTime.now(), null);
+        when(orderRepository.getOrderById(anyInt())).thenReturn(order);
+
+        doNothing().when(orderRepository).updateOrderStatus(any(), anyInt());
+
+        boolean updateStatus = orderService.updateOrderStatusById(OrderStatus.PENDING, 1);
+
+        assertTrue(updateStatus);
+    }
+
+    @Test
+    void can_not_update_order_status_by_wrong_id() {
+        when(orderRepository.getOrderById(anyInt())).thenReturn(null);
+
+        boolean updateStatus = orderService.updateOrderStatusById(OrderStatus.PENDING, 1);
+
+        assertFalse(updateStatus);
+    }
+
+    @Test
+    void can_not_update_order_status_by_id_not_updated_at_repository() {
+        Order order = new Order(LocalDateTime.now(), null);
+        when(orderRepository.getOrderById(anyInt())).thenReturn(order);
+        doThrow(new DataAccessException("") {
+        }).when(orderRepository).updateOrderStatus(any(), anyInt());
+
+        boolean updateStatus = orderService.updateOrderStatusById(OrderStatus.PENDING, 1);
+
+        assertFalse(updateStatus);
+    }
+
+    @Test
+    void can_get_order_customer_by_order_id() {
+        doReturn(new User()).when(orderRepository).getOrderCustomer(anyInt());
+
+        User customer = orderService.getOrderCustomer(1);
+
+        assertEquals(new User(), customer);
     }
 }

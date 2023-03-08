@@ -13,9 +13,9 @@ public class ProductValidator {
         if (product == null) {
             throw new IllegalArgumentException("Product was null");
         }
-        validateName(product.name());
-        validatePrice(product.price());
-        validateProductCategory(product.categoryId());
+        validateName(product.getName());
+        validatePrice(product.getPrice());
+        validateProductCategory(product.getCategoryId());
     }
 
     private void validateName(String name) {

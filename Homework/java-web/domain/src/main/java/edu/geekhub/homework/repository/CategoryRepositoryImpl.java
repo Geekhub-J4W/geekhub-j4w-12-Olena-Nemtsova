@@ -47,7 +47,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-            .addValue("name", category.name());
+            .addValue("name", category.getName());
         jdbcTemplate.update(INSERT_CATEGORY, mapSqlParameterSource, generatedKeyHolder);
 
         var keys = generatedKeyHolder.getKeys();
@@ -85,7 +85,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
         categoryValidator.validate(category);
 
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-            .addValue("name", category.name())
+            .addValue("name", category.getName())
             .addValue("id", id);
 
         jdbcTemplate.update(UPDATE_CATEGORY_BY_ID, mapSqlParameterSource);

@@ -10,7 +10,9 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
 import edu.geekhub.homework.domain.Order;
+import edu.geekhub.homework.domain.OrderStatus;
 import edu.geekhub.homework.domain.Product;
+import edu.geekhub.homework.domain.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 @ExtendWith(MockitoExtension.class)
 class OrderRepositoryImplTest {
     private OrderRepositoryImpl orderRepository;
-    private final Order order = new Order(LocalDateTime.now());
+    private final Order order = new Order(LocalDateTime.now(), null);
     @Mock
     private NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -134,9 +136,44 @@ class OrderRepositoryImplTest {
         doReturn(products)
             .when(jdbcTemplate)
             .query(anyString(), (SqlParameterSource) any(), any(RowMapper.class));
+
         assertDoesNotThrow(
             () -> orderRepository.getOrderProducts(1)
         );
         assertEquals(products, orderRepository.getOrderProducts(1));
+    }
+
+    @Test
+    void can_get_null_customer_by_wrong_id() {
+        doReturn(new ArrayList<>())
+            .when(jdbcTemplate)
+            .query(anyString(), (SqlParameterSource) any(), any(RowMapper.class));
+        assertDoesNotThrow(
+            () -> orderRepository.getOrderCustomer(1)
+        );
+        assertNull(orderRepository.getOrderCustomer(1));
+    }
+
+    @Test
+    void can_get_order_customer() {
+        User user = new User();
+
+        doReturn(List.of(user))
+            .when(jdbcTemplate)
+            .query(anyString(), (SqlParameterSource) any(), any(RowMapper.class));
+
+        assertDoesNotThrow(
+            () -> orderRepository.getOrderCustomer(1)
+        );
+        assertEquals(user, orderRepository.getOrderCustomer(1));
+    }
+
+    @Test
+    void can_update_order_status() {
+        doReturn(1).when(jdbcTemplate).update(anyString(), (SqlParameterSource) any());
+
+        assertDoesNotThrow(
+            () -> orderRepository.updateOrderStatus(OrderStatus.PENDING, 1)
+        );
     }
 }

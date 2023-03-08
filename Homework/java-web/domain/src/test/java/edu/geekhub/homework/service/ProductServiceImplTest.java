@@ -15,9 +15,9 @@ import static org.mockito.Mockito.when;
 import edu.geekhub.homework.domain.Category;
 import edu.geekhub.homework.domain.Product;
 import edu.geekhub.homework.domain.ProductValidator;
+import edu.geekhub.homework.domain.ProductsSortType;
 import edu.geekhub.homework.repository.interfaces.ProductRepository;
 import edu.geekhub.homework.service.interfaces.CategoryService;
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -102,13 +102,13 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void can_get_rating_sorted_products_by_category() {
+    void can_get_sorted_products_by_category() {
         List<Product> products = List.of(new Product("Milk", 45.6, 1),
             new Product("Bread", 12.5, 2));
         when(productRepository.getProductsRatingSorted()).thenReturn(products);
         when(categoryService.getCategoryById(anyInt())).thenReturn(new Category("Daily"));
 
-        List<Product> sortedProducts = productService.getProductsRatingSortedByCategory(1);
+        List<Product> sortedProducts = productService.getSortedProducts(ProductsSortType.RATING, 1);
 
         List<Product> expectedSortedProducts = List.of(new Product("Milk", 45.6, 1));
 
@@ -116,12 +116,19 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void can_get_empty_rating_sorted_products_by_not_exists_category() {
+    void can_get_all_products_sorted_by_not_exists_category() {
+        List<Product> products = List.of(new Product("Milk", 45.6, 1),
+            new Product("Bread", 12.5, 2));
+        productService = spy(this.productService);
+        when(productService.getProductsRatingSorted()).thenReturn(products);
         when(categoryService.getCategoryById(anyInt())).thenReturn(null);
 
-        List<Product> sortedProducts = productService.getProductsRatingSortedByCategory(1);
+        List<Product> sortedProducts = productService.getSortedProducts(
+            ProductsSortType.RATING,
+            -1
+        );
 
-        assertEquals(new ArrayList<>(), sortedProducts);
+        assertEquals(products, sortedProducts);
     }
 
     @Test
@@ -181,7 +188,8 @@ class ProductServiceImplTest {
         Product milk = new Product("Milk", 45.6, 1);
         productService = spy(this.productService);
         doReturn(milk).when(productService).getProductById(anyInt());
-        doThrow(new DataAccessException("") {}).when(productRepository).deleteProductById(anyInt());
+        doThrow(new DataAccessException("") {
+        }).when(productRepository).deleteProductById(anyInt());
 
         boolean successfulDeleted = productService.deleteProductById(1);
 
@@ -225,7 +233,8 @@ class ProductServiceImplTest {
         productService = spy(this.productService);
         doNothing().when(productValidator).validate(any());
         doReturn(new Product("Milk", 45.6, 1)).when(productService).getProductById(anyInt());
-        doThrow(new DataAccessException("") {})
+        doThrow(new DataAccessException("") {
+        })
             .when(productRepository).updateProductById(any(), anyInt());
 
         boolean successfulUpdated = productService.updateProductById(null, 1);

@@ -48,7 +48,4 @@ public class ProductsController {
         return productService.getProductsRatingSorted();
     }
 
-    public List<Product> getRatingSortedByCategoryProducts(int categoryId) {
-        return productService.getProductsRatingSortedByCategory(categoryId);
-    }
 }

@@ -1,0 +1,50 @@
+plugins {
+    id 'java'
+    id 'checkstyle'
+    id 'org.springframework.boot' version '2.7.5'
+    id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group 'edu.geekhub'
+
+repositories {
+    mavenCentral()
+}
+
+checkstyle {
+    toolVersion '10.7.0'
+    configFile file("${rootDir}/config/chekstyle-google-checks.xml")
+}
+
+checkstyleMain {
+    source = 'src/main/java'
+}
+
+checkstyleTest{
+    source = 'src/test/java'
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testImplementation 'org.assertj:assertj-core:3.23.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation 'org.tinylog:tinylog-api:2.6.0'
+    implementation 'org.tinylog:tinylog-impl:2.6.0'
+
+    implementation 'org.postgresql:postgresql:42.5.4'
+    implementation 'org.flywaydb:flyway-core:9.15.0'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc:3.0.3'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:3.0.3'
+
+    implementation project(":Homework:java-web:domain")
+}
+
+test {
+    useJUnitPlatform()
+}

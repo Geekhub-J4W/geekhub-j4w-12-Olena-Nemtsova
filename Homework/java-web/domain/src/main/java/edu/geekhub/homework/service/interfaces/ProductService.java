@@ -1,6 +1,7 @@
 package edu.geekhub.homework.service.interfaces;
 
 import edu.geekhub.homework.domain.Product;
+import edu.geekhub.homework.domain.ProductsSortType;
 import java.util.List;
 
 public interface ProductService {
@@ -21,5 +22,5 @@ public interface ProductService {
 
     List<Product> getProductsRatingSorted();
 
-    List<Product> getProductsRatingSortedByCategory(int categoryId);
+    List<Product> getSortedProducts(ProductsSortType sortType, int categoryId);
 }

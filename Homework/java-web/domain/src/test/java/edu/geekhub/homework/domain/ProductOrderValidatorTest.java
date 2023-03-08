@@ -70,7 +70,7 @@ class ProductOrderValidatorTest {
     void can_validate_correct_productOrder() {
         ProductOrder relation = new ProductOrder(1, 1);
         doReturn(product).when(productRepository).getProductById(anyInt());
-        doReturn(new Order(LocalDateTime.now())).when(orderRepository).getOrderById(anyInt());
+        doReturn(new Order(LocalDateTime.now(), null)).when(orderRepository).getOrderById(anyInt());
 
         assertDoesNotThrow(
             () -> productOrderValidator.validate(relation)

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Store</title>
+</head>
+<body>
+<div style="text-align: center;  height: 100%">
+    <div style="width: 100%; height: 10vh; background-color: lavender"><h2>Some shop</h2></div>
+    <div style="width: 100%; height: 5vh; text-align: right; font-size: 1.5em">
+         <span style="margin-right: 5%;">
+            <a th:href="@{/}" style="text-decoration: none">log out</a>
+        </span>
+    </div>
+    <div style="float: left; background-color: cadetblue; width: 30%;">
+        <table style="border-spacing: 1em">
+            <tr>
+                <td><a th:href="@{/mainAdmin/{userId}(userId=${userId})}">Products</a></td>
+            </tr>
+            <tr>
+                <td><a th:href="@{/categories/{userId}(userId=${userId})}">Categories</a></td>
+            </tr>
+            <tr>
+                <td><a th:href="@{/orders/{userId}(userId=${userId})}">Orders</a></td>
+            </tr>
+            <tr>
+                <td><a th:href="@{/users/{userId}(userId=${userId})}">Users</a></td>
+            </tr>
+        </table>
+    </div>
+    <div style="float: right; width: 70%">
+        <form th:action="@{/products/newProduct/{userId}(userId=${userId})}" th:object="${product}"
+              method="post" onsubmit="return check()">
+            <fieldset>
+                <legend th:if="${product.id == -1}">add product</legend>
+                <legend th:unless="${product.id == -1}">edit product</legend>
+                <br>
+                <table>
+                    <tr>
+                        <td></td>
+                        <td><span id="error_name"></span></td>
+                    </tr>
+                    <tr>
+                        <td><label>Product name:</label></td>
+                        <td><input type="text" th:field="*{name}" placeholder="Put name" id="name"
+                                   onkeyup="resetErrorName()"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><span id="error_price"></span></td>
+                    </tr>
+                    <tr>
+                        <td><label>Price:</label></td>
+                        <td><input type="text" th:field="*{price}" placeholder="Put price" id="price"
+                                   onkeyup="resetErrorPrice()"></td>
+                    </tr>
+                    <tr>
+                        <td><label>Category:</label></td>
+                        <td><select th:field="*{categoryId}">
+                            <option th:each="category: ${categories}" th:value="${category.id}"
+                                    th:text="${category.name}"></option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><span id="error_image"></span></td>
+                    </tr>
+                    <tr>
+                        <td><label>Image path:</label></td>
+                        <td><input type="text" th:field="*{imagePath}" placeholder="Put image path" id="image"
+                                   onkeyup="resetErrorImage()"></td>
+                    </tr>
+
+                    <tr style="text-align: center;">
+                        <td><input th:if="${product.id == -1}" type="submit" value="Add"></td>
+                        <td><input th:unless="${product.id == -1}" type="submit" value="Edit"></td>
+                    </tr>
+                </table>
+                <input type="hidden" th:field="*{id}" th:value="${product.id}">
+            </fieldset>
+        </form>
+    </div>
+</div>
+<script>
+    function check() {
+        let ok = true;
+
+        let regExp = /\b([A-Z][a-z]+)/;
+        if (!regExp.test(document.getElementById("name").value)) {
+            ok = false;
+            let name = document.getElementById("error_name");
+            name.innerHTML = "Please enter valid name";
+            name.style.color = "red";
+        }
+        regExp = /^\d+(\.\d{1,2})?$/;
+        if (!regExp.test(document.getElementById("price").value)) {
+            ok = false;
+            let lName = document.getElementById("error_price");
+            lName.innerHTML = "Please enter valid price";
+            lName.style.color = "red";
+        }
+        let img = new Image();
+        img.src = document.getElementById("image").value;
+        img.onload = function () {
+            ok = true;
+        };
+        img.onerror = function () {
+            ok = false;
+            let lName = document.getElementById("error_image");
+            lName.innerHTML = "Please enter valid image path";
+            lName.style.color = "red";
+        };
+        return ok;
+    }
+
+    function resetErrorPrice() {
+        document.getElementById("error_email").innerHTML = "";
+    }
+
+    function resetErrorName() {
+        document.getElementById("error_name").innerHTML = "";
+    }
+
+    function resetErrorImage() {
+        document.getElementById("error_image").innerHTML = "";
+    }
+
+</script>
+</body>
+</html>

@@ -1,7 +1,9 @@
 package edu.geekhub.homework.repository;
 
 import edu.geekhub.homework.domain.Order;
+import edu.geekhub.homework.domain.OrderStatus;
 import edu.geekhub.homework.domain.Product;
+import edu.geekhub.homework.domain.User;
 import edu.geekhub.homework.repository.interfaces.OrderRepository;
 import java.util.List;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -14,7 +16,8 @@ public class OrderRepositoryImpl implements OrderRepository {
         SELECT * FROM Orders
         """;
     private static final String INSERT_ORDER = """
-        INSERT INTO Orders(date, totalPrice) VALUES (:date, :totalPrice)
+        INSERT INTO Orders(date, totalPrice, userId, status)
+        VALUES (:date, :totalPrice, :userId, :status)
         """;
     private static final String FETCH_ORDER_BY_ID = """
         SELECT * FROM Orders WHERE id=:id
@@ -25,11 +28,21 @@ public class OrderRepositoryImpl implements OrderRepository {
         INNER JOIN Orders ON ProductsOrders.orderID=Orders.id
         WHERE Orders.id=:id
         """;
+
+    private static final String FETCH_ORDER_CUSTOMER = """
+        SELECT * FROM Users
+        INNER JOIN Orders ON Users.id=Orders.userId
+        WHERE Orders.id=:id
+        """;
     private static final String UPDATE_ORDER_BY_ID = """
         UPDATE Orders SET totalPrice=:totalPrice WHERE id=:id
         """;
+
+    private static final String UPDATE_ORDER_STATUS_BY_ID = """
+        UPDATE Orders SET status=:status WHERE id=:id
+        """;
     private static final String DELETE_ORDER_BY_ID = """
-        DELETE FROM Products WHERE id=:id
+        DELETE FROM Orders WHERE id=:id
         """;
 
     public OrderRepositoryImpl(NamedParameterJdbcTemplate jdbcTemplate) {
@@ -41,7 +54,9 @@ public class OrderRepositoryImpl implements OrderRepository {
         return jdbcTemplate.query(FETCH_ALL_ORDERS, (rs, rowNum) -> new Order(
             rs.getInt("id"),
             rs.getTimestamp("date").toLocalDateTime(),
-            rs.getDouble("totalPrice")
+            rs.getDouble("totalPrice"),
+            rs.getString("userId"),
+            OrderStatus.valueOf(rs.getString("status"))
         ));
     }
 
@@ -49,8 +64,10 @@ public class OrderRepositoryImpl implements OrderRepository {
     public int addOrder(Order order) {
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-            .addValue("date", order.dateTime())
-            .addValue("totalPrice", order.totalPrice());
+            .addValue("date", order.getDateTime())
+            .addValue("totalPrice", order.getTotalPrice())
+            .addValue("userId", order.getUserId())
+            .addValue("status", order.getStatus().name());
 
         jdbcTemplate.update(INSERT_ORDER, mapSqlParameterSource, generatedKeyHolder);
 
@@ -78,7 +95,9 @@ public class OrderRepositoryImpl implements OrderRepository {
                 (resultSet, rowNum) -> new Order(
                     resultSet.getInt("id"),
                     resultSet.getTimestamp("date").toLocalDateTime(),
-                    resultSet.getDouble("totalPrice")
+                    resultSet.getDouble("totalPrice"),
+                    resultSet.getString("userId"),
+                    OrderStatus.valueOf(resultSet.getString("status"))
                 ))
             .stream()
             .findFirst()
@@ -95,9 +114,27 @@ public class OrderRepositoryImpl implements OrderRepository {
                 rs.getInt("id"),
                 rs.getString("name"),
                 rs.getDouble("price"),
-                rs.getInt("productCategoryId"),
+                rs.getInt("categoryId"),
                 rs.getString("imagePath")
             ));
+    }
+
+    @Override
+    public User getOrderCustomer(int id) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("id", id);
+
+        return jdbcTemplate.query(FETCH_ORDER_CUSTOMER, mapSqlParameterSource,
+            (rs, rowNum) -> new User(
+                rs.getString("id"),
+                rs.getString("firstName"),
+                rs.getString("lastName"),
+                rs.getString("password"),
+                rs.getString("email"),
+                rs.getBoolean("isAdmin")
+            )).stream()
+            .findFirst()
+            .orElse(null);
     }
 
     @Override
@@ -107,6 +144,15 @@ public class OrderRepositoryImpl implements OrderRepository {
             .addValue("id", id);
 
         jdbcTemplate.update(UPDATE_ORDER_BY_ID, mapSqlParameterSource);
+    }
+
+    @Override
+    public void updateOrderStatus(OrderStatus orderStatus, int id) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("status", orderStatus.name())
+            .addValue("id", id);
+
+        jdbcTemplate.update(UPDATE_ORDER_STATUS_BY_ID, mapSqlParameterSource);
     }
 }
 

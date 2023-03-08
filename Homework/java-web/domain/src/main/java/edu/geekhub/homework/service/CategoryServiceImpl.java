@@ -21,7 +21,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category getCategoryById(int categoryId) {
         return getCategories().stream()
-            .filter(category -> category.id() == categoryId)
+            .filter(category -> category.getId() == categoryId)
             .findFirst()
             .orElse(null);
     }

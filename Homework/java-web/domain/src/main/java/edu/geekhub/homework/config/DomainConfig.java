@@ -1,26 +1,32 @@
 package edu.geekhub.homework.config;
 
-import edu.geekhub.homework.domain.Bucket;
 import edu.geekhub.homework.domain.CategoryValidator;
 import edu.geekhub.homework.domain.ProductOrderValidator;
 import edu.geekhub.homework.domain.ProductValidator;
+import edu.geekhub.homework.domain.UserValidator;
+import edu.geekhub.homework.repository.BucketRepositoryImpl;
 import edu.geekhub.homework.repository.CategoryRepositoryImpl;
 import edu.geekhub.homework.repository.OrderRepositoryImpl;
 import edu.geekhub.homework.repository.ProductOrderRepositoryImpl;
 import edu.geekhub.homework.repository.ProductRepositoryImpl;
+import edu.geekhub.homework.repository.UserRepositoryImpl;
+import edu.geekhub.homework.repository.interfaces.BucketRepository;
 import edu.geekhub.homework.repository.interfaces.CategoryRepository;
 import edu.geekhub.homework.repository.interfaces.OrderRepository;
 import edu.geekhub.homework.repository.interfaces.ProductOrderRepository;
 import edu.geekhub.homework.repository.interfaces.ProductRepository;
+import edu.geekhub.homework.repository.interfaces.UserRepository;
 import edu.geekhub.homework.service.BucketService;
 import edu.geekhub.homework.service.CategoryServiceImpl;
 import edu.geekhub.homework.service.OrderServiceImpl;
 import edu.geekhub.homework.service.ProductOrderServiceImpl;
 import edu.geekhub.homework.service.ProductServiceImpl;
+import edu.geekhub.homework.service.UserServiceImpl;
 import edu.geekhub.homework.service.interfaces.CategoryService;
 import edu.geekhub.homework.service.interfaces.OrderService;
 import edu.geekhub.homework.service.interfaces.ProductOrderService;
 import edu.geekhub.homework.service.interfaces.ProductService;
+import edu.geekhub.homework.service.interfaces.UserService;
 import java.io.File;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -68,6 +74,25 @@ public class DomainConfig {
 
     @Lazy
     @Bean
+    public UserRepository userRepository(NamedParameterJdbcTemplate jdbcTemplate,
+                                         UserValidator userValidator) {
+        return new UserRepositoryImpl(jdbcTemplate, userValidator);
+    }
+
+    @Lazy
+    @Bean
+    public UserValidator userValidator() {
+        return new UserValidator();
+    }
+
+    @Lazy
+    @Bean
+    public UserService userService(UserRepository userRepository, UserValidator userValidator) {
+        return new UserServiceImpl(userRepository, userValidator);
+    }
+
+    @Lazy
+    @Bean
     public ProductOrderValidator productOrderValidator(ProductRepository productRepository,
                                                        OrderRepository orderRepository) {
         return new ProductOrderValidator(productRepository, orderRepository);
@@ -100,10 +125,11 @@ public class DomainConfig {
         return new ProductOrderServiceImpl(productOrderRepository, validator);
     }
 
+
     @Lazy
     @Bean
-    public Bucket bucket(ProductService productService) {
-        return new Bucket(productService);
+    public BucketRepository bucketRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+        return new BucketRepositoryImpl(jdbcTemplate);
     }
 
     @Lazy
@@ -111,7 +137,8 @@ public class DomainConfig {
     public BucketService bucketService(ProductService productService,
                                        OrderService orderService,
                                        ProductOrderService productOrderService,
-                                       Bucket bucket) {
-        return new BucketService(productService, orderService, productOrderService, bucket);
+                                       BucketRepository bucketRepository) {
+        return new BucketService(productService, orderService,
+            productOrderService, bucketRepository);
     }
 }
