@@ -28,8 +28,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean addUser(User user) {
-        boolean successAdd = false;
+    public User addUser(User user) {
         try {
             userValidator.validate(user);
             String id = userRepository.addUser(user);
@@ -38,11 +37,11 @@ public class UserServiceImpl implements UserService {
             }
             user.setId(id);
             Logger.info("User was added:\n" + user);
-            successAdd = true;
+            return getUserById(id);
         } catch (IllegalArgumentException | DataAccessException exception) {
             Logger.warn("User wasn't added: " + user + "\n" + exception.getMessage());
+            return null;
         }
-        return successAdd;
     }
 
     @Override
@@ -62,17 +61,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updateUserById(User user, String id) {
+    public User updateUserById(User user, String id) {
         try {
             userValidator.validate(user);
             if (getUserById(id) == null) {
                 throw new IllegalArgumentException("User with id " + id + " not found");
             }
             userRepository.updateUserById(user, id);
-            return true;
+            Logger.info("User was updated:\n" + user);
+            return getUserById(id);
         } catch (IllegalArgumentException | DataAccessException exception) {
-            Logger.warn("User wasn't edited: " + user + "\n" + exception.getMessage());
-            return false;
+            Logger.warn("User wasn't updated: " + user + "\n" + exception.getMessage());
+            return null;
         }
     }
 

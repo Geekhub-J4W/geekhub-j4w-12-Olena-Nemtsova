@@ -27,7 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public boolean addCategory(Category category) {
+    public Category addCategory(Category category) {
         try {
             categoryValidator.validate(category);
             int newCategoryId = categoryRepository.addCategory(category);
@@ -35,10 +35,10 @@ public class CategoryServiceImpl implements CategoryService {
                 throw new IllegalArgumentException("Unable to retrieve the generated key");
             }
             Logger.info("Category was added:\n" + category);
-            return true;
+            return getCategoryById(newCategoryId);
         } catch (IllegalArgumentException | DataAccessException exception) {
             Logger.warn("Category wasn't added: " + category + "\n" + exception.getMessage());
-            return false;
+            return null;
         }
     }
 
@@ -58,17 +58,18 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public boolean updateCategoryById(Category category, int id) {
+    public Category updateCategoryById(Category category, int id) {
         try {
             categoryValidator.validate(category);
             if (getCategoryById(id) == null) {
                 throw new IllegalArgumentException("Category with id" + id + "not found");
             }
             categoryRepository.updateCategoryById(category, id);
-            return true;
+            Logger.info("Category was updated:\n" + category);
+            return getCategoryById(id);
         } catch (IllegalArgumentException | DataAccessException exception) {
             Logger.warn("Category wasn't edited: " + category + "\n" + exception.getMessage());
-            return false;
+            return null;
         }
     }
 

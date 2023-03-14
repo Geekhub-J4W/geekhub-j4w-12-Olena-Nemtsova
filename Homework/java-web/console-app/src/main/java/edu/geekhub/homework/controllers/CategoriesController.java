@@ -15,7 +15,7 @@ public class CategoriesController {
         this.categoryConsoleParser = categoryConsoleParser;
     }
 
-    public boolean addCategory(String line) {
+    public Category addCategory(String line) {
         Category category = categoryConsoleParser.parse(line);
         return categoryService.addCategory(category);
     }
@@ -24,7 +24,7 @@ public class CategoriesController {
         return categoryService.deleteCategoryById(id);
     }
 
-    public boolean updateCategoryById(Category category, int id) {
+    public Category updateCategoryById(Category category, int id) {
         return categoryService.updateCategoryById(category, id);
     }
 

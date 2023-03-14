@@ -2,6 +2,7 @@ package edu.geekhub.homework.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -133,13 +134,14 @@ class ProductServiceImplTest {
 
     @Test
     void can_add_product() {
-        Product milk = new Product("Milk", 45.6, 1);
         doNothing().when(productValidator).validate(any());
         doReturn(1).when(productRepository).addProduct(any());
+        Product milk = new Product("Milk", 45.6, 1);
+        productService = spy(this.productService);
+        doReturn(milk).when(productService).getProductById(anyInt());
+        Product newProduct = productService.addProduct(milk);
 
-        boolean successfulAdded = productService.addProduct(milk);
-
-        assertTrue(successfulAdded);
+        assertNotNull(newProduct);
     }
 
     @Test
@@ -147,18 +149,18 @@ class ProductServiceImplTest {
         doNothing().when(productValidator).validate(any());
         doReturn(-1).when(productRepository).addProduct(any());
 
-        boolean successfulAdded = productService.addProduct(null);
+        Product newProduct = productService.addProduct(null);
 
-        assertFalse(successfulAdded);
+        assertNull(newProduct);
     }
 
     @Test
     void can_not_add_not_valid_product() {
         doThrow(new IllegalArgumentException()).when(productValidator).validate(any());
 
-        boolean successfulAdded = productService.addProduct(null);
+        Product newProduct = productService.addProduct(null);
 
-        assertFalse(successfulAdded);
+        assertNull(newProduct);
     }
 
     @Test
@@ -203,18 +205,18 @@ class ProductServiceImplTest {
         doReturn(new Product("Milk", 45.6, 1)).when(productService).getProductById(anyInt());
         doNothing().when(productRepository).updateProductById(any(), anyInt());
 
-        boolean successfulUpdated = productService.updateProductById(null, 1);
+        Product updatedProduct = productService.updateProductById(null, 1);
 
-        assertTrue(successfulUpdated);
+        assertNotNull(updatedProduct);
     }
 
     @Test
     void can_not_update_product_by_id_to_not_valid_product() {
         doThrow(new IllegalArgumentException()).when(productValidator).validate(any());
 
-        boolean successfulUpdated = productService.updateProductById(null, 1);
+        Product updatedProduct = productService.updateProductById(null, 1);
 
-        assertFalse(successfulUpdated);
+        assertNull(updatedProduct);
     }
 
     @Test
@@ -223,9 +225,9 @@ class ProductServiceImplTest {
         doNothing().when(productValidator).validate(any());
         doReturn(null).when(productService).getProductById(anyInt());
 
-        boolean successfulUpdated = productService.updateProductById(null, 1);
+        Product updatedProduct = productService.updateProductById(null, 1);
 
-        assertFalse(successfulUpdated);
+        assertNull(updatedProduct);
     }
 
     @Test
@@ -237,8 +239,8 @@ class ProductServiceImplTest {
         })
             .when(productRepository).updateProductById(any(), anyInt());
 
-        boolean successfulUpdated = productService.updateProductById(null, 1);
+        Product updatedProduct = productService.updateProductById(null, 1);
 
-        assertFalse(successfulUpdated);
+        assertNull(updatedProduct);
     }
 }

@@ -22,7 +22,7 @@ public interface OrderService {
 
     boolean updateOrderPriceById(double newPrice, int id);
 
-    boolean updateOrderStatusById(OrderStatus orderStatus, int id);
+    Order updateOrderStatusById(OrderStatus orderStatus, int id);
 
     String saveToFile(Order order, List<Product> orderProducts);
 }

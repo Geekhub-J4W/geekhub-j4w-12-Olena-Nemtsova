@@ -97,7 +97,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public boolean updateOrderStatusById(OrderStatus orderStatus, int id) {
+    public Order updateOrderStatusById(OrderStatus orderStatus, int id) {
         Order orderToEdit = getOrderById(id);
         try {
             if (orderToEdit == null) {
@@ -108,10 +108,10 @@ public class OrderServiceImpl implements OrderService {
             Logger.info("Order status was updated: "
                         + orderToEdit + "\n"
                         + "new status: " + orderStatus);
-            return true;
+            return getOrderById(id);
         } catch (IllegalArgumentException | DataAccessException exception) {
-            Logger.warn("Order wasn't edited: " + orderToEdit + "\n" + exception.getMessage());
-            return false;
+            Logger.warn("Order wasn't updated: " + orderToEdit + "\n" + exception.getMessage());
+            return null;
         }
     }
 

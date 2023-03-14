@@ -15,7 +15,7 @@ public class ProductsController {
         this.productConsoleParser = productConsoleParser;
     }
 
-    public boolean addProduct(String line) {
+    public Product addProduct(String line) {
         Product product = productConsoleParser.parse(line);
         return productService.addProduct(product);
     }
@@ -28,7 +28,7 @@ public class ProductsController {
         return productService.deleteProductById(id);
     }
 
-    public boolean updateProductById(Product product, int id) {
+    public Product updateProductById(Product product, int id) {
         return productService.updateProductById(product, id);
     }
 

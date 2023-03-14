@@ -223,18 +223,18 @@ class OrderServiceImplTest {
 
         doNothing().when(orderRepository).updateOrderStatus(any(), anyInt());
 
-        boolean updateStatus = orderService.updateOrderStatusById(OrderStatus.PENDING, 1);
+        Order updated = orderService.updateOrderStatusById(OrderStatus.PENDING, 1);
 
-        assertTrue(updateStatus);
+        assertNotNull(updated);
     }
 
     @Test
     void can_not_update_order_status_by_wrong_id() {
         when(orderRepository.getOrderById(anyInt())).thenReturn(null);
 
-        boolean updateStatus = orderService.updateOrderStatusById(OrderStatus.PENDING, 1);
+        Order updated = orderService.updateOrderStatusById(OrderStatus.PENDING, 1);
 
-        assertFalse(updateStatus);
+        assertNull(updated);
     }
 
     @Test
@@ -244,9 +244,9 @@ class OrderServiceImplTest {
         doThrow(new DataAccessException("") {
         }).when(orderRepository).updateOrderStatus(any(), anyInt());
 
-        boolean updateStatus = orderService.updateOrderStatusById(OrderStatus.PENDING, 1);
+        Order updated = orderService.updateOrderStatusById(OrderStatus.PENDING, 1);
 
-        assertFalse(updateStatus);
+        assertNull(updated);
     }
 
     @Test

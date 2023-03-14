@@ -2,6 +2,7 @@ package edu.geekhub.homework.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -68,22 +69,24 @@ class CategoryServiceImplTest {
 
     @Test
     void can_add_category() {
-        Category dairy = new Category(1, "Dairy");
         doNothing().when(categoryValidator).validate(any());
         doReturn(1).when(categoryRepository).addCategory(any());
+        Category dairy = new Category(1, "Dairy");
+        categoryService = spy(this.categoryService);
+        doReturn(dairy).when(categoryService).getCategoryById(anyInt());
 
-        boolean successfulAdded = categoryService.addCategory(dairy);
+        Category category = categoryService.addCategory(dairy);
 
-        assertTrue(successfulAdded);
+        assertNotNull(category);
     }
 
     @Test
     void can_not_add_not_valid_category() {
         doThrow(new IllegalArgumentException()).when(categoryValidator).validate(any());
 
-        boolean successfulAdded = categoryService.addCategory(null);
+        Category category = categoryService.addCategory(null);
 
-        assertFalse(successfulAdded);
+        assertNull(category);
     }
 
     @Test
@@ -91,9 +94,9 @@ class CategoryServiceImplTest {
         doNothing().when(categoryValidator).validate(any());
         doReturn(-1).when(categoryRepository).addCategory(any());
 
-        boolean successfulAdded = categoryService.addCategory(null);
+        Category category = categoryService.addCategory(null);
 
-        assertFalse(successfulAdded);
+        assertNull(category);
     }
 
     @Test
@@ -123,7 +126,8 @@ class CategoryServiceImplTest {
         Category dairy = new Category(1, "Dairy");
         categoryService = spy(this.categoryService);
         doReturn(dairy).when(categoryService).getCategoryById(anyInt());
-        doThrow(new DataAccessException("") {})
+        doThrow(new DataAccessException("") {
+        })
             .when(categoryRepository).deleteCategoryById(anyInt());
 
         boolean successfulDeleted = categoryService.deleteCategoryById(1);
@@ -138,18 +142,18 @@ class CategoryServiceImplTest {
         doReturn(new Category("Dairy")).when(categoryService).getCategoryById(anyInt());
         doNothing().when(categoryRepository).updateCategoryById(any(), anyInt());
 
-        boolean successfulUpdated = categoryService.updateCategoryById(null, 1);
+        Category category = categoryService.updateCategoryById(null, 1);
 
-        assertTrue(successfulUpdated);
+        assertNotNull(category);
     }
 
     @Test
     void can_not_update_category_by_id_to_not_valid_category() {
         doThrow(new IllegalArgumentException()).when(categoryValidator).validate(any());
 
-        boolean successfulUpdated = categoryService.updateCategoryById(null, 1);
+        Category category = categoryService.updateCategoryById(null, 1);
 
-        assertFalse(successfulUpdated);
+        assertNull(category);
     }
 
     @Test
@@ -158,9 +162,9 @@ class CategoryServiceImplTest {
         doNothing().when(categoryValidator).validate(any());
         doReturn(null).when(categoryService).getCategoryById(anyInt());
 
-        boolean successfulUpdated = categoryService.updateCategoryById(null, 1);
+        Category category = categoryService.updateCategoryById(null, 1);
 
-        assertFalse(successfulUpdated);
+        assertNull(category);
     }
 
     @Test
@@ -171,8 +175,8 @@ class CategoryServiceImplTest {
         doThrow(new DataAccessException("") {
         }).when(categoryRepository).updateCategoryById(any(), anyInt());
 
-        boolean successfulUpdated = categoryService.updateCategoryById(null, 1);
+        Category category = categoryService.updateCategoryById(null, 1);
 
-        assertFalse(successfulUpdated);
+        assertNull(category);
     }
 }

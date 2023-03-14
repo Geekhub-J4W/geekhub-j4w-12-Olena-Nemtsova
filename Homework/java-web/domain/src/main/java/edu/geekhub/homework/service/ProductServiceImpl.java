@@ -35,8 +35,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public boolean addProduct(Product product) {
-        boolean successAdd = false;
+    public Product addProduct(Product product) {
         try {
             productValidator.validate(product);
             int id = productRepository.addProduct(product);
@@ -45,11 +44,11 @@ public class ProductServiceImpl implements ProductService {
             }
             product.setId(id);
             Logger.info("Product was added:\n" + product);
-            successAdd = true;
+            return getProductById(id);
         } catch (IllegalArgumentException | DataAccessException exception) {
             Logger.warn("Product wasn't added: " + product + "\n" + exception.getMessage());
+            return null;
         }
-        return successAdd;
     }
 
     @Override
@@ -69,17 +68,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public boolean updateProductById(Product product, int id) {
+    public Product updateProductById(Product product, int id) {
         try {
             productValidator.validate(product);
             if (getProductById(id) == null) {
                 throw new IllegalArgumentException("Product with id" + id + "not found");
             }
             productRepository.updateProductById(product, id);
-            return true;
+            Logger.info("Product was updated:\n" + product);
+            return getProductById(id);
         } catch (IllegalArgumentException | DataAccessException exception) {
-            Logger.warn("Product wasn't edited: " + product + "\n" + exception.getMessage());
-            return false;
+            Logger.warn("Product wasn't updated: " + product + "\n" + exception.getMessage());
+            return null;
         }
     }
 

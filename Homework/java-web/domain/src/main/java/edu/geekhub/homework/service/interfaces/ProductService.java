@@ -8,11 +8,11 @@ public interface ProductService {
 
     Product getProductById(int id);
 
-    boolean addProduct(Product product);
+    Product addProduct(Product product);
 
     boolean deleteProductById(int id);
 
-    boolean updateProductById(Product product, int id);
+    Product updateProductById(Product product, int id);
 
     List<Product> getProducts();
 

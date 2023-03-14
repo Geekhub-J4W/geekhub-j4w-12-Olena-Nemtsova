@@ -1,76 +1,63 @@
 package edu.geekhub.homework;
 
-import edu.geekhub.homework.domain.User;
+import edu.geekhub.homework.domain.Product;
 import edu.geekhub.homework.service.BucketService;
-import edu.geekhub.homework.service.interfaces.CategoryService;
-import edu.geekhub.homework.service.interfaces.UserService;
+import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
+@RequestMapping("/bucket")
 public class BucketController {
     private final BucketService bucketService;
-    private final CategoryService categoryService;
-    private final UserService userService;
 
     @Autowired
-    public BucketController(BucketService bucketService,
-                            CategoryService categoryService,
-                            UserService userService) {
+    public BucketController(BucketService bucketService) {
         this.bucketService = bucketService;
-        this.categoryService = categoryService;
-        this.userService = userService;
     }
 
-    @GetMapping("/bucket/add/{userId}/{productId}")
-    public String addProduct(@PathVariable(value = "productId") int productId,
-                             @PathVariable(value = "userId") String userId) {
-        User user = userService.getUserById(userId);
-        if (user == null || user.isAdmin()) {
-            return "redirect:/";
-        }
+    @PostMapping("/add/{userId}/{productId}")
+    public Collection<Product> addProductToUserBucket(
+        @PathVariable(value = "productId") int productId,
+        @PathVariable(value = "userId") String userId) {
+
         bucketService.addProductById(productId, userId);
-        return "redirect:/mainUser/" + userId;
+        return bucketService.getBucketProducts(userId);
     }
 
-    @GetMapping("/bucket/delete/{userId}/{productId}")
-    public String deleteProduct(@PathVariable(value = "productId") int productId,
-                                @PathVariable(value = "userId") String userId) {
-        User user = userService.getUserById(userId);
-        if (user == null || user.isAdmin()) {
-            return "redirect:/";
-        }
+    @DeleteMapping("/delete/{userId}/{productId}")
+    public Collection<Product> deleteProductFromUserBucket(
+        @PathVariable(value = "productId") int productId,
+        @PathVariable(value = "userId") String userId) {
+
         bucketService.deleteProduct(productId, userId);
-        return "redirect:/bucket/" + userId;
+        return bucketService.getBucketProducts(userId);
     }
 
-    @GetMapping("/bucket/{userId}")
-    public String bucketProducts(@PathVariable(value = "userId") String userId, Model model) {
-        User user = userService.getUserById(userId);
-        if (user == null || user.isAdmin()) {
-            return "redirect:/";
-        }
-        model.addAttribute("totalPrice", bucketService.getBucketTotalPrice(userId));
-        model.addAttribute("products", bucketService.getBucketProducts(userId));
-        model.addAttribute("categories", categoryService.getCategories());
-        model.addAttribute("userId", userId);
-        return "/bucket";
+    @GetMapping("/{userId}")
+    public Collection<Product> getBucketProducts(@PathVariable(value = "userId") String userId) {
+
+        return bucketService.getBucketProducts(userId);
     }
 
-    @GetMapping("/bucket/checkout/{userId}")
-    public String checkout(@PathVariable(value = "userId") String userId, Model model) {
-        User user = userService.getUserById(userId);
-        if (user == null || user.isAdmin()) {
-            return "redirect:/";
-        }
+    @GetMapping("/totalPrice/{userId}")
+    public double getBucketTotalPrice(@PathVariable(value = "userId") String userId) {
+
+        return bucketService.getBucketTotalPrice(userId);
+    }
+
+    @PostMapping("/checkout/{userId}")
+    public String checkout(@PathVariable(value = "userId") String userId) {
+
         String checkContent = bucketService.checkout(userId);
-        model.addAttribute("checkContent", checkContent);
-        model.addAttribute("userId", userId);
-        model.addAttribute("products", bucketService.getBucketProducts(userId));
-        model.addAttribute("categories", categoryService.getCategories());
-        return "/checkout";
+        if (checkContent == null) {
+            throw new IllegalArgumentException("Bucket wasn't checkout");
+        }
+        return checkContent;
     }
 }

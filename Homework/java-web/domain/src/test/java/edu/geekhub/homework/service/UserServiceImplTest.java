@@ -2,6 +2,7 @@ package edu.geekhub.homework.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -117,13 +118,15 @@ class UserServiceImplTest {
 
     @Test
     void can_add_user() {
-        User someUser = new User();
         doNothing().when(userValidator).validate(any());
         doReturn("userId1").when(userRepository).addUser(any());
+        User someUser = new User();
+        userService = spy(this.userService);
+        doReturn(someUser).when(userService).getUserById(any());
 
-        boolean successfulAdded = userService.addUser(someUser);
+        User addedUser = userService.addUser(someUser);
 
-        assertTrue(successfulAdded);
+        assertNotNull(addedUser);
     }
 
     @Test
@@ -131,18 +134,18 @@ class UserServiceImplTest {
         doNothing().when(userValidator).validate(any());
         doReturn(null).when(userRepository).addUser(any());
 
-        boolean successfulAdded = userService.addUser(null);
+        User addedUser = userService.addUser(null);
 
-        assertFalse(successfulAdded);
+        assertNull(addedUser);
     }
 
     @Test
     void can_not_add_not_valid_user() {
         doThrow(new IllegalArgumentException()).when(userValidator).validate(any());
 
-        boolean successfulAdded = userService.addUser(null);
+        User addedUser = userService.addUser(null);
 
-        assertFalse(successfulAdded);
+        assertNull(addedUser);
     }
 
     @Test
@@ -188,18 +191,18 @@ class UserServiceImplTest {
         doReturn(someUser).when(userService).getUserById(any());
         doNothing().when(userRepository).updateUserById(any(), any());
 
-        boolean successfulUpdated = userService.updateUserById(null, "");
+        User updatedUser = userService.updateUserById(null, "");
 
-        assertTrue(successfulUpdated);
+        assertNotNull(updatedUser);
     }
 
     @Test
     void can_not_update_user_by_id_to_not_valid_product() {
         doThrow(new IllegalArgumentException()).when(userValidator).validate(any());
 
-        boolean successfulUpdated = userService.updateUserById(null, "");
+        User updatedUser = userService.updateUserById(null, "");
 
-        assertFalse(successfulUpdated);
+        assertNull(updatedUser);
     }
 
     @Test
@@ -208,9 +211,9 @@ class UserServiceImplTest {
         doNothing().when(userValidator).validate(any());
         doReturn(null).when(userService).getUserById(any());
 
-        boolean successfulUpdated = userService.updateUserById(null, "");
+        User updatedUser = userService.updateUserById(null, "");
 
-        assertFalse(successfulUpdated);
+        assertNull(updatedUser);
     }
 
     @Test
@@ -223,8 +226,8 @@ class UserServiceImplTest {
         })
             .when(userRepository).updateUserById(any(), any());
 
-        boolean successfulUpdated = userService.updateUserById(null, "");
+        User updatedUser = userService.updateUserById(null, "");
 
-        assertFalse(successfulUpdated);
+        assertNull(updatedUser);
     }
 }

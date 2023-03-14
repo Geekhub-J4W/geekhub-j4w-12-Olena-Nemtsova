@@ -4,7 +4,7 @@ INSERT INTO Categories (name) VALUES
                                   ('Fruits');
 
 INSERT INTO Products (name, price, imagePath, categoryId) VALUES
-                                  ('Milk', 45.9, 'https://www.freepnglogos.com/uploads/milk/milk-carton-symbol-drinks-talksense-2.png', 1),
+                                  ('Milk', 45.9, 'https://www.nicepng.com/png/full/103-1037098_cartoon-milk-png.png', 1),
                                   ('Yogurt', 23.5, 'https://static.vecteezy.com/system/resources/previews/012/025/561/original/the-cherry-yogurt-png.png', 1),
                                   ('Ice cream', 26.0, 'https://static.vecteezy.com/system/resources/previews/009/366/966/original/cute-ice-cream-design-illustration-png.png', 1),
                                   ('Bread', 15.4, 'https://png.pngtree.com/png-clipart/20220706/ourmid/pngtree-cartoon-long-bread-png-png-image_5723302.png', 2),

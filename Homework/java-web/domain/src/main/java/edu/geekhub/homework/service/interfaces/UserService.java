@@ -7,11 +7,11 @@ public interface UserService {
 
     User getUserByEmailAndPassword(String email, String password);
 
-    boolean addUser(User user);
+    User addUser(User user);
 
     boolean deleteUserById(String id);
 
-    boolean updateUserById(User user, String id);
+    User updateUserById(User user, String id);
 
     List<User> getUsers();
 
