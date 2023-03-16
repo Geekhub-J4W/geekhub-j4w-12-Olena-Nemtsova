@@ -50,6 +50,7 @@ public class CategoryServiceImpl implements CategoryService {
                 throw new IllegalArgumentException("Category with id" + id + "not found");
             }
             categoryRepository.deleteCategoryById(id);
+            Logger.info("Category was deleted:\n" + categoryToDel);
             return true;
         } catch (IllegalArgumentException | DataAccessException exception) {
             Logger.warn("Product wasn't deleted: " + categoryToDel + "\n" + exception.getMessage());

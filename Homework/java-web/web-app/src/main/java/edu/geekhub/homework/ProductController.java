@@ -29,6 +29,11 @@ public class ProductController {
         return productService.getProducts();
     }
 
+    @GetMapping("/{id}")
+    public Product getProductById(@PathVariable int id) {
+        return productService.getProductById(id);
+    }
+
     @PostMapping("/newProduct")
     public Product addProduct(@RequestBody Product product) {
         Product newProduct = productService.addProduct(product);
@@ -39,7 +44,7 @@ public class ProductController {
         return newProduct;
     }
 
-    @PostMapping("editProduct/{id}")
+    @PostMapping("/editProduct/{id}")
     public Product editProduct(@RequestBody Product product,
                                @PathVariable(value = "id") int id) {
 
@@ -58,15 +63,16 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/{categoryId}")
+    @GetMapping("category/{categoryId}")
     public Collection<Product> productsOfCategory(@PathVariable(value = "categoryId") int id) {
 
         return productService.getSortedProducts(ProductsSortType.RATING, id);
     }
 
     @GetMapping("/{sortType}/{categoryId}")
-    public Collection<Product> productsSorted(@PathVariable(value = "categoryId") int categoryId,
-                                              @PathVariable(value = "sortType") String sortType) {
+    public Collection<Product> productsOfCategorySorted(
+        @PathVariable(value = "categoryId") int categoryId,
+        @PathVariable(value = "sortType") String sortType) {
 
         return productService
             .getSortedProducts(ProductsSortType.valueOf(sortType), categoryId);

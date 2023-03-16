@@ -1,4 +1,4 @@
-package edu.geekhub.homework;
+package edu.geekhub.homework.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;

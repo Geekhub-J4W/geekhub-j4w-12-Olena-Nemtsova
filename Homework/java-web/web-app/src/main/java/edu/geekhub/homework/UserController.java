@@ -27,11 +27,20 @@ public class UserController {
         return userService.getUsers();
     }
 
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable String id) {
+        User srchUser = userService.getUserById(id);
+        if (srchUser == null) {
+            throw new IllegalArgumentException("User not exists by id: " + id);
+        }
+        return srchUser;
+    }
+
     @GetMapping("/{email}/{pass}")
     public User getUserByEmailAndPass(@PathVariable String email, @PathVariable String pass) {
         User srchUser = userService.getUserByEmailAndPassword(email, pass);
         if (srchUser == null) {
-            throw new IllegalArgumentException("User not exists: " + email + ", " + pass);
+            throw new IllegalArgumentException("User by email and password not exists ");
         }
         return srchUser;
     }
@@ -47,7 +56,7 @@ public class UserController {
         return userService.getCustomers();
     }
 
-    @DeleteMapping(value = "/deleteUser/{id}")
+    @DeleteMapping("/deleteUser/{id}")
     public void deleteUser(@PathVariable(value = "id") String id) {
         if (!userService.deleteUserById(id)) {
             throw new IllegalArgumentException("User wasn't deleted");
@@ -64,7 +73,7 @@ public class UserController {
         return newUser;
     }
 
-    @PostMapping("editUser/{id}")
+    @PostMapping("/editUser/{id}")
     public User editUser(@RequestBody User user,
                          @PathVariable(value = "id") String id) {
 
