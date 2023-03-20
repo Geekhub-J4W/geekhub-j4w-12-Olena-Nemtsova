@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script defer="defer" src="mainUser.js"></script>
+    <script defer="defer" src="common.js"></script>
+    <title>Store</title>
+</head>
+
+<body onload="loadAll()">
+<div style="text-align: center;  height: 100%;">
+
+    <div style="width: 100%; height: 10vh; background-color: lavender"><h2>Some shop</h2></div>
+    <div style="width: 100%; height: 5vh; text-align: right; font-size: 1.5em">
+       <button onclick="logOut()" style="text-decoration: none">log out</button>
+        <span style="margin-right: 5%; margin-left: 2%">
+            <a style="cursor: pointer" onclick="bucketProducts()">🛒</a>
+        </span>
+    </div>
+
+    <div style="position: absolute; width: 100%; min-height: 85vh">
+
+        <div style="float: left; background-color: cadetblue; width: 25%; position: absolute; height: 100%">
+            <table style="border-spacing: 1em; width: 100%" id="categories">
+                <tr>
+                    <th>Categories</th>
+                </tr>
+                <tr>
+                    <td><a style="cursor: pointer" onclick="allProducts()">All</a></td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="float: right; width: 75%" id="main">
+            <table id="products">
+            </table>
+            <div id="pages"></div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

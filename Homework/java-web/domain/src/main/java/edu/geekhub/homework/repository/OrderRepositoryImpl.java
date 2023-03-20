@@ -115,7 +115,8 @@ public class OrderRepositoryImpl implements OrderRepository {
                 rs.getString("name"),
                 rs.getDouble("price"),
                 rs.getInt("categoryId"),
-                rs.getString("imagePath")
+                rs.getString("imagePath"),
+                rs.getInt("quantity")
             ));
     }
 
@@ -125,14 +126,14 @@ public class OrderRepositoryImpl implements OrderRepository {
             .addValue("id", id);
 
         return jdbcTemplate.query(FETCH_ORDER_CUSTOMER, mapSqlParameterSource,
-            (rs, rowNum) -> new User(
-                rs.getString("id"),
-                rs.getString("firstName"),
-                rs.getString("lastName"),
-                rs.getString("password"),
-                rs.getString("email"),
-                rs.getBoolean("isAdmin")
-            )).stream()
+                (rs, rowNum) -> new User(
+                    rs.getString("id"),
+                    rs.getString("firstName"),
+                    rs.getString("lastName"),
+                    rs.getString("password"),
+                    rs.getString("email"),
+                    rs.getBoolean("isAdmin")
+                )).stream()
             .findFirst()
             .orElse(null);
     }

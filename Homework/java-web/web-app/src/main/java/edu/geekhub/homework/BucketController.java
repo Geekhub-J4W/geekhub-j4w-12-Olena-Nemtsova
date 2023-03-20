@@ -31,11 +31,20 @@ public class BucketController {
     }
 
     @DeleteMapping("/delete/{userId}/{productId}")
-    public Collection<Product> deleteProductFromUserBucket(
+    public Collection<Product> deleteAllConcreteProductsFromUserBucket(
         @PathVariable(value = "productId") int productId,
         @PathVariable(value = "userId") String userId) {
 
-        bucketService.deleteProduct(productId, userId);
+        bucketService.deleteAllConcreteProducts(productId, userId);
+        return bucketService.getBucketProducts(userId);
+    }
+
+    @DeleteMapping("/deleteOne/{userId}/{productId}")
+    public Collection<Product> deleteOneProductFromUserBucket(
+        @PathVariable(value = "productId") int productId,
+        @PathVariable(value = "userId") String userId) {
+
+        bucketService.deleteOneProduct(productId, userId);
         return bucketService.getBucketProducts(userId);
     }
 
@@ -49,6 +58,14 @@ public class BucketController {
     public double getBucketTotalPrice(@PathVariable(value = "userId") String userId) {
 
         return bucketService.getBucketTotalPrice(userId);
+    }
+
+    @GetMapping("/quantity/{userId}/{productId}")
+    public int getQuantityOfConcreteProductAtBucket(
+        @PathVariable(value = "userId") String userId,
+        @PathVariable(value = "productId") int productId) {
+
+        return bucketService.getCountOfConcreteProductAtUserBucket(productId, userId);
     }
 
     @PostMapping("/checkout/{userId}")

@@ -8,7 +8,6 @@ import edu.geekhub.homework.repository.interfaces.ProductRepository;
 import edu.geekhub.homework.service.interfaces.CategoryService;
 import edu.geekhub.homework.service.interfaces.ProductService;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import org.springframework.dao.DataAccessException;
 import org.tinylog.Logger;
@@ -88,40 +87,79 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.getProducts();
     }
 
-    @Override
-    public List<Product> getSortedByNameProducts() {
-        List<Product> sortedProducts = new ArrayList<>(getProducts());
-        sortedProducts.sort((Comparator.comparing(Product::getName)));
-        return sortedProducts;
+    private List<Product> getSortedByNameProducts(int limit,
+                                                  int pageNumber,
+                                                  List<Integer> categoriesId) {
+
+        return productRepository
+            .getProductsNameSortedWithPagination(limit, pageNumber, categoriesId);
+    }
+
+    private List<Product> getSortedByPriceProducts(int limit,
+                                                   int pageNumber,
+                                                   List<Integer> categoriesId) {
+
+        return productRepository
+            .getProductsPriceSortedWithPagination(limit, pageNumber, categoriesId);
+    }
+
+    private List<Product> getProductsRatingSorted(int limit,
+                                                  int pageNumber,
+                                                  List<Integer> categoriesId) {
+
+        return productRepository
+            .getProductsRatingSortedWithPagination(limit, pageNumber, categoriesId);
     }
 
     @Override
-    public List<Product> getSortedByPriceProducts() {
-        List<Product> sortedProducts = new ArrayList<>(getProducts());
-        sortedProducts.sort((Comparator.comparingDouble(Product::getPrice)));
-        return sortedProducts;
-    }
-
-    @Override
-    public List<Product> getProductsRatingSorted() {
-        return productRepository.getProductsRatingSorted();
-    }
-
-    @Override
-    public List<Product> getSortedProducts(ProductsSortType sortType, int categoryId) {
+    public List<Product> getSortedProductsByCategoryWithPagination(ProductsSortType sortType,
+                                                                   int categoryId,
+                                                                   int limit,
+                                                                   int pageNumber) {
         List<Product> products;
+
+        Category category = categoryService.getCategoryById(categoryId);
+        List<Integer> categoriesId = new ArrayList<>();
+        if (category != null) {
+            categoriesId.add(categoryId);
+        } else {
+            categoriesId = categoryService.getCategories().stream().map(Category::getId).toList();
+        }
+
         switch (sortType) {
-            case NAME -> products = getSortedByNameProducts();
-            case PRICE -> products = getSortedByPriceProducts();
-            case RATING -> products = getProductsRatingSorted();
+            case NAME -> products = getSortedByNameProducts(limit, pageNumber, categoriesId);
+            case PRICE -> products = getSortedByPriceProducts(limit, pageNumber, categoriesId);
+            case RATING -> products = getProductsRatingSorted(limit, pageNumber, categoriesId);
             default -> products = getProducts();
         }
+        return products;
+    }
+
+    @Override
+    public int getCountOfPages(int categoryId, int limit) {
+        double count;
+
+        if (limit <= 0) {
+            limit = 1;
+            Logger.warn("Limit of products on a page can't be less than 1");
+        }
+
         Category category = categoryService.getCategoryById(categoryId);
         if (category != null) {
-            products = products.stream()
-                .filter(product -> product.getCategoryId() == categoryId)
-                .toList();
+            count = getProducts().stream()
+                        .filter(product -> product.getCategoryId() == categoryId)
+                        .toList().size() / (double) limit;
+        } else {
+            count = getProducts().size() / (double) limit;
         }
-        return products;
+
+        return (int) Math.ceil(count);
+    }
+
+    @Override
+    public List<Product> getProductsNameContainsInput(String input) {
+        return getProducts().stream()
+            .filter(product -> product.getName().toLowerCase().contains(input.toLowerCase()))
+            .toList();
     }
 }

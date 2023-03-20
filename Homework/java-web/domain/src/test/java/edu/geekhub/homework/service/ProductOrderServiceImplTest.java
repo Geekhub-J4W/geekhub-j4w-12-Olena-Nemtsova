@@ -4,14 +4,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
+import edu.geekhub.homework.domain.Product;
 import edu.geekhub.homework.domain.ProductOrder;
 import edu.geekhub.homework.domain.ProductOrderValidator;
 import edu.geekhub.homework.repository.interfaces.ProductOrderRepository;
+import edu.geekhub.homework.service.interfaces.ProductService;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,11 +29,14 @@ class ProductOrderServiceImplTest {
     private ProductOrderRepository productOrderRepository;
     @Mock
     private ProductOrderValidator productOrderValidator;
+    @Mock
+    private ProductService productService;
 
     @BeforeEach
     void setUp() {
         productOrderService = new ProductOrderServiceImpl(productOrderRepository,
-            productOrderValidator);
+            productOrderValidator,
+            productService);
     }
 
     @Test
@@ -48,6 +54,9 @@ class ProductOrderServiceImplTest {
         ProductOrder relation = new ProductOrder(1, 1);
         doNothing().when(productOrderValidator).validate(any());
         doReturn(1).when(productOrderRepository).addProductOrder(any());
+        Product milk = new Product(1, "Milk", 49.5, 1, "", 1);
+        doReturn(milk).when(productService).getProductById(anyInt());
+        doReturn(milk).when(productService).updateProductById(any(), anyInt());
 
         boolean successfulAdded = productOrderService.addProductOrder(relation);
 

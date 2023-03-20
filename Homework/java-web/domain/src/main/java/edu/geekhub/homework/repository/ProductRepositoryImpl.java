@@ -15,8 +15,8 @@ public class ProductRepositoryImpl implements ProductRepository {
         SELECT * FROM Products
         """;
     private static final String INSERT_PRODUCT = """
-        INSERT INTO Products(name, price, categoryId, imagePath)
-        VALUES (:name, :price, :categoryId, :imagePath)
+        INSERT INTO Products(name, price, categoryId, imagePath, quantity)
+        VALUES (:name, :price, :categoryId, :imagePath, quantity)
         """;
     private static final String FETCH_PRODUCT_BY_ID = """
         SELECT * FROM Products WHERE id=:id
@@ -25,15 +25,33 @@ public class ProductRepositoryImpl implements ProductRepository {
         DELETE FROM Products WHERE id=:id
         """;
     private static final String UPDATE_PRODUCT_BY_ID = """
-        UPDATE Products SET name=:name, price=:price, categoryId=:categoryId, imagePath=:imagePath
+        UPDATE Products SET
+        name=:name, price=:price, categoryId=:categoryId, imagePath=:imagePath, quantity=:quantity
         WHERE id=:id
         """;
-    private static final String FETCH_PRODUCTS_RATING_SORTED = """
+    private static final String FETCH_PRODUCTS_RATING_SORTED_PAGINATION = """
         SELECT * FROM Products
+        WHERE Products.categoryId IN (:categoriesId)
         ORDER BY
         (SELECT COUNT(ProductsOrders.productId)
         FROM ProductsOrders WHERE ProductsOrders.productId = Products.id)
         DESC
+        LIMIT :limit
+        OFFSET :limit * :pageNumber
+        """;
+    private static final String FETCH_PRODUCTS_NAME_SORTED_PAGINATION = """
+        SELECT * FROM Products
+        WHERE Products.categoryId IN (:categoriesId)
+        ORDER BY Products.name
+        LIMIT :limit
+        OFFSET :limit * :pageNumber
+        """;
+    private static final String FETCH_PRODUCTS_PRICE_SORTED_PAGINATION = """
+        SELECT * FROM Products
+        WHERE Products.categoryId IN (:categoriesId)
+        ORDER BY Products.price
+        LIMIT :limit
+        OFFSET :limit * :pageNumber
         """;
 
     public ProductRepositoryImpl(NamedParameterJdbcTemplate jdbcTemplate,
@@ -50,19 +68,8 @@ public class ProductRepositoryImpl implements ProductRepository {
                 rs.getString("name"),
                 rs.getDouble("price"),
                 rs.getInt("categoryId"),
-                rs.getString("imagePath")
-            ));
-    }
-
-    @Override
-    public List<Product> getProductsRatingSorted() {
-        return jdbcTemplate.query(FETCH_PRODUCTS_RATING_SORTED,
-            (rs, rowNum) -> new Product(
-                rs.getInt("id"),
-                rs.getString("name"),
-                rs.getDouble("price"),
-                rs.getInt("categoryId"),
-                rs.getString("imagePath")
+                rs.getString("imagePath"),
+                rs.getInt("quantity")
             ));
     }
 
@@ -75,7 +82,8 @@ public class ProductRepositoryImpl implements ProductRepository {
             .addValue("name", product.getName())
             .addValue("price", product.getPrice())
             .addValue("categoryId", product.getCategoryId())
-            .addValue("imagePath", product.getImagePath());
+            .addValue("imagePath", product.getImagePath())
+            .addValue("quantity", product.getQuantity());
 
         jdbcTemplate.update(INSERT_PRODUCT, mapSqlParameterSource, generatedKeyHolder);
 
@@ -97,7 +105,8 @@ public class ProductRepositoryImpl implements ProductRepository {
                     resultSet.getString("name"),
                     resultSet.getDouble("price"),
                     resultSet.getInt("categoryId"),
-                    resultSet.getString("imagePath")
+                    resultSet.getString("imagePath"),
+                    resultSet.getInt("quantity")
                 ))
             .stream()
             .findFirst()
@@ -121,8 +130,71 @@ public class ProductRepositoryImpl implements ProductRepository {
             .addValue("price", product.getPrice())
             .addValue("categoryId", product.getCategoryId())
             .addValue("id", id)
-            .addValue("imagePath", product.getImagePath());
+            .addValue("imagePath", product.getImagePath())
+            .addValue("quantity", product.getQuantity());
 
         jdbcTemplate.update(UPDATE_PRODUCT_BY_ID, mapSqlParameterSource);
+    }
+
+    @Override
+    public List<Product> getProductsRatingSortedWithPagination(int limit,
+                                                               int pageNumber,
+                                                               List<Integer> categoriesId) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("limit", limit)
+            .addValue("pageNumber", pageNumber - 1)
+            .addValue("categoriesId", categoriesId);
+
+        return jdbcTemplate.query(FETCH_PRODUCTS_RATING_SORTED_PAGINATION, mapSqlParameterSource,
+            (rs, rowNum) -> new Product(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getDouble("price"),
+                rs.getInt("categoryId"),
+                rs.getString("imagePath"),
+                rs.getInt("quantity")
+            ));
+    }
+
+    @Override
+    public List<Product> getProductsNameSortedWithPagination(int limit,
+                                                             int pageNumber,
+                                                             List<Integer> categoriesId) {
+
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("limit", limit)
+            .addValue("pageNumber", pageNumber - 1)
+            .addValue("categoriesId", categoriesId);
+
+        return jdbcTemplate.query(FETCH_PRODUCTS_NAME_SORTED_PAGINATION, mapSqlParameterSource,
+            (rs, rowNum) -> new Product(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getDouble("price"),
+                rs.getInt("categoryId"),
+                rs.getString("imagePath"),
+                rs.getInt("quantity")
+            ));
+    }
+
+    @Override
+    public List<Product> getProductsPriceSortedWithPagination(int limit,
+                                                              int pageNumber,
+                                                              List<Integer> categoriesId) {
+
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("limit", limit)
+            .addValue("pageNumber", pageNumber - 1)
+            .addValue("categoriesId", categoriesId);
+
+        return jdbcTemplate.query(FETCH_PRODUCTS_PRICE_SORTED_PAGINATION, mapSqlParameterSource,
+            (rs, rowNum) -> new Product(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getDouble("price"),
+                rs.getInt("categoryId"),
+                rs.getString("imagePath"),
+                rs.getInt("quantity")
+            ));
     }
 }

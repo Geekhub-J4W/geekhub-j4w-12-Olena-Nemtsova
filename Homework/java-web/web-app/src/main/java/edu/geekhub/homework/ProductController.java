@@ -29,6 +29,11 @@ public class ProductController {
         return productService.getProducts();
     }
 
+    @GetMapping("/search/{input}")
+    public Collection<Product> getSimilarNameProducts(@PathVariable String input) {
+        return productService.getProductsNameContainsInput(input);
+    }
+
     @GetMapping("/{id}")
     public Product getProductById(@PathVariable int id) {
         return productService.getProductById(id);
@@ -63,18 +68,37 @@ public class ProductController {
         }
     }
 
-    @GetMapping("category/{categoryId}")
-    public Collection<Product> productsOfCategory(@PathVariable(value = "categoryId") int id) {
+    @GetMapping("category/{categoryId}/{limit}/{pageNumber}")
+    public Collection<Product> productsOfCategory(
+        @PathVariable(value = "categoryId") int categoryId,
+        @PathVariable(value = "limit") int limit,
+        @PathVariable(value = "pageNumber") int pageNumber) {
 
-        return productService.getSortedProducts(ProductsSortType.RATING, id);
+        return productService.getSortedProductsByCategoryWithPagination(
+            ProductsSortType.RATING,
+            categoryId,
+            limit,
+            pageNumber);
     }
 
-    @GetMapping("/{sortType}/{categoryId}")
+    @GetMapping("/{sortType}/{categoryId}/{limit}/{pageNumber}")
     public Collection<Product> productsOfCategorySorted(
         @PathVariable(value = "categoryId") int categoryId,
-        @PathVariable(value = "sortType") String sortType) {
+        @PathVariable(value = "sortType") String sortType,
+        @PathVariable int limit,
+        @PathVariable int pageNumber) {
 
-        return productService
-            .getSortedProducts(ProductsSortType.valueOf(sortType), categoryId);
+        return productService.getSortedProductsByCategoryWithPagination(
+            ProductsSortType.valueOf(sortType),
+            categoryId,
+            limit,
+            pageNumber);
+    }
+
+    @GetMapping("/pagesCount/{categoryId}/{limit}")
+    public int getCountOfProductPages(@PathVariable(value = "categoryId") int categoryId,
+                                      @PathVariable(value = "limit") int limit) {
+
+        return productService.getCountOfPages(categoryId, limit);
     }
 }

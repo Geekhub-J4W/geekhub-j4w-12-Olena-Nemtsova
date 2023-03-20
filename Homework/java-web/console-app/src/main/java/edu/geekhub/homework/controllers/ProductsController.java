@@ -36,16 +36,4 @@ public class ProductsController {
         return productService.getProducts();
     }
 
-    public List<Product> getSortedByNameProducts() {
-        return productService.getSortedByNameProducts();
-    }
-
-    public List<Product> getSortedByPriceProducts() {
-        return productService.getSortedByPriceProducts();
-    }
-
-    public List<Product> getRatingSortedProducts() {
-        return productService.getProductsRatingSorted();
-    }
-
 }

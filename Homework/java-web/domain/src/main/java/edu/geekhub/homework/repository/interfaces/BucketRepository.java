@@ -10,5 +10,7 @@ public interface BucketRepository {
 
     int deleteUserBucketProductById(int productId, String userId);
 
+    int deleteUserBucketOneProductById(int productId, String userId);
+
     List<Product> getBucketProductsByUserId(String id);
 }

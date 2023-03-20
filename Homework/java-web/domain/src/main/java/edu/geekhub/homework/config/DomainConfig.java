@@ -121,10 +121,10 @@ public class DomainConfig {
     @Lazy
     @Bean
     public ProductOrderService productOrderService(ProductOrderRepository productOrderRepository,
-                                                   ProductOrderValidator validator) {
-        return new ProductOrderServiceImpl(productOrderRepository, validator);
+                                                   ProductOrderValidator validator,
+                                                   ProductService productService) {
+        return new ProductOrderServiceImpl(productOrderRepository, validator, productService);
     }
-
 
     @Lazy
     @Bean

@@ -56,7 +56,7 @@ class ProductServiceImplTest {
 
     @Test
     void can_get_product_by_id() {
-        Product milk = new Product(1, "Milk", 45.6, 1, null);
+        Product milk = new Product(1, "Milk", 45.6, 1, null, 1);
         when(productRepository.getProducts()).thenReturn(List.of(milk));
 
         Product product = productService.getProductById(1);
@@ -66,7 +66,7 @@ class ProductServiceImplTest {
 
     @Test
     void can_get_null_product_by_wrong_id() {
-        Product milk = new Product(1, "Milk", 45.6, 1, null);
+        Product milk = new Product(1, "Milk", 45.6, 1, null, 1);
         when(productRepository.getProducts()).thenReturn(List.of(milk));
 
         Product product = productService.getProductById(0);
@@ -75,59 +75,35 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void can_get_sorted_by_name_products() {
-        List<Product> products = List.of(new Product("Milk", 45.6, 1),
-            new Product("Bread", 12.5, 1));
-        when(productRepository.getProducts()).thenReturn(products);
-
-        List<Product> sortedProducts = productService.getSortedByNameProducts();
-
-        List<Product> expectedSortedProducts = List.of(new Product("Bread", 12.5, 1),
-            new Product("Milk", 45.6, 1));
-
-        assertEquals(expectedSortedProducts, sortedProducts);
-    }
-
-    @Test
-    void can_get_sorted_by_price_products() {
-        List<Product> products = List.of(new Product("Milk", 45.6, 1),
-            new Product("Bread", 12.5, 1));
-        when(productRepository.getProducts()).thenReturn(products);
-
-        List<Product> sortedProducts = productService.getSortedByPriceProducts();
-
-        List<Product> expectedSortedProducts = List.of(new Product("Bread", 12.5, 1),
-            new Product("Milk", 45.6, 1));
-
-        assertEquals(expectedSortedProducts, sortedProducts);
-    }
-
-    @Test
-    void can_get_sorted_products_by_category() {
+    void can_get_sorted_products_by_specific_category_with_pagination() {
         List<Product> products = List.of(new Product("Milk", 45.6, 1),
             new Product("Bread", 12.5, 2));
-        when(productRepository.getProductsRatingSorted()).thenReturn(products);
+        when(productRepository.getProductsRatingSortedWithPagination(anyInt(), anyInt(), any()))
+            .thenReturn(products);
         when(categoryService.getCategoryById(anyInt())).thenReturn(new Category("Daily"));
 
-        List<Product> sortedProducts = productService.getSortedProducts(ProductsSortType.RATING, 1);
+        List<Product> sortedProducts = productService.getSortedProductsByCategoryWithPagination(
+            ProductsSortType.RATING,
+            1,
+            1,
+            1);
 
-        List<Product> expectedSortedProducts = List.of(new Product("Milk", 45.6, 1));
-
-        assertEquals(expectedSortedProducts, sortedProducts);
+        assertEquals(products, sortedProducts);
     }
 
     @Test
-    void can_get_all_products_sorted_by_not_exists_category() {
+    void can_get_all_sorted_products_by_wrong_category_with_pagination() {
         List<Product> products = List.of(new Product("Milk", 45.6, 1),
             new Product("Bread", 12.5, 2));
-        productService = spy(this.productService);
-        when(productService.getProductsRatingSorted()).thenReturn(products);
+        when(productRepository.getProductsRatingSortedWithPagination(anyInt(), anyInt(), any()))
+            .thenReturn(products);
         when(categoryService.getCategoryById(anyInt())).thenReturn(null);
 
-        List<Product> sortedProducts = productService.getSortedProducts(
+        List<Product> sortedProducts = productService.getSortedProductsByCategoryWithPagination(
             ProductsSortType.RATING,
-            -1
-        );
+            -1,
+            1,
+            1);
 
         assertEquals(products, sortedProducts);
     }
@@ -242,5 +218,44 @@ class ProductServiceImplTest {
         Product updatedProduct = productService.updateProductById(null, 1);
 
         assertNull(updatedProduct);
+    }
+
+    @Test
+    void can_get_products_search_by_name() {
+        Product milk = new Product("Milk", 45.6, 1);
+        List<Product> products = List.of(milk,
+            new Product("Bread", 12.5, 2));
+        productService = spy(this.productService);
+        when(productService.getProducts()).thenReturn(products);
+
+        List<Product> gotProducts = productService.getProductsNameContainsInput("milk");
+
+        assertEquals(List.of(milk), gotProducts);
+    }
+
+    @Test
+    void can_get_count_of_products_pages_by_category_and_page_limit() {
+        List<Product> products = List.of(new Product("Milk", 45.6, 1),
+            new Product("Bread", 12.5, 2));
+        when(categoryService.getCategoryById(anyInt())).thenReturn(new Category("Daily"));
+        productService = spy(this.productService);
+        when(productService.getProducts()).thenReturn(products);
+
+        int countOfPages = productService.getCountOfPages(1, 1);
+
+        assertEquals(1, countOfPages);
+    }
+
+    @Test
+    void can_get_count_of_all_products_pages_by_wrong_category_and_page_limit() {
+        List<Product> products = List.of(new Product("Milk", 45.6, 1),
+            new Product("Ice cream", 22.5, 1));
+        when(categoryService.getCategoryById(anyInt())).thenReturn(null);
+        productService = spy(this.productService);
+        when(productService.getProducts()).thenReturn(products);
+
+        int countOfPages = productService.getCountOfPages(1, -1);
+
+        assertEquals(2, countOfPages);
     }
 }

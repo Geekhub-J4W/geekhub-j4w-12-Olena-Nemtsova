@@ -76,7 +76,7 @@ class OrderServiceImplTest {
 
     @Test
     void can_get_order_products() {
-        List<Product> expectedProducts = List.of(new Product(1, "Milk", 45.6, 1, null));
+        List<Product> expectedProducts = List.of(new Product(1, "Milk", 45.6, 1, null, 1));
         when(orderRepository.getOrderProducts(anyInt())).thenReturn(expectedProducts);
 
         List<Product> products = orderService.getOrderProducts(1);

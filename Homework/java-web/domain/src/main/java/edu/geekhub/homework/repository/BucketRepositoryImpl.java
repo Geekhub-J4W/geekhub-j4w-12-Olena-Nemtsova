@@ -23,8 +23,15 @@ public class BucketRepositoryImpl implements BucketRepository {
         DELETE FROM Buckets WHERE userId=:userId
         """;
 
-    private static final String DELETE_USER_BUCKET_PRODUCT_BY_ID = """
+    private static final String DELETE_USER_BUCKET_PRODUCT_ALL_BY_ID = """
         DELETE FROM Buckets WHERE userId=:userId AND productId=:productId
+        """;
+    private static final String DELETE_USER_BUCKET_PRODUCT_BY_ID = """
+        DELETE FROM Buckets
+        WHERE id IN
+        (SELECT id FROM Buckets
+        WHERE userId=:userId AND productId=:productId
+        LIMIT 1)
         """;
 
     public BucketRepositoryImpl(NamedParameterJdbcTemplate jdbcTemplate) {
@@ -61,8 +68,18 @@ public class BucketRepositoryImpl implements BucketRepository {
             .addValue("productId", productId)
             .addValue("userId", userId);
 
+        return jdbcTemplate.update(DELETE_USER_BUCKET_PRODUCT_ALL_BY_ID, mapSqlParameterSource);
+    }
+
+    @Override
+    public int deleteUserBucketOneProductById(int productId, String userId) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("productId", productId)
+            .addValue("userId", userId);
+
         return jdbcTemplate.update(DELETE_USER_BUCKET_PRODUCT_BY_ID, mapSqlParameterSource);
     }
+
 
     @Override
     public List<Product> getBucketProductsByUserId(String id) {
@@ -75,7 +92,8 @@ public class BucketRepositoryImpl implements BucketRepository {
                 resultSet.getString("name"),
                 resultSet.getDouble("price"),
                 resultSet.getInt("categoryId"),
-                resultSet.getString("imagePath")
+                resultSet.getString("imagePath"),
+                resultSet.getInt("quantity")
             ));
     }
 }

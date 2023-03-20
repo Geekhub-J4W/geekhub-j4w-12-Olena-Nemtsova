@@ -8,21 +8,29 @@ public class Product {
     private double price;
     private int categoryId;
     private String imagePath;
+    private int quantity;
 
-    public Product(int id, String name, double price, int categoryId, String imagePath) {
+    public Product(int id,
+                   String name,
+                   double price,
+                   int categoryId,
+                   String imagePath,
+                   int quantity) {
+
         this.id = id;
         this.name = name;
         this.price = price;
         this.categoryId = categoryId;
         this.imagePath = imagePath;
+        this.quantity = quantity;
     }
 
     public Product(String name, double price, int productCategoryId) {
-        this(-1, name, price, productCategoryId, null);
+        this(-1, name, price, productCategoryId, null, 0);
     }
 
     public Product() {
-        this(-1, null, 0, -1, null);
+        this(-1, null, 0, -1, null, 0);
     }
 
     public void setId(int id) {
@@ -43,6 +51,14 @@ public class Product {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public int getId() {

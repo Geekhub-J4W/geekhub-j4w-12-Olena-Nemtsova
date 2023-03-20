@@ -40,6 +40,7 @@ public class BucketService {
     public boolean addProductById(int productId, String userId) {
         Product product = productService.getProductById(productId);
         if (product != null
+            && product.getQuantity() > 0
             && bucketRepository.addBucketProduct(productId, userId) != -1) {
             Logger.info("Product was added to basket:\n" + product);
             return true;
@@ -52,12 +53,25 @@ public class BucketService {
         return bucketRepository.getBucketProductsByUserId(userId);
     }
 
-    public boolean deleteProduct(int productId, String userId) {
+    public boolean deleteAllConcreteProducts(int productId, String userId) {
         if (bucketRepository.deleteUserBucketProductById(productId, userId) != 0) {
-            Logger.info("Product with id '" + productId + "' was deleted from basket");
+            Logger.info("All products with id '" + productId
+                        + "' was deleted from basket");
             return true;
         }
-        Logger.warn("Product with id '" + productId + "' wasn't deleted from basket: not found");
+        Logger.warn("All products with id '" + productId
+                    + "' wasn't deleted from basket: not found");
+        return false;
+    }
+
+    public boolean deleteOneProduct(int productId, String userId) {
+        if (bucketRepository.deleteUserBucketOneProductById(productId, userId) != 0) {
+            Logger.info("Product with id '" + productId
+                        + "' was deleted from basket");
+            return true;
+        }
+        Logger.warn("Product with id '" + productId
+                    + "' wasn't deleted from basket: not found");
         return false;
     }
 
@@ -107,5 +121,12 @@ public class BucketService {
             }
         }
         return true;
+    }
+
+    public int getCountOfConcreteProductAtUserBucket(int productId, String userId) {
+        return bucketRepository.getBucketProductsByUserId(userId).stream()
+            .filter(product -> product.getId() == productId)
+            .toList()
+            .size();
     }
 }

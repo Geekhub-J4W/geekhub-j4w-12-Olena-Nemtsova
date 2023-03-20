@@ -47,7 +47,7 @@ public class UserValidator {
             throw new IllegalArgumentException("User password was empty");
         }
         if (!validateSymbols(password)) {
-            throw new IllegalArgumentException("User password not match email pattern");
+            throw new IllegalArgumentException("User password not match password pattern");
         }
         if (password.length() > 20 || password.length() < 6) {
             throw new IllegalArgumentException("User password had wrong length");

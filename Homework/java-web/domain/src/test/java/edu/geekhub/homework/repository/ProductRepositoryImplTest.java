@@ -156,15 +156,4 @@ class ProductRepositoryImplTest {
         );
         assertNull(productRepository.getProductById(1));
     }
-
-    @Test
-    void can_get_products_rating_sorted() {
-        List<Product> products = List.of(product, product);
-        doReturn(products).when(jdbcTemplate).query(anyString(), any(RowMapper.class));
-
-        assertDoesNotThrow(
-            () -> productRepository.getProductsRatingSorted()
-        );
-        assertEquals(products, productRepository.getProductsRatingSorted());
-    }
 }

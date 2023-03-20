@@ -16,11 +16,12 @@ public interface ProductService {
 
     List<Product> getProducts();
 
-    List<Product> getSortedByNameProducts();
+    List<Product> getSortedProductsByCategoryWithPagination(ProductsSortType sortType,
+                                                            int categoryId,
+                                                            int limit,
+                                                            int pageNumber);
 
-    List<Product> getSortedByPriceProducts();
+    int getCountOfPages(int categoryId, int limit);
 
-    List<Product> getProductsRatingSorted();
-
-    List<Product> getSortedProducts(ProductsSortType sortType, int categoryId);
+    List<Product> getProductsNameContainsInput(String input);
 }

@@ -20,6 +20,8 @@ class ProductValidatorTest {
     private ProductValidator productValidator;
     @Mock
     private CategoryRepository categoryRepository;
+    @Mock
+    private Product product;
 
     @BeforeEach
     void setUp() {
@@ -43,7 +45,7 @@ class ProductValidatorTest {
         "p, Product name had wrong length",
     })
     void can_not_validate_product_with_wrong_name(String name, String expectedMessage) {
-        Product product = new Product(name, 0, 1);
+        doReturn(name).when(product).getName();
 
         IllegalArgumentException thrown = assertThrows(
             IllegalArgumentException.class,
@@ -60,7 +62,8 @@ class ProductValidatorTest {
         "1.456, Product price had too much numbers after point",
     })
     void can_not_validate_product_with_wrong_price(Double price, String expectedMessage) {
-        Product product = new Product("Milk", price, 1);
+        doReturn("Milk").when(product).getName();
+        doReturn(price).when(product).getPrice();
 
         IllegalArgumentException thrown = assertThrows(
             IllegalArgumentException.class,
@@ -72,7 +75,9 @@ class ProductValidatorTest {
 
     @Test
     void can_not_validate_product_with_not_exists_category() {
-        Product product = new Product("Milk", 1.67, 1);
+        doReturn("Milk").when(product).getName();
+        doReturn(49.5).when(product).getPrice();
+        doReturn(1).when(product).getCategoryId();
         doReturn(null).when(categoryRepository).getCategoryById(anyInt());
 
         IllegalArgumentException thrown = assertThrows(
@@ -84,9 +89,27 @@ class ProductValidatorTest {
     }
 
     @Test
+    void can_not_validate_product_with_quantity_less_than_zero() {
+        doReturn("Milk").when(product).getName();
+        doReturn(49.5).when(product).getPrice();
+        doReturn(1).when(product).getCategoryId();
+        doReturn(-1).when(product).getQuantity();
+        doReturn(new Category(1, "Dairy")).when(categoryRepository).getCategoryById(anyInt());
+
+        IllegalArgumentException thrown = assertThrows(
+            IllegalArgumentException.class,
+            () -> productValidator.validate(product)
+        );
+
+        assertEquals("Product quantity was less than zero", thrown.getMessage());
+    }
+
+    @Test
     void can_validate_correct_product() {
         Product product = new Product("Milk", 1.67, 1);
+        product.setQuantity(1);
         doReturn(new Category(1, "Dairy")).when(categoryRepository).getCategoryById(anyInt());
+
         assertDoesNotThrow(
             () -> productValidator.validate(product)
         );

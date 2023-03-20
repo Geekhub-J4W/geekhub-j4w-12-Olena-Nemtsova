@@ -16,7 +16,7 @@ public class BucketController {
     }
 
     public boolean deleteProduct(int productId, String userId) {
-        return bucketService.deleteProduct(productId, userId);
+        return bucketService.deleteAllConcreteProducts(productId, userId);
     }
 
     public List<Product> getBucketProducts(String userId) {

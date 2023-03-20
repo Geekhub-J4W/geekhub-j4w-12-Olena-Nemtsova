@@ -16,6 +16,13 @@ public class ProductValidator {
         validateName(product.getName());
         validatePrice(product.getPrice());
         validateProductCategory(product.getCategoryId());
+        validateQuantity(product.getQuantity());
+    }
+
+    private void validateQuantity(int quantity) {
+        if (quantity < 0) {
+            throw new IllegalArgumentException("Product quantity was less than zero");
+        }
     }
 
     private void validateName(String name) {

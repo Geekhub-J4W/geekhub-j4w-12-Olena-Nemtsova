@@ -28,8 +28,12 @@ public class ProductOrderValidator {
     }
 
     private void validateProductExists(int productId) {
-        if (productRepository.getProductById(productId) == null) {
+        Product product = productRepository.getProductById(productId);
+        if (product == null) {
             throw new IllegalArgumentException("Product with id '" + productId + "' doesn't exist");
+        }
+        if (product.getQuantity() <= 0) {
+            throw new IllegalArgumentException("Product with id '" + productId + "' out of stock");
         }
     }
 }

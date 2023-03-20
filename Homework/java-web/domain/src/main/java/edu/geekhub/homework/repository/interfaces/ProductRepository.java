@@ -4,7 +4,6 @@ import edu.geekhub.homework.domain.Product;
 import java.util.List;
 
 public interface ProductRepository {
-    List<Product> getProductsRatingSorted();
 
     int addProduct(Product product);
 
@@ -15,4 +14,16 @@ public interface ProductRepository {
     void deleteProductById(int id);
 
     void updateProductById(Product product, int id);
+
+    List<Product> getProductsRatingSortedWithPagination(int limit,
+                                                        int pageNumber,
+                                                        List<Integer> categoriesId);
+
+    List<Product> getProductsNameSortedWithPagination(int limit,
+                                                      int pageNumber,
+                                                      List<Integer> categoriesId);
+
+    List<Product> getProductsPriceSortedWithPagination(int limit,
+                                                       int pageNumber,
+                                                       List<Integer> categoriesId);
 }
