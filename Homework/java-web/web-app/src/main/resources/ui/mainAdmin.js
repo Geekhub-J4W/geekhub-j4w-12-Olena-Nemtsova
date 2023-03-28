@@ -270,9 +270,7 @@ function allOrders() {
                 let tr = document.createElement("tr");
 
                 let date_td = document.createElement("td");
-                let date = new Date(Date.parse(orders[i].dateTime));
-                date_td.innerText = [[date.getHours(), date.getMinutes()].join(":"),
-                    [date.getDate(), (date.getMonth() + 1), date.getFullYear()].join(".")].join(" ");
+                date_td.innerText = orders[i].dateTime;
 
                 let totalPrice_td = document.createElement("td");
                 totalPrice_td.innerText = orders[i].totalPrice;
