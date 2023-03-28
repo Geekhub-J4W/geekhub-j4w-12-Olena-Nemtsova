@@ -1,11 +1,13 @@
 package edu.geekhub.homework.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Order {
     private int id;
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT, pattern = "dd.MM.yyyy HH:mm")
     private LocalDateTime dateTime;
     private double totalPrice;
     private String userId;
@@ -36,10 +38,6 @@ public class Order {
         this.status = status;
     }
 
-    public void setStatus(String status) {
-        this.status = OrderStatus.valueOf(status);
-    }
-
     public int getId() {
         return id;
     }
@@ -52,19 +50,8 @@ public class Order {
         return dateTime;
     }
 
-    public String getDateTimeString() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-
-        return dateTime.format(formatter);
-    }
-
     public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
-    }
-
-    public void setDateTime(String dateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-        this.dateTime = LocalDateTime.parse(dateTime, formatter);
     }
 
     public double getTotalPrice() {
@@ -95,5 +82,4 @@ public class Order {
                + "\ntotalPrice: " + totalPrice
                + "\ndate: " + dateTime.format(formatter);
     }
-
 }
