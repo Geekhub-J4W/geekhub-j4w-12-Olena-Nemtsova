@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS Products(
     id SERIAL PRIMARY KEY,
     name VARCHAR,
     price NUMERIC CHECK(price>=0.00),
-    imagePath VARCHAR,
+    image bytea,
     quantity INT CHECK (quantity>=0),
     categoryId INT NOT NULL,
     FOREIGN KEY (categoryId) REFERENCES Categories(id) ON DELETE CASCADE

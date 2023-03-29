@@ -3,6 +3,7 @@ package edu.geekhub.homework;
 import edu.geekhub.homework.domain.Product;
 import edu.geekhub.homework.domain.ProductsSortType;
 import edu.geekhub.homework.service.interfaces.ProductService;
+import java.io.IOException;
 import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/products")
@@ -56,6 +59,21 @@ public class ProductController {
         Product updatedProduct = productService.updateProductById(product, id);
         if (updatedProduct == null) {
             throw new IllegalArgumentException("Product wasn't updated");
+        }
+
+        return updatedProduct;
+    }
+
+    @PostMapping("/setImage/{id}")
+    public Product setProductImage(@RequestParam("file") MultipartFile file,
+                                   @PathVariable(value = "id") int id) throws IOException {
+        Product product = productService.getProductById(id);
+        if (product != null) {
+            product.setImage(file.getBytes());
+        }
+        Product updatedProduct = productService.updateProductById(product, id);
+        if (updatedProduct == null) {
+            throw new IllegalArgumentException("Product image wasn't updated");
         }
         return updatedProduct;
     }

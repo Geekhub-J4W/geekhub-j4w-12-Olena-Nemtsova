@@ -92,7 +92,7 @@ public class BucketRepositoryImpl implements BucketRepository {
                 resultSet.getString("name"),
                 resultSet.getDouble("price"),
                 resultSet.getInt("categoryId"),
-                resultSet.getString("imagePath"),
+                resultSet.getBytes("image"),
                 resultSet.getInt("quantity")
             ));
     }

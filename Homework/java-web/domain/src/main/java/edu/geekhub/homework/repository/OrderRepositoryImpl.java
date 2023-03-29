@@ -115,7 +115,7 @@ public class OrderRepositoryImpl implements OrderRepository {
                 rs.getString("name"),
                 rs.getDouble("price"),
                 rs.getInt("categoryId"),
-                rs.getString("imagePath"),
+                rs.getBytes("image"),
                 rs.getInt("quantity")
             ));
     }

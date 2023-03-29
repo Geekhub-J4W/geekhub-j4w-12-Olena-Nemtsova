@@ -1,5 +1,6 @@
 package edu.geekhub.homework.domain;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class Product {
@@ -7,21 +8,21 @@ public class Product {
     private String name;
     private double price;
     private int categoryId;
-    private String imagePath;
+    private byte[] image;
     private int quantity;
 
     public Product(int id,
                    String name,
                    double price,
                    int categoryId,
-                   String imagePath,
+                   byte[] image,
                    int quantity) {
 
         this.id = id;
         this.name = name;
         this.price = price;
         this.categoryId = categoryId;
-        this.imagePath = imagePath;
+        this.image = image;
         this.quantity = quantity;
     }
 
@@ -49,8 +50,8 @@ public class Product {
         this.categoryId = categoryId;
     }
 
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 
     public int getQuantity() {
@@ -77,8 +78,8 @@ public class Product {
         return categoryId;
     }
 
-    public String getImagePath() {
-        return imagePath;
+    public byte[] getImage() {
+        return image;
     }
 
     @Override
@@ -93,13 +94,16 @@ public class Product {
         return id == product.id
                && Double.compare(product.price, price) == 0
                && categoryId == product.categoryId
+               && quantity == product.quantity
                && Objects.equals(name, product.name)
-               && Objects.equals(imagePath, product.imagePath);
+               && Arrays.equals(image, product.image);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, price, categoryId, imagePath);
+        int result = Objects.hash(id, name, price, categoryId, quantity);
+        result = 31 * result + Arrays.hashCode(image);
+        return result;
     }
 
     @Override

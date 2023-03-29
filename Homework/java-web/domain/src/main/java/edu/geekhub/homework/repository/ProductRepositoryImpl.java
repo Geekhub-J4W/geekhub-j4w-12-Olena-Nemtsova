@@ -15,8 +15,8 @@ public class ProductRepositoryImpl implements ProductRepository {
         SELECT * FROM Products
         """;
     private static final String INSERT_PRODUCT = """
-        INSERT INTO Products(name, price, categoryId, imagePath, quantity)
-        VALUES (:name, :price, :categoryId, :imagePath, quantity)
+        INSERT INTO Products(name, price, categoryId, image, quantity)
+        VALUES (:name, :price, :categoryId, :image, :quantity)
         """;
     private static final String FETCH_PRODUCT_BY_ID = """
         SELECT * FROM Products WHERE id=:id
@@ -26,7 +26,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         """;
     private static final String UPDATE_PRODUCT_BY_ID = """
         UPDATE Products SET
-        name=:name, price=:price, categoryId=:categoryId, imagePath=:imagePath, quantity=:quantity
+        name=:name, price=:price, categoryId=:categoryId, image=:image, quantity=:quantity
         WHERE id=:id
         """;
     private static final String FETCH_PRODUCTS_RATING_SORTED_PAGINATION = """
@@ -68,7 +68,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 rs.getString("name"),
                 rs.getDouble("price"),
                 rs.getInt("categoryId"),
-                rs.getString("imagePath"),
+                rs.getBytes("image"),
                 rs.getInt("quantity")
             ));
     }
@@ -82,7 +82,7 @@ public class ProductRepositoryImpl implements ProductRepository {
             .addValue("name", product.getName())
             .addValue("price", product.getPrice())
             .addValue("categoryId", product.getCategoryId())
-            .addValue("imagePath", product.getImagePath())
+            .addValue("image", product.getImage())
             .addValue("quantity", product.getQuantity());
 
         jdbcTemplate.update(INSERT_PRODUCT, mapSqlParameterSource, generatedKeyHolder);
@@ -105,7 +105,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                     resultSet.getString("name"),
                     resultSet.getDouble("price"),
                     resultSet.getInt("categoryId"),
-                    resultSet.getString("imagePath"),
+                    resultSet.getBytes("image"),
                     resultSet.getInt("quantity")
                 ))
             .stream()
@@ -130,7 +130,7 @@ public class ProductRepositoryImpl implements ProductRepository {
             .addValue("price", product.getPrice())
             .addValue("categoryId", product.getCategoryId())
             .addValue("id", id)
-            .addValue("imagePath", product.getImagePath())
+            .addValue("image", product.getImage())
             .addValue("quantity", product.getQuantity());
 
         jdbcTemplate.update(UPDATE_PRODUCT_BY_ID, mapSqlParameterSource);
@@ -151,7 +151,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 rs.getString("name"),
                 rs.getDouble("price"),
                 rs.getInt("categoryId"),
-                rs.getString("imagePath"),
+                rs.getBytes("image"),
                 rs.getInt("quantity")
             ));
     }
@@ -172,7 +172,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 rs.getString("name"),
                 rs.getDouble("price"),
                 rs.getInt("categoryId"),
-                rs.getString("imagePath"),
+                rs.getBytes("image"),
                 rs.getInt("quantity")
             ));
     }
@@ -193,7 +193,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 rs.getString("name"),
                 rs.getDouble("price"),
                 rs.getInt("categoryId"),
-                rs.getString("imagePath"),
+                rs.getBytes("image"),
                 rs.getInt("quantity")
             ));
     }

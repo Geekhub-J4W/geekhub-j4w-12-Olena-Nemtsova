@@ -54,7 +54,7 @@ class ProductOrderServiceImplTest {
         ProductOrder relation = new ProductOrder(1, 1);
         doNothing().when(productOrderValidator).validate(any());
         doReturn(1).when(productOrderRepository).addProductOrder(any());
-        Product milk = new Product(1, "Milk", 49.5, 1, "", 1);
+        Product milk = new Product(1, "Milk", 49.5, 1, null, 1);
         doReturn(milk).when(productService).getProductById(anyInt());
         doReturn(milk).when(productService).updateProductById(any(), anyInt());
 
