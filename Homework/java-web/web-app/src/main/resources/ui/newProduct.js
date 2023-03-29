@@ -15,7 +15,7 @@ function loadProduct() {
 
                 document.getElementById("name").value = product.name;
                 document.getElementById("price").value = product.price;
-                document.getElementById("image").value = product.imagePath;
+                document.getElementById("icon").src = "data:image/png;base64," + product.image;
                 document.getElementById("category").value = product.categoryId;
                 document.getElementById("quantity").value = product.quantity;
             }
@@ -45,14 +45,22 @@ function loadCategories() {
     request.send();
 }
 
+document.getElementById("image").addEventListener("change", handleFile, false);
+
+function handleFile() {
+    const file = this.files[0];
+    document.getElementById("icon").src = URL.createObjectURL(file);
+    resetErrorImage();
+}
+
 function submit() {
+
     if (checked()) {
         let product = {
             id: Number(getCookie("productId")),
             name: document.getElementById("name").value,
             price: Number(document.getElementById("price").value),
             categoryId: Number(document.getElementById("category").value),
-            imagePath: document.getElementById("image").value,
             quantity: document.getElementById("quantity").value
         };
 
@@ -66,8 +74,23 @@ function submit() {
         request.setRequestHeader("Accept", "application/json");
         request.setRequestHeader("Content-Type", "application/json");
 
+
         request.onreadystatechange = function () {
             if (request.readyState === 4 && request.status === 200) {
+                let product = JSON.parse(request.response);
+
+                let requestImg = initRequest();
+                requestImg.open("POST", "products/setImage/" + product.id);
+
+                let formData = new FormData();
+                fetch(document.getElementById("icon").src)
+                    .then(res => res.blob())
+                    .then(blob => {
+                            const file = new File([blob], 'file', {type: blob.type});
+                        formData.append("file", file);
+                        requestImg.send(formData);
+                        }
+                    )
 
                 let message = "product successfully added!";
                 if (id !== "-1") {
@@ -101,22 +124,17 @@ function checked() {
         price.style.color = "red";
     }
 
-    let request = new XMLHttpRequest();
-
-    request.open("HEAD", document.getElementById("image").value, false);
-    request.send();
-
-    if (request.status === 404 || document.getElementById("image").value.length === 0) {
+    if (document.getElementById("icon").src === "" || document.getElementById("icon").src.includes("null")) {
         ok = false;
         let img = document.getElementById("error_image");
-        img.innerHTML = "Please enter valid image path";
+        img.innerHTML = "Please choose image";
         img.style.color = "red";
     }
 
-    if (Number(document.getElementById("quantity").value) < 0) {
+    if (Number(document.getElementById("quantity").value) < 0 || document.getElementById("quantity").value === "") {
         ok = false;
         let quantity = document.getElementById("error_quantity");
-        quantity.innerHTML = "Quantity can't be less than zero";
+        quantity.innerHTML = "Please enter valid quantity";
         quantity.style.color = "red";
     }
 

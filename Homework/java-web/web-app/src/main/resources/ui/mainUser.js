@@ -63,7 +63,7 @@ function productsByCategory(sortType, categoryId, limit, pageNumber) {
                 let image_td = document.createElement("td");
                 let image = document.createElement("img");
                 image.style.width = "50px";
-                image.src = products[i].imagePath;
+                image.src = "data:image/png;base64," + products[i].image;
                 image_td.appendChild(image);
 
                 let name_td = document.createElement("td");
@@ -297,7 +297,7 @@ function bucketTotalPrice(products) {
                 let image_td = document.createElement("td");
                 let image = document.createElement("img");
                 image.style.width = "50px";
-                image.src = products[i].imagePath;
+                image.src = "data:image/png;base64," + products[i].image;
                 image_td.appendChild(image);
 
                 let name_td = document.createElement("td");
