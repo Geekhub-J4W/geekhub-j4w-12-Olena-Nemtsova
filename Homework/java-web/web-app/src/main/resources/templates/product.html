@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script defer="defer" src="js/product.js"></script>
+    <script defer="defer" src="mainUser.js" sec:authorize="hasAuthority('USER')"></script>
+    <script defer="defer" src="js/mainUserAnonymous.js" sec:authorize="isAnonymous()"></script>
+    <script defer="defer" src="js/common.js"></script>
+    <title>Store</title>
+</head>
+
+<body onload="load()">
+<div style="text-align: center;  height: 100%;">
+
+    <div style="width: 100%; height: 10vh; background-color: lavender"><h2>Some shop</h2></div>
+    <div style="width: 100%; height: 10vh; text-align: right; font-size: 1.5em">
+        <form sec:authorize="hasAuthority('USER')" th:action="@{/logout}" method="POST">
+            <button type="submit">Logout</button>
+        </form>
+        <form sec:authorize="isAnonymous()" th:action="@{/login}" method="POST">
+            <button type="submit">Login</button>
+        </form>
+        <span style="margin-right: 5%; margin-left: 2%">
+            <a style="cursor: pointer" onclick="window.location.replace('/mainUser')">🔙</a>
+        </span>
+        <span style="margin-right: 5%; margin-left: 2%">
+            <a style="cursor: pointer" onclick="bucket()">🛒</a>
+        </span>
+        <span sec:authorize="hasAuthority('USER')" style="margin-right: 5%; margin-left: 2%">
+            <a style="cursor: pointer" onclick="personalArea()">👤</a>
+        </span>
+    </div>
+
+    <div style="position: absolute; width: 100%; min-height: 85vh">
+
+        <div style="float: left; background-color: cadetblue; width: 25%; position: absolute; height: 100%">
+            <table style="border-spacing: 1em; width: 100%" id="categories">
+                <tr>
+                    <th>Categories</th>
+                </tr>
+                <tr>
+                    <td><a style="cursor: pointer" onclick="products()">All</a></td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="float: right; width: 70%; margin-top:5vh;" id="product">
+            <div style="height:40vh; width: 100%">
+                <div style="width: 40%; height:40vh; float:left">
+                    <img style="height:40vh" id="image">
+                </div>
+                <div style="width: 40%; height:40vh; margin-right: 10%; float:right">
+                    <h3 id="availability" style="color: green">● Product in stock</h3>
+                    <h1 id="name"></h1>
+                    <h2>Price:  <span id="price"></span>₴</h2>
+                    <hr>
+                    <button id="bucketBtn">Add to bucket 🧺</button>
+                    <button sec:authorize="hasAuthority('USER')" id="favorBtn"></button>
+                </div>
+            </div>
+            <div style="width: 100%; text-align: center; font-size: 2em;" id="rating">
+                <span>Star rating: </span>
+                <span id="1" class="star">★</span>
+                <span id="2" class="star">★</span>
+                <span id="3" class="star">★</span>
+                <span id="4" class="star">★</span>
+                <span id="5" class="star">★</span>
+            </div>
+            <div style="width: 100%; text-align: left;" id="reviews">
+                <h3>Reviews:</h3>
+                <hr>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

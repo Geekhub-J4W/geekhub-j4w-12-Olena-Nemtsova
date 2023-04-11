@@ -1,8 +1,8 @@
 package edu.geekhub.homework.controllers;
 
 import edu.geekhub.homework.CategoryConsoleParser;
-import edu.geekhub.homework.domain.Category;
-import edu.geekhub.homework.service.interfaces.CategoryService;
+import edu.geekhub.homework.categories.Category;
+import edu.geekhub.homework.categories.interfaces.CategoryService;
 import java.util.List;
 
 public class CategoriesController {

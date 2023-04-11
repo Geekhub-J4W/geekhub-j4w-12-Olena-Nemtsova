@@ -1,6 +1,6 @@
 package edu.geekhub.homework;
 
-import edu.geekhub.homework.domain.Product;
+import edu.geekhub.homework.products.Product;
 import org.tinylog.Logger;
 
 public class ProductConsoleParser {

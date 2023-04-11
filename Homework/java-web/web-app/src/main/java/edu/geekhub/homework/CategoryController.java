@@ -1,9 +1,10 @@
 package edu.geekhub.homework;
 
-import edu.geekhub.homework.domain.Category;
-import edu.geekhub.homework.service.interfaces.CategoryService;
+import edu.geekhub.homework.categories.Category;
+import edu.geekhub.homework.categories.interfaces.CategoryService;
 import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +33,8 @@ public class CategoryController {
         return categoryService.getCategoryById(id);
     }
 
-    @PostMapping("/newCategory")
+    @PostMapping
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'SELLER')")
     public Category addCategory(@RequestBody Category category) {
         Category newCategory = categoryService.addCategory(category);
         if (newCategory == null) {
@@ -41,7 +43,8 @@ public class CategoryController {
         return newCategory;
     }
 
-    @DeleteMapping(value = "/deleteCategory/{id}")
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'SELLER')")
     public void deleteCategory(@PathVariable(value = "id") int id) {
 
         if (!categoryService.deleteCategoryById(id)) {
@@ -49,7 +52,8 @@ public class CategoryController {
         }
     }
 
-    @PostMapping("/editCategory/{id}")
+    @PostMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'SELLER')")
     public Category editCategory(@PathVariable(value = "id") int id,
                                  @RequestBody Category category) {
         Category updatedCategory = categoryService.updateCategoryById(category, id);

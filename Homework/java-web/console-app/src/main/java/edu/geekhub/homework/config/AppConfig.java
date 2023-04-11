@@ -2,12 +2,12 @@ package edu.geekhub.homework.config;
 
 import edu.geekhub.homework.CategoryConsoleParser;
 import edu.geekhub.homework.ProductConsoleParser;
+import edu.geekhub.homework.buckets.BucketService;
+import edu.geekhub.homework.categories.interfaces.CategoryService;
 import edu.geekhub.homework.controllers.BucketController;
 import edu.geekhub.homework.controllers.CategoriesController;
 import edu.geekhub.homework.controllers.ProductsController;
-import edu.geekhub.homework.service.BucketService;
-import edu.geekhub.homework.service.interfaces.CategoryService;
-import edu.geekhub.homework.service.interfaces.ProductService;
+import edu.geekhub.homework.products.interfaces.ProductService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

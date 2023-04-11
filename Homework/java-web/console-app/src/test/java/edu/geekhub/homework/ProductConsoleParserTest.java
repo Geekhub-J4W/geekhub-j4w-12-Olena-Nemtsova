@@ -3,7 +3,7 @@ package edu.geekhub.homework;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import edu.geekhub.homework.domain.Product;
+import edu.geekhub.homework.products.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

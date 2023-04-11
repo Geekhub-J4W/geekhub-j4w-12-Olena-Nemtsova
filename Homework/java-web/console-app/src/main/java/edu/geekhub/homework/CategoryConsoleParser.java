@@ -1,6 +1,6 @@
 package edu.geekhub.homework;
 
-import edu.geekhub.homework.domain.Category;
+import edu.geekhub.homework.categories.Category;
 import org.tinylog.Logger;
 
 public class CategoryConsoleParser {

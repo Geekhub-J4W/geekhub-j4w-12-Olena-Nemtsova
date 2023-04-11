@@ -1,7 +1,7 @@
 package edu.geekhub.homework.controllers;
 
-import edu.geekhub.homework.domain.Product;
-import edu.geekhub.homework.service.BucketService;
+import edu.geekhub.homework.buckets.BucketService;
+import edu.geekhub.homework.products.Product;
 import java.util.List;
 
 public class BucketController {
@@ -11,19 +11,16 @@ public class BucketController {
         this.bucketService = bucketService;
     }
 
-    public boolean addProduct(Product product, String userId) {
-        return bucketService.addProduct(product, userId);
+    public boolean addProduct(Product product, int userId) {
+        return bucketService.addProduct(product.getId(), userId);
     }
 
-    public boolean deleteProduct(int productId, String userId) {
+    public boolean deleteProduct(int productId, int userId) {
         return bucketService.deleteAllConcreteProducts(productId, userId);
     }
 
-    public List<Product> getBucketProducts(String userId) {
+    public List<Product> getBucketProducts(int userId) {
         return bucketService.getBucketProducts(userId);
     }
 
-    public String checkout(String userId) {
-        return bucketService.checkout(userId);
-    }
 }

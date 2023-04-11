@@ -1,8 +1,8 @@
 package edu.geekhub.homework.controllers;
 
 import edu.geekhub.homework.ProductConsoleParser;
-import edu.geekhub.homework.domain.Product;
-import edu.geekhub.homework.service.interfaces.ProductService;
+import edu.geekhub.homework.products.Product;
+import edu.geekhub.homework.products.interfaces.ProductService;
 import java.util.List;
 
 public class ProductsController {

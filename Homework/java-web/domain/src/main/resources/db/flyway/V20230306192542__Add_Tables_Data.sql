@@ -14,10 +14,12 @@ INSERT INTO Products (name, price, categoryId, quantity) VALUES
                                   ('Passion fruit', 80.7, 3, 9),
                                   ('Papaya', 350.2, 3, 4);
 
-INSERT INTO Users (id, firstName, lastName, password, email, isAdmin) VALUES
-                                                                      ('d1325332-039e-472e-923f-df6c5e0e85bf', 'Mark', 'Pearce', 'Qwerty123', 'admin@gmail.com', true),
-                                                                      ('5174ec9f-5725-4b78-aa68-7d37189eed58', 'John', 'Smith', 'Qwerty123', 'user@gmail.com', false);
+INSERT INTO Users (firstName, lastName, password, email, role) VALUES
+                                                                      ('Bob', 'Jones', '$2a$12$C6sRmHJySXxnYx/NYMlHyemPlhH7BJ7yi9RvudVLudfI0QnUFDA0y', 'superAdmin@gmail.com', 'SUPER_ADMIN'),
+                                                                      ('Jack', 'Brown', '$2a$12$C6sRmHJySXxnYx/NYMlHyemPlhH7BJ7yi9RvudVLudfI0QnUFDA0y', 'admin@gmail.com', 'ADMIN'),
+                                                                      ('Mark', 'Pearce', '$2a$12$C6sRmHJySXxnYx/NYMlHyemPlhH7BJ7yi9RvudVLudfI0QnUFDA0y', 'seller@gmail.com', 'SELLER'),
+                                                                      ('John', 'Smith', '$2a$12$C6sRmHJySXxnYx/NYMlHyemPlhH7BJ7yi9RvudVLudfI0QnUFDA0y', 'user@gmail.com', 'USER');
 
 INSERT INTO Buckets (productId, userId) VALUES
-                                  (1, '5174ec9f-5725-4b78-aa68-7d37189eed58'),
-                                  (4, '5174ec9f-5725-4b78-aa68-7d37189eed58');
+                                  (1, 4),
+                                  (4, 4);

@@ -3,7 +3,7 @@ plugins {
     id 'checkstyle'
 }
 
-group 'edu.geekhub'
+group 'edu.geekhub.homework'
 
 repositories {
     mavenCentral()
@@ -24,22 +24,27 @@ checkstyleTest{
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-    testImplementation 'org.mockito:mockito-junit-jupiter:4.10.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.0'
     testImplementation 'org.assertj:assertj-core:3.23.1'
+    testImplementation 'org.mockito:mockito-junit-jupiter:4.10.0'
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 
-    implementation 'org.postgresql:postgresql:42.5.4'
-    implementation 'org.flywaydb:flyway-core:9.15.0'
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc:3.0.3'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test:3.0.3'
-
     implementation 'org.tinylog:tinylog-api:2.6.0'
     implementation 'org.tinylog:tinylog-impl:2.6.0'
+
+    implementation 'org.postgresql:postgresql:42.5.4'
+    implementation 'org.flywaydb:flyway-core:9.15.0'
+    implementation 'org.springframework.boot:spring-boot-starter-security:3.0.5'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.0.5'
+
+    testImplementation 'org.springframework.security:spring-security-test:6.0.2'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:3.0.5'
+
     implementation libs.spring.context
 }
 
 test {
     useJUnitPlatform()
 }
+

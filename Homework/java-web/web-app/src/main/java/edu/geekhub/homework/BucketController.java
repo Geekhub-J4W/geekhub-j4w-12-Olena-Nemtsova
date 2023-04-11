@@ -1,13 +1,17 @@
 package edu.geekhub.homework;
 
-import edu.geekhub.homework.domain.Product;
-import edu.geekhub.homework.service.BucketService;
+import edu.geekhub.homework.buckets.BucketService;
+import edu.geekhub.homework.orders.Order;
+import edu.geekhub.homework.products.Product;
+import edu.geekhub.homework.security.SecurityUser;
 import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,60 +25,59 @@ public class BucketController {
         this.bucketService = bucketService;
     }
 
-    @PostMapping("/add/{userId}/{productId}")
+    @PostMapping("/add/{productId}")
     public Collection<Product> addProductToUserBucket(
-        @PathVariable(value = "productId") int productId,
-        @PathVariable(value = "userId") String userId) {
-
-        bucketService.addProductById(productId, userId);
+        @PathVariable(value = "productId") int productId) {
+        int userId = getUserId();
+        bucketService.addProduct(productId, userId);
         return bucketService.getBucketProducts(userId);
     }
 
-    @DeleteMapping("/delete/{userId}/{productId}")
+    @DeleteMapping("/delete/{productId}")
     public Collection<Product> deleteAllConcreteProductsFromUserBucket(
-        @PathVariable(value = "productId") int productId,
-        @PathVariable(value = "userId") String userId) {
-
+        @PathVariable(value = "productId") int productId) {
+        int userId = getUserId();
         bucketService.deleteAllConcreteProducts(productId, userId);
         return bucketService.getBucketProducts(userId);
     }
 
-    @DeleteMapping("/deleteOne/{userId}/{productId}")
+    @DeleteMapping("/deleteOne/{productId}")
     public Collection<Product> deleteOneProductFromUserBucket(
-        @PathVariable(value = "productId") int productId,
-        @PathVariable(value = "userId") String userId) {
+        @PathVariable(value = "productId") int productId) {
+        int userId = getUserId();
 
         bucketService.deleteOneProduct(productId, userId);
         return bucketService.getBucketProducts(userId);
     }
 
-    @GetMapping("/{userId}")
-    public Collection<Product> getBucketProducts(@PathVariable(value = "userId") String userId) {
-
-        return bucketService.getBucketProducts(userId);
+    @GetMapping
+    public Collection<Product> getBucketProducts() {
+        return bucketService.getBucketProducts(getUserId());
     }
 
-    @GetMapping("/totalPrice/{userId}")
-    public double getBucketTotalPrice(@PathVariable(value = "userId") String userId) {
-
-        return bucketService.getBucketTotalPrice(userId);
+    @GetMapping("/totalPrice")
+    public double getBucketTotalPrice() {
+        return bucketService.getBucketTotalPrice(getUserId());
     }
 
-    @GetMapping("/quantity/{userId}/{productId}")
+    @GetMapping("/quantity/{productId}")
     public int getQuantityOfConcreteProductAtBucket(
-        @PathVariable(value = "userId") String userId,
         @PathVariable(value = "productId") int productId) {
-
-        return bucketService.getCountOfConcreteProductAtUserBucket(productId, userId);
+        return bucketService.getCountOfConcreteProductAtBucket(productId, getUserId());
     }
 
-    @PostMapping("/checkout/{userId}")
-    public String checkout(@PathVariable(value = "userId") String userId) {
-
-        String checkContent = bucketService.checkout(userId);
-        if (checkContent == null) {
+    @PostMapping("/checkout")
+    public void checkout(@RequestBody Order order) {
+        if (!bucketService.checkout(getUserId(), order)) {
             throw new IllegalArgumentException("Bucket wasn't checkout");
         }
-        return checkContent;
+    }
+
+    private int getUserId() {
+        SecurityUser user = (SecurityUser) SecurityContextHolder
+            .getContext()
+            .getAuthentication()
+            .getPrincipal();
+        return user.getUserId();
     }
 }

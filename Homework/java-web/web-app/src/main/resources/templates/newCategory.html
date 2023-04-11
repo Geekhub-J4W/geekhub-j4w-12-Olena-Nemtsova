@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script defer="defer" src="js/common.js"></script>
+    <script defer="defer" src="newCommon.js"></script>
+    <script defer="defer" src="newCategory.js"></script>
+    <title>Store</title>
+</head>
+
+<body onload="loadCategory()">
+<div style="text-align: center;  height: 100%">
+    <div style="width: 100%; height: 10vh; background-color: lavender"><h2>Some shop</h2></div>
+    <div style="width: 100%; height: 10vh; text-align: right; font-size: 1.5em">
+         <span style="margin-right: 5%;">
+                <form th:action="@{/logout}" method="POST">
+                    <button type="submit">Logout</button>
+                </form>
+        </span>
+        <span sec:authorize="hasAnyAuthority('SELLER', 'ADMIN', 'SUPER_ADMIN')"
+              style="margin-right: 5%; margin-left: 2%">
+            <a style="cursor: pointer" onclick="personalArea()">👤</a>
+        </span>
+    </div>
+    <div style="position: absolute; width: 100%; min-height: 85vh">
+        <div style="float: left; background-color: cadetblue; width: 25%; position: absolute; height: 100%">
+            <table style="border-spacing: 1em">
+                <tr>
+                    <td><a style="cursor: pointer" onclick="allProducts()">Products</a></td>
+                </tr>
+                <tr>
+                    <td><a style="cursor: pointer" onclick="allCategories()">Categories</a></td>
+                </tr>
+                <tr>
+                    <td><a style="cursor: pointer" onclick="allOrders()">Orders</a></td>
+                </tr>
+                <tr sec:authorize="hasAnyAuthority('ADMIN', 'SUPER_ADMIN')">
+                    <td sec:authorize="hasAuthority('ADMIN')"><a style="cursor: pointer" onclick="allUsers()">Users&Sellers</a>
+                    </td>
+                    <td sec:authorize="hasAuthority('SUPER_ADMIN')"><a style="cursor: pointer" onclick="allUsers()">All
+                        users</a></td>
+                </tr>
+            </table>
+        </div>
+        <div style="float: right; width: 70%" id="main">
+            <fieldset style="width: 40%">
+                <legend id="legend">add category</legend>
+                <br>
+                <table style="border-spacing: 1em">
+                    <tr>
+                        <td></td>
+                        <td><span id="error_name"></span></td>
+                    </tr>
+                    <tr>
+                        <td><label>Category name:</label></td>
+                        <td><input type="text" placeholder="Put name" id="name"
+                                   onkeyup="resetErrorById('error_name')"></td>
+                    </tr>
+                    <tr style="text-align: center;">
+                        <td colspan="2" style="padding-top: 2vh">
+                            <button style="width: 30%" id="submit" onclick="submit()">Add</button>
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+        </div>
+    </div>
+</div>
+</body>
+</html>

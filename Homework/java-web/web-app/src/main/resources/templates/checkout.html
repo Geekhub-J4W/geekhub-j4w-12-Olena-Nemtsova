@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script defer="defer" src="js/checkout.js"></script>
+    <script defer="defer" src="js/common.js"></script>
+    <title>Store</title>
+</head>
+
+<body onload="load()">
+<div style="text-align: center;  height: 100%;">
+
+    <div style="width: 100%; height: 10vh; background-color: lavender"><h2>Some shop</h2></div>
+    <div style="width: 100%; height: 10vh; text-align: right; font-size: 1.5em">
+        <form sec:authorize="hasAuthority('USER')" th:action="@{/logout}" method="POST">
+            <button type="submit">Logout</button>
+        </form>
+        <form sec:authorize="isAnonymous()" th:action="@{/login}" method="POST">
+            <button type="submit">Login</button>
+        </form>
+        <span style="margin-right: 5%; margin-left: 2%">
+            <a style="cursor: pointer" onclick="window.location.replace('/mainUser')">🔙</a>
+        </span>
+        <span style="margin-right: 5%; margin-left: 2%">
+            <a style="cursor: pointer" onclick="bucket()">🛒</a>
+        </span>
+        <span sec:authorize="hasAuthority('USER')" style="margin-right: 5%; margin-left: 2%">
+            <a style="cursor: pointer" onclick="personalArea()">👤</a>
+        </span>
+    </div>
+
+    <div style="position: absolute; width: 100%; min-height: 85vh">
+
+        <div style="float: left; background-color: cadetblue; width: 25%; position: absolute; height: 100%">
+            <table style="border-spacing: 1em; width: 100%" id="categories">
+                <tr>
+                    <th>Categories</th>
+                </tr>
+                <tr>
+                    <td><a style="cursor: pointer" onclick="products()">All</a></td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="float: right; width: 70%; margin-top:5vh;" id="orderDetails">
+            <h3>Order details:</h3>
+            <table>
+                <tr>
+                    <td></td>
+                    <td><span id="error_firstName"></span></td>
+                </tr>
+                <tr>
+                    <td><label>First name:</label></td>
+                    <td><input type="text" placeholder="Put first name" id="firstName"
+                               onkeyup="resetErrorById('error_firstName')"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><span id="error_lastName"></span></td>
+                </tr>
+                <tr>
+                    <td><label>Last name:</label></td>
+                    <td><input type="text" placeholder="Put last name" id="lastName"
+                               onkeyup="resetErrorById('error_lastName')"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><span id="error_email"></span></td>
+                </tr>
+                <tr>
+                    <td><label>Email:</label></td>
+                    <td><input type="email" placeholder="Put email" id="email"
+                               onkeyup="resetErrorById('error_email')"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><span id="error_address"></span></td>
+                </tr>
+                <tr>
+                    <td><label>Address to delivery:</label></td>
+                    <td><input type="text" placeholder="Put address" id="address" onkeyup="resetErrorById('error_address')"></td>
+                </tr>
+                <tr style="text-align: center;">
+                    <td colspan="2" style="padding-top: 2vh">
+                        <button style="width: 30%" id="submit" onclick="submit()">Checkout</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

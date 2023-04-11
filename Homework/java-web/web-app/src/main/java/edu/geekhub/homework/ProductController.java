@@ -1,11 +1,12 @@
 package edu.geekhub.homework;
 
-import edu.geekhub.homework.domain.Product;
-import edu.geekhub.homework.domain.ProductsSortType;
-import edu.geekhub.homework.service.interfaces.ProductService;
+import edu.geekhub.homework.products.Product;
+import edu.geekhub.homework.products.ProductsSortType;
+import edu.geekhub.homework.products.interfaces.ProductService;
 import java.io.IOException;
 import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/products")
 public class ProductController {
-
     private final ProductService productService;
 
     @Autowired
@@ -42,7 +42,8 @@ public class ProductController {
         return productService.getProductById(id);
     }
 
-    @PostMapping("/newProduct")
+    @PostMapping
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'SELLER')")
     public Product addProduct(@RequestBody Product product) {
         Product newProduct = productService.addProduct(product);
 
@@ -52,7 +53,8 @@ public class ProductController {
         return newProduct;
     }
 
-    @PostMapping("/editProduct/{id}")
+    @PostMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'SELLER')")
     public Product editProduct(@RequestBody Product product,
                                @PathVariable(value = "id") int id) {
 
@@ -65,6 +67,7 @@ public class ProductController {
     }
 
     @PostMapping("/setImage/{id}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'SELLER')")
     public Product setProductImage(@RequestParam("file") MultipartFile file,
                                    @PathVariable(value = "id") int id) throws IOException {
         Product product = productService.getProductById(id);
@@ -78,25 +81,13 @@ public class ProductController {
         return updatedProduct;
     }
 
-    @DeleteMapping(value = "/deleteProduct/{id}")
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'SELLER')")
     public void deleteProduct(@PathVariable(value = "id") int id) {
 
         if (!productService.deleteProductById(id)) {
             throw new IllegalArgumentException("Product wasn't deleted");
         }
-    }
-
-    @GetMapping("category/{categoryId}/{limit}/{pageNumber}")
-    public Collection<Product> productsOfCategory(
-        @PathVariable(value = "categoryId") int categoryId,
-        @PathVariable(value = "limit") int limit,
-        @PathVariable(value = "pageNumber") int pageNumber) {
-
-        return productService.getSortedProductsByCategoryWithPagination(
-            ProductsSortType.RATING,
-            categoryId,
-            limit,
-            pageNumber);
     }
 
     @GetMapping("/{sortType}/{categoryId}/{limit}/{pageNumber}")

@@ -12,18 +12,22 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
             .addResourceHandler("/**")
-            .addResourceLocations("classpath:/ui/");
+            .addResourceLocations("classpath:/templates/");
     }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("forward:/login.html");
-        registry.addViewController("/mainUser").setViewName("forward:/mainUser.html");
-        registry.addViewController("/mainAdmin").setViewName("forward:/main.html");
-        registry.addViewController("/register").setViewName("forward:/register.html");
-        registry.addViewController("/newProduct").setViewName("forward:/newProduct.html");
-        registry.addViewController("/newCategory").setViewName("forward:/newCategory.html");
-        registry.addViewController("/newUser").setViewName("forward:/newUser.html");
-        registry.addViewController("/newOrder").setViewName("forward:/newOrder.html");
+        registry.addViewController("/login");
+        registry.addViewController("/mainUser");
+        registry.addViewController("/main");
+        registry.addViewController("/personal");
+        registry.addViewController("/product");
+        registry.addViewController("/checkout");
+        registry.addViewController("/register");
+        registry.addViewController("/newProduct");
+        registry.addViewController("/newCategory");
+        registry.addViewController("/newUser");
+        registry.addViewController("/newOrder");
+        registry.addViewController("/error");
     }
 }
