@@ -16,7 +16,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
 
       - name: Setup build
         uses: gradle/gradle-build-action@v2
@@ -34,7 +33,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
 
       - name: Setup gradle for tests
         uses: gradle/gradle-build-action@v2
@@ -52,7 +50,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
 
       - name: Setup gradle for checkstyle
         uses: gradle/gradle-build-action@v2

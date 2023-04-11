@@ -3,7 +3,7 @@ plugins {
     id 'checkstyle'
 }
 
-group 'edu.geekhub.homework'
+group 'edu.geekhub'
 
 repositories {
     mavenCentral()
