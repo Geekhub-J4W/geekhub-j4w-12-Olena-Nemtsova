@@ -1,7 +1,10 @@
-package edu.geekhub.homework.domain;
+package edu.geekhub.coursework.model.validator;
 
+import edu.geekhub.coursework.model.User;
+import org.springframework.stereotype.Component;
+
+@Component
 public class UserValidator {
-
     public void validate(User user) {
         if (user == null) {
             throw new IllegalArgumentException("User was null");
@@ -19,7 +22,7 @@ public class UserValidator {
         if (name.isBlank()) {
             throw new IllegalArgumentException("User " + propertyName + " was empty");
         }
-        if (name.length() > 50 || name.length() < 2) {
+        if (name.length() > 100 || name.length() < 2) {
             throw new IllegalArgumentException("User " + propertyName + " had wrong length");
         }
     }
@@ -67,6 +70,7 @@ public class UserValidator {
                 digits++;
             }
         }
+
         return upperCase != 0
                && lowerCase != 0
                && digits != 0;
