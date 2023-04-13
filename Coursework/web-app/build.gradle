@@ -1,0 +1,31 @@
+plugins {
+    id 'org.springframework.boot' version '3.0.5'
+    id 'io.spring.dependency-management' version '1.1.0'
+}
+
+checkstyle {
+    toolVersion '10.7.0'
+    configFile file("${rootDir}/config/chekstyle-google-checks.xml")
+}
+
+checkstyleMain {
+    source = 'src/main/java'
+}
+
+checkstyleTest{
+    source = 'src/test/java'
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.thymeleaf:thymeleaf-spring6:3.1.1.RELEASE'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
+
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.13'
+
+    compileOnly 'javax.servlet:javax.servlet-api:3.0.1'
+
+    implementation project(":Coursework:domain")
+}
+

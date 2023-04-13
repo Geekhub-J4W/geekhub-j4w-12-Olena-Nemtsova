@@ -57,3 +57,6 @@ include 'Homework:java-web:domain'
 include 'Homework:java-web:console-app'
 include 'Homework:java-web:web-app'
 include 'Homework:java-web:lecture:14-Gradle-CI'
+
+include 'Coursework:domain'
+include 'Coursework:web-app'

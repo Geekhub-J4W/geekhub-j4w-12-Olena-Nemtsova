@@ -1,0 +1,29 @@
+plugins {
+    id 'org.springframework.boot' version '3.0.5'
+    id 'io.spring.dependency-management' version '1.1.0'
+}
+
+checkstyle {
+    toolVersion '10.7.0'
+    configFile file("${rootDir}/config/chekstyle-google-checks.xml")
+}
+
+checkstyleMain {
+    source = 'src/main/java'
+}
+
+checkstyleTest{
+    source = 'src/test/java'
+}
+
+dependencies {
+    implementation libs.spring.context
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}

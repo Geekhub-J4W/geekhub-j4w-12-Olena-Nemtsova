@@ -1,10 +1,15 @@
-package edu.geekhub.coursework.model.validator;
+package edu.geekhub.coursework.users;
 
-import edu.geekhub.coursework.model.User;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserValidator {
+
+    public void validateWithoutPass(User user) {
+        user.setPassword("Temporary1");
+        validate(user);
+    }
+
     public void validate(User user) {
         if (user == null) {
             throw new IllegalArgumentException("User was null");
@@ -13,6 +18,13 @@ public class UserValidator {
         validateName(user.getLastName(), "lastName");
         validatePassword(user.getPassword());
         validateEmail(user.getEmail());
+        validateRole(user.getRole());
+    }
+
+    private void validateRole(Role role) {
+        if (role == null) {
+            throw new IllegalArgumentException("User role was null");
+        }
     }
 
     private void validateName(String name, String propertyName) {
