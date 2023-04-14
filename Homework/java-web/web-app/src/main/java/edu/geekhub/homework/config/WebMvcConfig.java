@@ -29,5 +29,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addViewController("/newUser");
         registry.addViewController("/newOrder");
         registry.addViewController("/error");
+        registry.addViewController("/googleLogin");
     }
 }

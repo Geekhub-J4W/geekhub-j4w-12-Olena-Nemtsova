@@ -5,15 +5,19 @@ import edu.geekhub.homework.users.Role;
 import edu.geekhub.homework.users.User;
 import edu.geekhub.homework.users.interfaces.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.AccessException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,7 +54,6 @@ public class UserController {
         }
         return srchUser;
     }
-
 
     @GetMapping("/info")
     public User getUser() {
@@ -135,21 +138,6 @@ public class UserController {
         return newUser;
     }
 
-    public void authWithoutPassword(User user, HttpServletRequest request) {
-        SecurityUser securityUser = new SecurityUser(user);
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-            securityUser,
-            null,
-            securityUser.getAuthorities()
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        request.getSession().setAttribute(
-            HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-            SecurityContextHolder.getContext()
-        );
-    }
-
     @PostMapping("/edit")
     public User editCurrentUser(@RequestBody User user) {
         User userToEdit = userService.getUserById(getUserId());
@@ -182,6 +170,53 @@ public class UserController {
             throw new IllegalArgumentException("User wasn't updated");
         }
         return updatedUser;
+    }
+
+    @PostMapping("/google")
+    public String googleLogin(
+        @AuthenticationPrincipal OAuth2User user,
+        HttpServletRequest httpServletRequest,
+        HttpServletResponse response
+    ) throws IOException {
+        String email = user.getAttribute("email");
+
+        User existsUser = userService.getUserByEmail(email);
+        if (existsUser == null) {
+            String lastName = user.getAttribute("family_name");
+            String firstName = user.getAttribute("given_name");
+
+            User newUser = new User(
+                -1,
+                firstName,
+                lastName,
+                "Temporary1",
+                email,
+                Role.USER
+            );
+            existsUser = userService.addUser(newUser);
+        }
+
+        authWithoutPassword(existsUser, httpServletRequest);
+        if (existsUser.getRole() == Role.USER) {
+            return "/mainUser";
+        } else {
+            return "/main";
+        }
+    }
+
+    public void authWithoutPassword(User user, HttpServletRequest request) {
+        SecurityUser securityUser = new SecurityUser(user);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+            securityUser,
+            null,
+            securityUser.getAuthorities()
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        request.getSession().setAttribute(
+            HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+            SecurityContextHolder.getContext()
+        );
     }
 
     private int getUserId() {

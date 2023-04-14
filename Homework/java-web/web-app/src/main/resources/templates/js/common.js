@@ -118,8 +118,8 @@ function checkAddress() {
     return true;
 }
 
-function checkCustomerName(){
-    let regExp= /^[a-zA-Z]+ [a-zA-Z]+$/;
+function checkCustomerName() {
+    let regExp = /^[a-zA-Z]+ [a-zA-Z]+$/;
     if (!regExp.test(document.getElementById("customerName").value)) {
         let email = document.getElementById("error_customerName");
         email.innerHTML = "Please enter valid customerName";
@@ -223,4 +223,15 @@ function loadPieces(pieces_div, productId, ordersId) {
 
 function personalArea() {
     window.location.replace("/personal");
+}
+
+function googleLogin() {
+    let request = initRequest();
+    request.open("POST", "users/google");
+    request.onreadystatechange = function () {
+        if (request.readyState === 4 && request.status === 200) {
+            window.location.replace(request.responseText);
+        }
+    }
+    request.send();
 }
