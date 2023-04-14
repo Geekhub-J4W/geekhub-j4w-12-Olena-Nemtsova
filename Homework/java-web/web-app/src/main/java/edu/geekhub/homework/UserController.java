@@ -5,8 +5,6 @@ import edu.geekhub.homework.users.Role;
 import edu.geekhub.homework.users.User;
 import edu.geekhub.homework.users.interfaces.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.AccessException;
@@ -175,9 +173,8 @@ public class UserController {
     @PostMapping("/google")
     public String googleLogin(
         @AuthenticationPrincipal OAuth2User user,
-        HttpServletRequest httpServletRequest,
-        HttpServletResponse response
-    ) throws IOException {
+        HttpServletRequest httpServletRequest
+    ) {
         String email = user.getAttribute("email");
 
         User existsUser = userService.getUserByEmail(email);
