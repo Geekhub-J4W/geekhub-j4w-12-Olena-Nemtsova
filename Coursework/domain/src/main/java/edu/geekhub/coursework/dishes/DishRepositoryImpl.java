@@ -36,6 +36,12 @@ public class DishRepositoryImpl implements DishRepository {
         LIMIT :limit
         OFFSET :limit * :pageNumber
         """;
+    private static final String FETCH_DISH_CALORIES_BY_ID = """
+        SELECT SUM(Products.calories * ProductsDishes.productQuantity / 100) AS calories
+        FROM Products INNER JOIN ProductsDishes
+        ON Products.id=ProductsDishes.productId
+        WHERE ProductsDishes.dishId=:id
+        """;
     private static final String FETCH_DISHES_BY_CALORIES_RANGE_AND_USER_ID = """
         SELECT * FROM Dishes
         INNER JOIN ProductsDishes
@@ -119,6 +125,20 @@ public class DishRepositoryImpl implements DishRepository {
             .addValue("id", id);
 
         jdbcTemplate.update(UPDATE_DISH_BY_ID, mapSqlParameterSource);
+    }
+
+    @Override
+    public int getDishCalories(int id) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("id", id);
+
+        return jdbcTemplate.query(FETCH_DISH_CALORIES_BY_ID, mapSqlParameterSource,
+                (rs, rowNum) ->
+                    rs.getInt("calories")
+            )
+            .stream()
+            .findFirst()
+            .orElse(0);
     }
 
     @Override

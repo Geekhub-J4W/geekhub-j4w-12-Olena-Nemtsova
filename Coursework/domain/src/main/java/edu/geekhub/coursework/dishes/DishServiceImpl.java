@@ -90,6 +90,15 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
+    public int getDishCalories(int id) {
+        if (getDishById(id) == null) {
+            Logger.warn("Dish with id '" + id + "' not found");
+            return 0;
+        }
+        return dishRepository.getDishCalories(id);
+    }
+
+    @Override
     public List<Dish> getDishesByUserIdAndTypeOfMeal(int userId, TypeOfMeal typeOfMeal) {
         int calories = userParametersService.getUserCaloriesByTypeOfMeal(userId, typeOfMeal);
 

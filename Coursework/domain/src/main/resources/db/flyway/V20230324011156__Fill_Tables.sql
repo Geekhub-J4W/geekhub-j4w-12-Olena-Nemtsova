@@ -227,9 +227,9 @@ INSERT INTO ProductsDishes (productQuantity, productId, dishId) VALUES
                                                                     (3, 41, 20);
 
 INSERT INTO Users (firstName, lastName, password, email, role) VALUES
-                                                                   ('Sam', 'Brown', 'Qwerty123', 'super_admin@gmail.com', 'SUPER_ADMIN'),
-                                                                   ('Mark', 'Pearce', 'Qwerty123', 'admin@gmail.com', 'ADMIN'),
-                                                                   ('John', 'Smith', 'Qwerty123', 'user@gmail.com', 'USER');
+                                                                   ('Sam', 'Brown', '$2a$12$mt/C6HUtuT20uOozDgXaje.LosKQrBje/kC32rIl9kp848sG0lbz2', 'super_admin@gmail.com', 'SUPER_ADMIN'),
+                                                                   ('Mark', 'Pearce', '$2a$12$mt/C6HUtuT20uOozDgXaje.LosKQrBje/kC32rIl9kp848sG0lbz2', 'admin@gmail.com', 'ADMIN'),
+                                                                   ('John', 'Smith', '$2a$12$mt/C6HUtuT20uOozDgXaje.LosKQrBje/kC32rIl9kp848sG0lbz2', 'user@gmail.com', 'USER');
 
 
 

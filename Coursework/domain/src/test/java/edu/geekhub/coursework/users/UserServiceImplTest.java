@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 
 import edu.geekhub.coursework.users.interfaces.UserRepository;
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -49,6 +52,7 @@ class UserServiceImplTest {
     @Test
     void can_add_user() {
         doNothing().when(validator).validate(any());
+        doReturn(null).when(repository).getUserByEmail(any());
         doReturn(1).when(repository).addUser(any());
         doReturn(user).when(repository).getUserById(anyInt());
 
@@ -67,8 +71,34 @@ class UserServiceImplTest {
     }
 
     @Test
+    void can_not_add_user_with_role_super_admin() {
+        user.setRole(Role.SUPER_ADMIN);
+        doNothing().when(validator).validate(any());
+
+        User addedUser = userService.addUser(user);
+
+        assertNull(addedUser);
+    }
+
+    @Test
+    void can_update_added_user_with_temp_password() {
+        PasswordEncoder encoder = new BCryptPasswordEncoder(12);
+        user.setPassword(encoder.encode("Temporary1"));
+
+        doNothing().when(validator).validate(any());
+        userService = spy(this.userService);
+        doReturn(user).when(userService).getUserByEmail(any());
+        doReturn(user).when(userService).updateUserById(any(), anyInt());
+
+        User addedUser = userService.addUser(user);
+
+        assertNotNull(addedUser);
+    }
+
+    @Test
     void can_not_add_user_not_added_at_repository() {
         doNothing().when(validator).validate(any());
+        doReturn(null).when(repository).getUserByEmail(any());
         doThrow(new DataAccessException("") {
         }).when(repository).addUser(any());
 
@@ -80,6 +110,7 @@ class UserServiceImplTest {
     @Test
     void can_not_add_user_not_retrieved_generated_key() {
         doNothing().when(validator).validate(any());
+        doReturn(null).when(repository).getUserByEmail(any());
         doReturn(-1).when(repository).addUser(any());
 
         User addedUser = userService.addUser(user);
@@ -100,6 +131,16 @@ class UserServiceImplTest {
     @Test
     void can_not_delete_user_by_not_wrong_id() {
         doReturn(null).when(repository).getUserById(anyInt());
+
+        boolean successfulDeleted = userService.deleteUserById(-1);
+
+        assertFalse(successfulDeleted);
+    }
+
+    @Test
+    void can_not_delete_user_with_role_super_admin() {
+        user.setRole(Role.SUPER_ADMIN);
+        doReturn(user).when(repository).getUserById(anyInt());
 
         boolean successfulDeleted = userService.deleteUserById(-1);
 
@@ -141,6 +182,31 @@ class UserServiceImplTest {
     void can_not_update_user_by_not_existing_id() {
         doNothing().when(validator).validate(any());
         doReturn(null).when(repository).getUserById(anyInt());
+
+        User updatedUser = userService.updateUserById(user, 1);
+
+        assertNull(updatedUser);
+    }
+
+    @Test
+    void can_not_update_user_role_with_role_super_admin() {
+        User userToUpdate = new User();
+        userToUpdate.setRole(Role.SUPER_ADMIN);
+        doNothing().when(validator).validate(any());
+        doReturn(userToUpdate).when(repository).getUserById(anyInt());
+
+        User updatedUser = userService.updateUserById(user, 1);
+
+        assertNull(updatedUser);
+    }
+
+    @Test
+    void can_not_update_user_role_to_role_super_admin() {
+        User userToUpdate = new User();
+        userToUpdate.setRole(Role.USER);
+        user.setRole(Role.SUPER_ADMIN);
+        doNothing().when(validator).validate(any());
+        doReturn(userToUpdate).when(repository).getUserById(anyInt());
 
         User updatedUser = userService.updateUserById(user, 1);
 

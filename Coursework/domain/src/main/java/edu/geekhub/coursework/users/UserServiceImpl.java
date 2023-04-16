@@ -32,8 +32,18 @@ public class UserServiceImpl implements UserService {
     public User addUser(User user) {
         try {
             validator.validate(user);
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
 
+            if (user.getRole() == Role.SUPER_ADMIN) {
+                throw new IllegalArgumentException("Can't add user with role 'SUPER_ADMIN'");
+            }
+
+            User existsUser = getUserByEmail(user.getEmail());
+            if (existsUser != null
+                && passwordEncoder.matches("Temporary1", existsUser.getPassword())) {
+                return updateUserById(user, existsUser.getId());
+            }
+
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             int id = userRepository.addUser(user);
             if (id == -1) {
                 throw new IllegalArgumentException("Unable to retrieve the generated key");
@@ -54,6 +64,10 @@ public class UserServiceImpl implements UserService {
             if (userToDel == null) {
                 throw new IllegalArgumentException("User with id '" + id + "' not found");
             }
+            if (userToDel.getRole() == Role.SUPER_ADMIN) {
+                throw new IllegalArgumentException("Can't delete user with role 'SUPER_ADMIN'");
+            }
+
             userRepository.deleteUserById(id);
             Logger.info("User was deleted:\n" + userToDel);
             return true;
@@ -67,8 +81,21 @@ public class UserServiceImpl implements UserService {
     public User updateUserById(User user, int id) {
         try {
             validator.validate(user);
-            if (getUserById(id) == null) {
+            User userToUpdate = getUserById(id);
+            if (userToUpdate == null) {
                 throw new IllegalArgumentException("User with id '" + id + "' not found");
+            }
+            if (userToUpdate.getRole() == Role.SUPER_ADMIN
+                && userToUpdate.getRole() != user.getRole()) {
+                throw new IllegalArgumentException(
+                    "Can't update role of user with role 'SUPER_ADMIN'"
+                );
+            }
+            if (userToUpdate.getRole() != Role.SUPER_ADMIN
+                && user.getRole() == Role.SUPER_ADMIN) {
+                throw new IllegalArgumentException(
+                    "Can't update role of user to role 'SUPER_ADMIN'"
+                );
             }
             user.setPassword(passwordEncoder.encode(user.getPassword()));
 
@@ -93,5 +120,10 @@ public class UserServiceImpl implements UserService {
             return new ArrayList<>();
         }
         return userRepository.getUsersByRole(role);
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return userRepository.getUserByEmail(email);
     }
 }

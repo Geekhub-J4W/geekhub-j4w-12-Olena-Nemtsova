@@ -15,6 +15,8 @@ public interface DishService {
 
     List<Dish> getDishes();
 
+    int getDishCalories(int id);
+
     List<Dish> getDishesByUserIdAndTypeOfMeal(int userId, TypeOfMeal typeOfMeal);
 
     int getCountOfPages(int limit, String input);

@@ -17,4 +17,6 @@ public interface UserService {
     List<User> getUsers();
 
     List<User> getUsersByRole(Role role);
+
+    User getUserByEmail(String email);
 }
