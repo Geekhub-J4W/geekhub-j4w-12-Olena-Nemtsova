@@ -50,7 +50,7 @@ class UserAllergicProductServiceImplTest {
     void can_add_userAllergicProduct() {
         doNothing().when(validator).validate(any());
         doNothing().when(repository).addRelation(any());
-        doReturn(userAllergicProduct)
+        doReturn(null, userAllergicProduct)
             .when(repository).getRelationByUserAndProductId(anyInt(), anyInt());
 
         UserAllergicProduct addedUserAllergicProduct = userAllergicProductService
@@ -62,6 +62,18 @@ class UserAllergicProductServiceImplTest {
     @Test
     void can_not_add_not_valid_userAllergicProduct() {
         doThrow(new IllegalArgumentException()).when(validator).validate(any());
+
+        UserAllergicProduct addedUserAllergicProduct = userAllergicProductService
+            .addRelation(userAllergicProduct);
+
+        assertNull(addedUserAllergicProduct);
+    }
+
+    @Test
+    void can_not_add_existing_userAllergicProduct() {
+        doNothing().when(validator).validate(any());
+        doReturn(userAllergicProduct)
+            .when(repository).getRelationByUserAndProductId(anyInt(), anyInt());
 
         UserAllergicProduct addedUserAllergicProduct = userAllergicProductService
             .addRelation(userAllergicProduct);

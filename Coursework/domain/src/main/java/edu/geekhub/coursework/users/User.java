@@ -24,6 +24,17 @@ public class User {
         this.role = role;
     }
 
+    public User(User user) {
+        this(
+            user.getId(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getPassword(),
+            user.getEmail(),
+            user.getRole()
+        );
+    }
+
     public User() {
         this(-1, null, null, null, null, null);
     }
@@ -74,5 +85,17 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    @Override
+    public String toString() {
+        return "User{"
+               + "id=" + id
+               + ", firstName='" + firstName + '\''
+               + ", lastName='" + lastName + '\''
+               + ", password='" + password + '\''
+               + ", email='" + email + '\''
+               + ", role=" + role
+               + '}';
     }
 }

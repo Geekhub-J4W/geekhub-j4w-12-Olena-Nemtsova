@@ -95,4 +95,18 @@ public class UserParameters {
     public void setAim(Aim aim) {
         this.aim = aim;
     }
+
+    @Override
+    public String toString() {
+        return "UserParameters{"
+               + "userId=" + userId
+               + ", age=" + age
+               + ", weight=" + weight
+               + ", height=" + height
+               + ", gender=" + gender
+               + ", activityLevel=" + activityLevel
+               + ", bodyType=" + bodyType
+               + ", aim=" + aim
+               + '}';
+    }
 }

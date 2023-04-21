@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script defer="defer" src="js/register.js"></script>
+    <script defer="defer" src="js/main.js"></script>
+    <link rel="stylesheet" href="css/main.css">
+    <title>Nutritionist online</title>
+</head>
+
+<body onload="loadPages()">
+<div id="header">
+    <div id="title">Nutritionist online</div>
+    <div id="navigation">
+        <div class="navigation_element" sec:authorize="hasAnyAuthority('USER', 'ADMIN', 'SUPER_ADMIN')"
+             th:action="@{/logout}"
+             onclick="window.location.href = this.getAttribute('action');">
+            <p>Logout</p>
+        </div>
+        <div class="navigation_element" sec:authorize="isAnonymous()" th:action="@{/login}"
+             onclick="window.location.href = this.getAttribute('action');">
+            <p>Login</p>
+        </div>
+        <div class="navigation_element" sec:authorize="hasAnyAuthority('ADMIN', 'SUPER_ADMIN')"
+             th:action="@{/admin/products}"
+             onclick="window.location.href = this.getAttribute('action');">
+            <p>Admin panel</p>
+        </div>
+    </div>
+</div>
+<div id="leftPanel">
+    <div class="left_element" style="background: none;"><span id="arrow">🢂</span></div>
+    <div id="products" class="left_element"><span class="icon">🍎</span><span class="name">Products</span></div>
+    <div id="dishes" class="left_element"><span class="icon">🥗</span><span class="name">Dishes</span></div>
+    <div id="diet" class="left_element"><span class="icon">🧮</span><span class="name">Own diet</span></div>
+    <div id="params" class="left_element"><span class="icon">📐️</span><span class="name">Parameters</span></div>
+    <div id="allergic" class="left_element"><span class="icon">🧬</span><span class="name">Allergic</span></div>
+</div>
+<div id="content">
+    <p id="headline">Register</p>
+    <div id="container">
+        <div class="container_element">
+            <table id="paramsTable">
+                <tr>
+                    <td class="label"></td>
+                    <td class="input"><span class="error" id="error_firstName"></span></td>
+                </tr>
+                <tr>
+                    <td class="label"><label>First name:</label></td>
+                    <td class="input"><input type="text" placeholder="Put first name" id="firstName"
+                               onkeyup="resetErrorById('error_firstName')"></td>
+                </tr>
+                <tr>
+                    <td class="label"></td>
+                    <td class="input"><span class="error" id="error_lastName"></span></td>
+                </tr>
+                <tr>
+                    <td class="label"><label>Last name:</label></td>
+                    <td class="input"><input type="text" placeholder="Put last name" id="lastName"
+                               onkeyup="resetErrorById('error_lastName')"></td>
+                </tr>
+                <tr>
+                    <td class="label"></td>
+                    <td class="input"><span class="error" id="error_email"></span></td>
+                </tr>
+                <tr>
+                    <td class="label"><label>Email:</label></td>
+                    <td class="input"><input type="email" placeholder="Put email" id="email"
+                               onkeyup="resetErrorById('error_email')"></td>
+                </tr>
+                <tr>
+                    <td class="label"></td>
+                    <td class="input"><span class="error" id="error_pass"></span></td>
+                </tr>
+                <tr>
+                    <td class="label"><label>Password:</label></td>
+                    <td class="input"><input type="password" placeholder="Put password" id="password" onkeyup="resetErrorById('error_pass')"></td>
+                </tr>
+                <tr>
+                    <td class="label"></td>
+                    <td class="input"><span class="error" id="error_passConfirm"></span></td>
+                </tr>
+                <tr>
+                    <td class="label"><label>Confirm password:</label></td>
+                    <td class="input"><input type="password" placeholder="Put password" id="passwordConfirm" onkeyup="resetErrorById('error_passConfirm')"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <button onclick="submit()">Register</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

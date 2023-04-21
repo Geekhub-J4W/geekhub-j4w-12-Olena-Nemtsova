@@ -42,20 +42,31 @@ public class DishRepositoryImpl implements DishRepository {
         ON Products.id=ProductsDishes.productId
         WHERE ProductsDishes.dishId=:id
         """;
+
+    private static final String FETCH_DISH_WEIGHT_BY_ID = """
+        SELECT SUM(ProductsDishes.productQuantity) AS weight
+        FROM ProductsDishes
+        WHERE ProductsDishes.dishId=:id
+        """;
     private static final String FETCH_DISHES_BY_CALORIES_RANGE_AND_USER_ID = """
         SELECT * FROM Dishes
-        INNER JOIN ProductsDishes
-        ON Dishes.id=ProductsDishes.dishId
-        INNER JOIN Products
-        ON ProductsDishes.productId=Products.id
-        WHERE Products.id NOT IN
+        WHERE Dishes.id NOT IN (
+        SELECT ProductsDishes.dishId FROM ProductsDishes
+        WHERE ProductsDishes.productId IN
         (SELECT Products.id FROM Products
         INNER JOIN UsersAllergicProducts
         ON Products.id=UsersAllergicProducts.productId
         WHERE UsersAllergicProducts.userId=:userId)
         GROUP BY ProductsDishes.dishId
-        HAVING SUM(Products.calories * ProductsDishes.productQuantity / 100) >=:minCalories
+        )
+        AND Dishes.id IN (
+        SELECT ProductsDishes.dishId FROM ProductsDishes
+        INNER JOIN Products
+        ON ProductsDishes.productId=Products.id
+        GROUP BY ProductsDishes.dishId
+        HAVING SUM(Products.calories * ProductsDishes.productQuantity / 100)>=:minCalories
         AND SUM(Products.calories * ProductsDishes.productQuantity / 100)<=:maxCalories
+        )
         """;
 
     public DishRepositoryImpl(DishValidator validator, NamedParameterJdbcTemplate jdbcTemplate) {
@@ -135,6 +146,20 @@ public class DishRepositoryImpl implements DishRepository {
         return jdbcTemplate.query(FETCH_DISH_CALORIES_BY_ID, mapSqlParameterSource,
                 (rs, rowNum) ->
                     rs.getInt("calories")
+            )
+            .stream()
+            .findFirst()
+            .orElse(0);
+    }
+
+    @Override
+    public int getDishWeight(int id) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("id", id);
+
+        return jdbcTemplate.query(FETCH_DISH_WEIGHT_BY_ID, mapSqlParameterSource,
+                (rs, rowNum) ->
+                    rs.getInt("weight")
             )
             .stream()
             .findFirst()

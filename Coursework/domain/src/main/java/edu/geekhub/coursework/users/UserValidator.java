@@ -4,16 +4,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserValidator {
-
     public void validateWithoutPass(User user) {
-        user.setPassword("Temporary1");
-        validate(user);
+        User userWithoutPass = new User(user);
+        userWithoutPass.setPassword("Temporary1");
+        validate(userWithoutPass);
     }
 
     public void validate(User user) {
-        if (user == null) {
-            throw new IllegalArgumentException("User was null");
-        }
+        validateUserIsNotNull(user);
         validateName(user.getFirstName(), "firstName");
         validateName(user.getLastName(), "lastName");
         validatePassword(user.getPassword());
@@ -21,9 +19,50 @@ public class UserValidator {
         validateRole(user.getRole());
     }
 
+    public void validateUserToDelete(User user) {
+        validateUserIsNotNull(user);
+        validateRole(user.getRole());
+    }
+
+    public void validateUsersForUpdate(User userToUpdate, User user) {
+        validateUserIsNotNull(userToUpdate);
+
+        User userWithoutRole = new User(user);
+        userWithoutRole.setRole(Role.USER);
+
+        if (user.getPassword() != null) {
+            validate(userWithoutRole);
+        } else {
+            validateWithoutPass(userWithoutRole);
+        }
+
+        if (userToUpdate.getRole() == Role.SUPER_ADMIN
+            && user.getRole() != Role.SUPER_ADMIN) {
+            throw new IllegalArgumentException(
+                "Can't update role of user with role 'SUPER_ADMIN'"
+            );
+        }
+
+        if (user.getRole() == Role.SUPER_ADMIN
+            && userToUpdate.getRole() != Role.SUPER_ADMIN) {
+            throw new IllegalArgumentException(
+                "Can't update role of user to role 'SUPER_ADMIN'"
+            );
+        }
+    }
+
+    private void validateUserIsNotNull(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User was null");
+        }
+    }
+
     private void validateRole(Role role) {
         if (role == null) {
             throw new IllegalArgumentException("User role was null");
+        }
+        if (role == Role.SUPER_ADMIN) {
+            throw new IllegalArgumentException("User has role 'SUPER_ADMIN'");
         }
     }
 
@@ -82,7 +121,6 @@ public class UserValidator {
                 digits++;
             }
         }
-
         return upperCase != 0
                && lowerCase != 0
                && digits != 0;

@@ -28,9 +28,15 @@ public class UserAllergicProductServiceImpl implements UserAllergicProductServic
     public UserAllergicProduct addRelation(UserAllergicProduct relation) {
         try {
             validator.validate(relation);
+            int userId = relation.getUserId();
+            int productId = relation.getProductId();
+
+            if (getRelationByUserAndProductId(userId, productId) != null) {
+                throw new IllegalArgumentException("Relation already exists");
+            }
             userAllergicProductRepository.addRelation(relation);
 
-            relation = getRelationByUserAndProductId(relation.getUserId(), relation.getProductId());
+            relation = getRelationByUserAndProductId(userId, productId);
             Logger.info("UserAllergicProduct relation was added:\n" + relation);
             return relation;
         } catch (IllegalArgumentException | DataAccessException exception) {

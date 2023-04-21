@@ -69,8 +69,13 @@ public class DishController {
         return dishService.getDishCalories(id);
     }
 
-    @GetMapping("/{typeOfMeal}")
-    @PreAuthorize("hasAuthority('USER')")
+    @GetMapping("/weight/{id}")
+    public int getDishWeight(@PathVariable int id) {
+        return dishService.getDishWeight(id);
+    }
+
+    @GetMapping("/typeOfMeal/{typeOfMeal}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'USER')")
     public Collection<Dish> getUserDishesByTypeOfMeal(@PathVariable String typeOfMeal) {
 
         return dishService.getDishesByUserIdAndTypeOfMeal(
@@ -79,11 +84,17 @@ public class DishController {
         );
     }
 
+    @GetMapping("/{id}")
+    public Dish getDishById(@PathVariable int id) {
+        return dishService.getDishById(id);
+    }
+
     @GetMapping("/pages/{limit}/{input}")
     public int getCountOfDishesPages(
         @PathVariable int limit,
         @PathVariable String input
     ) {
+        input = input.equals("null") ? "" : input;
         return dishService.getCountOfPages(limit, input);
     }
 
@@ -93,6 +104,7 @@ public class DishController {
         @PathVariable int pageNumber,
         @PathVariable String input
     ) {
+        input = input.equals("null") ? "" : input;
         return dishService.getDishesNameSortedByPageAndInput(limit, pageNumber, input);
     }
 

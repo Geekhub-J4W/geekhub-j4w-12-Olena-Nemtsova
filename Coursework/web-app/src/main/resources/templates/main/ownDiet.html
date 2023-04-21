@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script defer="defer" src="../js/ownDiet.js"></script>
+    <script defer="defer" src="../js/main.js"></script>
+    <link rel="stylesheet" href="../css/main.css">
+    <title>Nutritionist online</title>
+</head>
+
+<body onload="loadAll()">
+<div id="header">
+    <div id="title">Nutritionist online</div>
+    <div id="navigation">
+        <div class="navigation_element" sec:authorize="hasAnyAuthority('USER', 'ADMIN', 'SUPER_ADMIN')"
+             th:action="@{/logout}"
+             onclick="window.location.href = this.getAttribute('action');">
+            <p>Logout</p>
+        </div>
+        <div class="navigation_element" sec:authorize="isAnonymous()" th:action="@{/login}"
+             onclick="window.location.href = this.getAttribute('action');">
+            <p>Login</p>
+        </div>
+        <div class="navigation_element" sec:authorize="hasAnyAuthority('ADMIN', 'SUPER_ADMIN')"
+             th:action="@{/admin/products}"
+             onclick="window.location.href = this.getAttribute('action');">
+            <p>Admin panel</p>
+        </div>
+    </div>
+</div>
+<div id="leftPanel">
+    <div class="left_element" style="background: none;"><span id="arrow">🢂</span></div>
+    <div id="products" class="left_element"><span class="icon">🍎</span><span class="name">Products</span></div>
+    <div id="dishes" class="left_element"><span class="icon">🥗</span><span class="name">Dishes</span></div>
+    <div id="diet" class="left_element"><span class="icon">🧮</span><span class="name">Own diet</span></div>
+    <div id="params" class="left_element"><span class="icon">📐️</span><span class="name">Parameters</span>
+        <span id="tooltip">Add own parameters first</span></div>
+    <div id="allergic" class="left_element"><span class="icon">🧬</span><span class="name">Allergic</span></div>
+</div>
+<div id="content">
+    <p id="headline">Own diet</p>
+    <hr>
+    <div id="container">
+        <div class="container_element">
+            <button id="calculate">Calculate</button>
+        </div>
+        <div class="container_element">
+            <p>Total day calories recommended: <span id="totalCalories">0</span>cal</p>
+            <hr>
+            <p>Breakfast calories: <span id="breakfastCalories">0</span>cal</p>
+            <p>Dinner calories: <span id="dinnerCalories">0</span>cal</p>
+            <p>Lunch calories: <span id="lunchCalories">0</span>cal</p>
+            <p>Supper calories: <span id="supperCalories">0</span>cal</p>
+        </div>
+        <div class="container_element">
+            <p>Breakfast dishes variants:</p>
+            <div class="carousel" id="breakfastDishes">
+            </div>
+            <hr>
+            <p>Dinner dishes variants:</p>
+            <div class="carousel" id="dinnerDishes"></div>
+            <hr>
+            <p>Lunch dishes variants:</p>
+            <div class="carousel" id="lunchDishes"></div>
+            <hr>
+            <p>Supper dishes variants:</p>
+            <div class="carousel" id="supperDishes"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -17,6 +17,8 @@ public interface DishRepository {
 
     int getDishCalories(int id);
 
+    int getDishWeight(int id);
+
     List<Dish> getDishesNameSortedByPageAndInput(int limit, int pageNumber, String input);
 
     List<Dish> getDishesByCaloriesRangeAndUserId(int minCalories, int maxCalories, int userId);

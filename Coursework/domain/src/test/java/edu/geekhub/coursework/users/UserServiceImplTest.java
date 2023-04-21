@@ -13,6 +13,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 
 import edu.geekhub.coursework.users.interfaces.UserRepository;
+import edu.geekhub.coursework.util.PageValidator;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,11 +32,13 @@ class UserServiceImplTest {
     private UserValidator validator;
     @Mock
     private UserRepository repository;
+    @Mock
+    private PageValidator pageValidator;
     private User user;
 
     @BeforeEach
     void setUp() {
-        userService = new UserServiceImpl(validator, repository);
+        userService = new UserServiceImpl(validator, pageValidator, repository);
 
         user = new User(1, "Mark", "Pearce", "Qwerty1", "some@gmail.com", Role.USER);
     }
@@ -71,9 +74,10 @@ class UserServiceImplTest {
     }
 
     @Test
-    void can_not_add_user_with_role_super_admin() {
-        user.setRole(Role.SUPER_ADMIN);
+    void can_not_add_user_with_existing_email() {
         doNothing().when(validator).validate(any());
+        userService = spy(this.userService);
+        doReturn(user).when(userService).getUserByEmail(any());
 
         User addedUser = userService.addUser(user);
 
@@ -131,6 +135,7 @@ class UserServiceImplTest {
     @Test
     void can_not_delete_user_by_not_wrong_id() {
         doReturn(null).when(repository).getUserById(anyInt());
+        doThrow(new IllegalArgumentException()).when(validator).validateUserToDelete(any());
 
         boolean successfulDeleted = userService.deleteUserById(-1);
 
@@ -141,6 +146,7 @@ class UserServiceImplTest {
     void can_not_delete_user_with_role_super_admin() {
         user.setRole(Role.SUPER_ADMIN);
         doReturn(user).when(repository).getUserById(anyInt());
+        doThrow(new IllegalArgumentException()).when(validator).validateUserToDelete(any());
 
         boolean successfulDeleted = userService.deleteUserById(-1);
 
@@ -160,7 +166,7 @@ class UserServiceImplTest {
 
     @Test
     void can_update_user_by_id() {
-        doNothing().when(validator).validate(any());
+        doNothing().when(validator).validateUsersForUpdate(any(), any());
         doReturn(user).when(repository).getUserById(anyInt());
         doNothing().when(repository).updateUserById(any(), anyInt());
 
@@ -170,8 +176,21 @@ class UserServiceImplTest {
     }
 
     @Test
-    void can_not_update_user_by_id_to_not_valid_user() {
-        doThrow(new IllegalArgumentException()).when(validator).validate(any());
+    void can_update_user_without_updating_password_by_id() {
+        user.setPassword(null);
+        doNothing().when(validator).validateUsersForUpdate(any(), any());
+        doReturn(user).when(repository).getUserById(anyInt());
+        doNothing().when(repository).updateUserWithoutPasswordById(any(), anyInt());
+
+        User updatedUser = userService.updateUserById(user, 1);
+
+        assertNotNull(updatedUser);
+    }
+
+    @Test
+    void can_not_update_user_by_id_by_not_valid_users() {
+        doThrow(new IllegalArgumentException())
+            .when(validator).validateUsersForUpdate(any(), any());
 
         User updatedUser = userService.updateUserById(null, 1);
 
@@ -179,43 +198,8 @@ class UserServiceImplTest {
     }
 
     @Test
-    void can_not_update_user_by_not_existing_id() {
-        doNothing().when(validator).validate(any());
-        doReturn(null).when(repository).getUserById(anyInt());
-
-        User updatedUser = userService.updateUserById(user, 1);
-
-        assertNull(updatedUser);
-    }
-
-    @Test
-    void can_not_update_user_role_with_role_super_admin() {
-        User userToUpdate = new User();
-        userToUpdate.setRole(Role.SUPER_ADMIN);
-        doNothing().when(validator).validate(any());
-        doReturn(userToUpdate).when(repository).getUserById(anyInt());
-
-        User updatedUser = userService.updateUserById(user, 1);
-
-        assertNull(updatedUser);
-    }
-
-    @Test
-    void can_not_update_user_role_to_role_super_admin() {
-        User userToUpdate = new User();
-        userToUpdate.setRole(Role.USER);
-        user.setRole(Role.SUPER_ADMIN);
-        doNothing().when(validator).validate(any());
-        doReturn(userToUpdate).when(repository).getUserById(anyInt());
-
-        User updatedUser = userService.updateUserById(user, 1);
-
-        assertNull(updatedUser);
-    }
-
-    @Test
     void can_not_update_user_not_updated_at_repository() {
-        doNothing().when(validator).validate(any());
+        doNothing().when(validator).validateUsersForUpdate(any(), any());
         doReturn(user).when(repository).getUserById(anyInt());
         doThrow(new DataAccessException("") {
         })
@@ -236,18 +220,91 @@ class UserServiceImplTest {
     }
 
     @Test
-    void can_get_users_by_role() {
-        doReturn(List.of(user)).when(repository).getUsersByRole(any());
+    void can_get_users_of_role_by_page_and_input() {
+        doNothing().when(pageValidator).validatePageLimit(anyInt());
+        doNothing().when(pageValidator).validatePageNumber(anyInt(), anyInt());
+        doReturn(List.of(user))
+            .when(repository).getUsersOfRoleByPageAndInput(any(), anyInt(), anyInt(), any());
 
-        List<User> users = userService.getUsersByRole(Role.USER);
+        List<User> users = userService.getUsersOfRoleByPageAndInput(
+            Role.USER,
+            1,
+            1,
+            "some user search"
+        );
 
         assertEquals(List.of(user), users);
     }
 
     @Test
-    void can_get_empty_users_by_null_role() {
-        List<User> users = userService.getUsersByRole(null);
+    void can_get_empty_users_of_role_by_page_and_wrong_limit() {
+        doThrow(new IllegalArgumentException()).when(pageValidator).validatePageLimit(anyInt());
+
+        List<User> users = userService.getUsersOfRoleByPageAndInput(
+            Role.USER,
+            -1,
+            1,
+            "some user search"
+        );
 
         assertEquals(new ArrayList<>(), users);
+    }
+
+    @Test
+    void can_get_empty_users_of_role_by_limit_and_wrong_page() {
+        doNothing().when(pageValidator).validatePageLimit(anyInt());
+        doThrow(new IllegalArgumentException())
+            .when(pageValidator).validatePageNumber(anyInt(), anyInt());
+
+        List<User> users = userService.getUsersOfRoleByPageAndInput(
+            Role.USER,
+            -1,
+            1,
+            "some user search"
+        );
+
+        assertEquals(new ArrayList<>(), users);
+    }
+
+    @Test
+    void can_get_count_of_users_pages_by_role_limit_and_input() {
+        doNothing().when(pageValidator).validatePageLimit(anyInt());
+        userService = spy(userService);
+        doReturn(List.of(user, user)).when(userService).getUsers();
+
+        int countOfPages = userService.getCountOfPages(Role.USER, 1, "mark pear");
+
+        assertEquals(2, countOfPages);
+    }
+
+    @Test
+    void can_get_one_users_pages_by_wrong_limit() {
+        doThrow(new IllegalArgumentException()).when(pageValidator).validatePageLimit(anyInt());
+
+        int countOfPages = userService.getCountOfPages(Role.USER, 0, "ric");
+
+        assertEquals(1, countOfPages);
+    }
+
+    @Test
+    void can_get_one_users_pages_by_wrong_input() {
+        doNothing().when(pageValidator).validatePageLimit(anyInt());
+        userService = spy(userService);
+        doReturn(List.of(user, user)).when(userService).getUsers();
+
+        int countOfPages = userService.getCountOfPages(Role.USER, 0, "some user search");
+
+        assertEquals(1, countOfPages);
+    }
+
+    @Test
+    void can_get_one_users_pages_by_null_role() {
+        doNothing().when(pageValidator).validatePageLimit(anyInt());
+        userService = spy(userService);
+        doReturn(List.of(user, user)).when(userService).getUsers();
+
+        int countOfPages = userService.getCountOfPages(null, 1, "some user search");
+
+        assertEquals(1, countOfPages);
     }
 }

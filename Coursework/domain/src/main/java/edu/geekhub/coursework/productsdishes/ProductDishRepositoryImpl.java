@@ -55,9 +55,9 @@ public class ProductDishRepositoryImpl implements ProductDishRepository {
 
         return jdbcTemplate.query(FETCH_RELATION_BY_PRODUCT_AND_DISH_ID, mapSqlParameterSource,
                 (rs, rowNum) -> new ProductDish(
-                    rs.getInt("productQuantity"),
                     rs.getInt("productId"),
-                    rs.getInt("dishId")
+                    rs.getInt("dishId"),
+                    rs.getInt("productQuantity")
                 ))
             .stream()
             .findFirst()

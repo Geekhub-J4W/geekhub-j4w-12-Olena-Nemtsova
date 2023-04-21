@@ -192,12 +192,31 @@ class DishServiceImplTest {
     }
 
     @Test
-    void can_get_zer0_calories_of_dish_by_wrong_id() {
+    void can_get_zero_calories_of_dish_by_wrong_id() {
         doReturn(null).when(repository).getDishById(anyInt());
 
         int calories = dishService.getDishCalories(1);
 
         assertEquals(0, calories);
+    }
+
+    @Test
+    void can_get_weight_of_dish_by_id() {
+        doReturn(dish).when(repository).getDishById(anyInt());
+        doReturn(350).when(repository).getDishWeight(anyInt());
+
+        int weight = dishService.getDishWeight(1);
+
+        assertEquals(350, weight);
+    }
+
+    @Test
+    void can_get_zero_weight_of_dish_by_wrong_id() {
+        doReturn(null).when(repository).getDishById(anyInt());
+
+        int weight = dishService.getDishWeight(1);
+
+        assertEquals(0, weight);
     }
 
     @Test

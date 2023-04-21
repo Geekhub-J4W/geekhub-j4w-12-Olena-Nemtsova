@@ -30,10 +30,28 @@ public class SecurityConfig {
             .csrf().disable()
             .authorizeHttpRequests()
             .requestMatchers("/dishes/**", "/products/**", "/users/**",
-                "/parameters/**", "/allergic/**", "/productsDishes/**"
+                "/productsDishes/**", "/css/**", "/js/**", "/register",
+                "/main/products", "/main/dishes", "/main/dish"
             ).permitAll()
+            .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "SUPER_ADMIN")
             .anyRequest().authenticated()
-            .and().formLogin();
+            .and()
+            .formLogin()
+            .loginPage("/login")
+            .permitAll()
+            .defaultSuccessUrl("/main/products")
+            .and()
+            .oauth2Login()
+            .loginPage("/login")
+            .defaultSuccessUrl("/googleLogin")
+            .and()
+            .logout()
+            .logoutUrl("/logout")
+            .logoutSuccessUrl("/login?logout").permitAll()
+            .deleteCookies("JSESSIONID")
+            .and()
+            .rememberMe()
+            .key("uniqueAndSecret");
 
         return http.build();
     }

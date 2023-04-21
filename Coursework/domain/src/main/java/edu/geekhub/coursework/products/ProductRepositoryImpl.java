@@ -40,7 +40,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         SELECT * FROM Products
         INNER JOIN UsersAllergicProducts
         ON Products.id=UsersAllergicProducts.productId
-        WHERE Users.id=:userId
+        WHERE UsersAllergicProducts.userId=:userId
         """;
     private static final String FETCH_PRODUCTS_NAME_SORTED_BY_PAGE_AND_INPUT = """
         SELECT * FROM Products

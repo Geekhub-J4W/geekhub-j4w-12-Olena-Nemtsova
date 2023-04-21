@@ -38,4 +38,13 @@ public class Product {
     public void setCalories(int calories) {
         this.calories = calories;
     }
+
+    @Override
+    public String toString() {
+        return "Product{"
+               + "id=" + id
+               + ", name='" + name + '\''
+               + ", calories=" + calories
+               + '}';
+    }
 }

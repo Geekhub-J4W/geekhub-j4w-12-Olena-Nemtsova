@@ -1,5 +1,7 @@
 package edu.geekhub.coursework.dishes;
 
+import java.util.Arrays;
+
 public class Dish {
     private int id;
     private String name;
@@ -39,4 +41,12 @@ public class Dish {
         this.image = image;
     }
 
+    @Override
+    public String toString() {
+        return "Dish{"
+               + "id=" + id
+               + ", name='" + name + '\''
+               + ", image=" + Arrays.toString(image)
+               + '}';
+    }
 }

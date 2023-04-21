@@ -41,6 +41,12 @@ public class ProductController {
         return productService.updateProductById(product, id);
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
+    public Product getProductById(@PathVariable int id) {
+        return productService.getProductById(id);
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
     public boolean deleteProduct(@PathVariable int id) {
@@ -52,6 +58,7 @@ public class ProductController {
         @PathVariable int limit,
         @PathVariable String input
     ) {
+        input = input.equals("null") ? "" : input;
         return productService.getCountOfPages(limit, input);
     }
 
@@ -61,6 +68,7 @@ public class ProductController {
         @PathVariable int pageNumber,
         @PathVariable String input
     ) {
+        input = input.equals("null") ? "" : input;
         return productService.getProductsNameSortedByPageAndInput(limit, pageNumber, input);
     }
 
@@ -70,7 +78,7 @@ public class ProductController {
     }
 
     @GetMapping("/allergic")
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'USER')")
     public Collection<Product> getUserAllergicProducts() {
         return productService.getUserAllergicProducts(
             getUserId()

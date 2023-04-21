@@ -16,7 +16,14 @@ public interface UserService {
 
     List<User> getUsers();
 
-    List<User> getUsersByRole(Role role);
+    int getCountOfPages(Role role, int limit, String input);
+
+    List<User> getUsersOfRoleByPageAndInput(
+            Role role,
+            int limit,
+            int pageNumber,
+            String input
+    );
 
     User getUserByEmail(String email);
 }

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script defer="defer" src="js/products.js"></script>
+    <script defer="defer" src="js/admin.js"></script>
+    <script defer="defer" src="../js/main.js"></script>
+    <link rel="stylesheet" href="../css/main.css">
+    <title>Nutritionist online</title>
+</head>
+
+<body onload="loadProduct()">
+<div id="header">
+    <div id="title">Nutritionist online</div>
+    <div id="navigation">
+        <div class="navigation_element" th:action="@{/logout}"
+             onclick="window.location.href = this.getAttribute('action');">
+            <p>Logout</p>
+        </div>
+        <div class="navigation_element" th:action="@{/main/products}"
+             onclick="window.location.href = this.getAttribute('action');">
+            <p>Main</p>
+        </div>
+    </div>
+</div>
+<div id="leftPanel">
+    <div class="left_element" style="background: none;"><span id="arrow">🢂</span></div>
+    <div id="products" class="left_element"><span class="icon">🍎</span><span class="name">Products</span></div>
+    <div id="dishes" class="left_element"><span class="icon">🥗</span><span class="name">Dishes</span></div>
+    <div id="diet" class="left_element"><span class="icon">👥</span><span class="name">Users</span></div>
+</div>
+<div id="content">
+    <p id="headline">Add product</p>
+    <div id="container">
+        <div class="container_element">
+            <table class="paramsTable">
+                <tr>
+                    <td class="label"></td>
+                    <td class="input"><span class="error" id="error_name"></span></td>
+                </tr>
+                <tr>
+                    <td class="label"><label>Name:</label></td>
+                    <td class="input"><input type="text" placeholder="Put name" id="name"
+                                             onkeyup="resetErrorById('error_name')"></td>
+                </tr>
+                <tr>
+                    <td class="label"></td>
+                    <td class="input"><span class="error" id="error_calories"></span></td>
+                </tr>
+                <tr>
+                    <td class="label"><label>Calories/100g:</label></td>
+                    <td class="input"><input type="number" placeholder="Put calories" id="calories"
+                                             onkeyup="resetErrorById('error_calories')"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <button id="submit" onclick="submit()">Add</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

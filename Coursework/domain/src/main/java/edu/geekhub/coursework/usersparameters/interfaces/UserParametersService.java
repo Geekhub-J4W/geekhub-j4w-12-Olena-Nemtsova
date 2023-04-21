@@ -8,7 +8,7 @@ public interface UserParametersService {
 
     UserParameters addUserParameters(UserParameters userParameters);
 
-    UserParameters updateUserParametersByUserId(UserParameters userParameters, int userId);
+    UserParameters updateUserParameters(UserParameters userParameters);
 
     int getUserCaloriesForDay(int userId);
 

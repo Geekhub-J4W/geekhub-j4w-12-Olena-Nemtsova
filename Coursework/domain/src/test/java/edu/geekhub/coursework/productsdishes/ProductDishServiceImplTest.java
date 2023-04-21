@@ -47,7 +47,8 @@ class ProductDishServiceImplTest {
     void can_add_productDish_relation() {
         doNothing().when(validator).validate(any());
         doNothing().when(repository).addRelation(any());
-        doReturn(productDish).when(repository).getRelationByProductAndDishId(anyInt(), anyInt());
+        doReturn(null, productDish)
+            .when(repository).getRelationByProductAndDishId(anyInt(), anyInt());
 
         ProductDish addedProductDish = productDishService.addRelation(productDish);
 
@@ -57,6 +58,17 @@ class ProductDishServiceImplTest {
     @Test
     void can_not_add_not_valid_productDish_relation() {
         doThrow(new IllegalArgumentException()).when(validator).validate(any());
+
+        ProductDish addedProductDish = productDishService.addRelation(productDish);
+
+        assertNull(addedProductDish);
+    }
+
+    @Test
+    void can_not_add_existing_productDish_relation() {
+        doNothing().when(validator).validate(any());
+        doReturn(productDish)
+            .when(repository).getRelationByProductAndDishId(anyInt(), anyInt());
 
         ProductDish addedProductDish = productDishService.addRelation(productDish);
 

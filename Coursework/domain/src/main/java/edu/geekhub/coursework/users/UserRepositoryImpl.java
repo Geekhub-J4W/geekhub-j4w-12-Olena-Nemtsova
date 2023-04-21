@@ -14,8 +14,13 @@ public class UserRepositoryImpl implements UserRepository {
     private static final String FETCH_ALL_USERS = """
         SELECT * FROM Users
         """;
-    private static final String FETCH_USERS_BY_ROLE = """
-        SELECT * FROM Users WHERE role=:role
+    private static final String FETCH_USERS_OF_ROLE_BY_PAGE_AND_INPUT = """
+        SELECT * FROM Users
+        WHERE CONCAT(REPLACE(Users.firstName, ' ', ''), REPLACE(Users.lastName, ' ', ''))
+        ILIKE REPLACE(:input, ' ', '')
+        AND role=:role
+        LIMIT :limit
+        OFFSET :limit * :pageNumber
         """;
     private static final String INSERT_USER = """
         INSERT INTO Users(firstName, lastName, password, email, role)
@@ -35,6 +40,11 @@ public class UserRepositoryImpl implements UserRepository {
         firstName=:firstName, lastName=:lastName, password=:password, email=:email, role=:role
         WHERE id=:id
         """;
+    private static final String UPDATE_USER_WITHOUT_PASS_BY_ID = """
+        UPDATE Users SET
+        firstName=:firstName, lastName=:lastName, email=:email, role=:role
+        WHERE id=:id
+        """;
 
     public UserRepositoryImpl(UserValidator validator, NamedParameterJdbcTemplate jdbcTemplate) {
         this.validator = validator;
@@ -44,22 +54,6 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public List<User> getUsers() {
         return jdbcTemplate.query(FETCH_ALL_USERS,
-            (rs, rowNum) -> new User(
-                rs.getInt("id"),
-                rs.getString("firstName"),
-                rs.getString("lastName"),
-                rs.getString("password"),
-                rs.getString("email"),
-                Role.valueOf(rs.getString("role"))
-            ));
-    }
-
-    @Override
-    public List<User> getUsersByRole(Role role) {
-        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
-            .addValue("role", role.toString());
-
-        return jdbcTemplate.query(FETCH_USERS_BY_ROLE, mapSqlParameterSource,
             (rs, rowNum) -> new User(
                 rs.getInt("id"),
                 rs.getString("firstName"),
@@ -150,5 +144,44 @@ public class UserRepositoryImpl implements UserRepository {
             .addValue("id", id);
 
         jdbcTemplate.update(UPDATE_USER_BY_ID, mapSqlParameterSource);
+    }
+
+    @Override
+    public void updateUserWithoutPasswordById(User user, int id) {
+        validator.validateWithoutPass(user);
+
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("firstName", user.getFirstName())
+            .addValue("lastName", user.getLastName())
+            .addValue("email", user.getEmail())
+            .addValue("role", user.getRole().toString())
+            .addValue("id", id);
+
+        jdbcTemplate.update(UPDATE_USER_WITHOUT_PASS_BY_ID, mapSqlParameterSource);
+    }
+
+    @Override
+    public List<User> getUsersOfRoleByPageAndInput(
+        Role role,
+        int limit,
+        int pageNumber,
+        String input
+    ) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+            .addValue("role", role.name())
+            .addValue("limit", limit)
+            .addValue("pageNumber", pageNumber - 1)
+            .addValue("input", "%" + input + "%");
+
+        return jdbcTemplate.query(FETCH_USERS_OF_ROLE_BY_PAGE_AND_INPUT,
+            mapSqlParameterSource,
+            (rs, rowNum) -> new User(
+                rs.getInt("id"),
+                rs.getString("firstName"),
+                rs.getString("lastName"),
+                rs.getString("password"),
+                rs.getString("email"),
+                Role.valueOf(rs.getString("role"))
+            ));
     }
 }

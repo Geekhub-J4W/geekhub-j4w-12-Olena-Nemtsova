@@ -4,7 +4,6 @@ import edu.geekhub.coursework.security.SecurityUser;
 import edu.geekhub.coursework.usersparameters.UserParameters;
 import edu.geekhub.coursework.usersparameters.interfaces.UserParametersService;
 import edu.geekhub.coursework.util.TypeOfMeal;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,13 +25,11 @@ public class UserParametersController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('USER')")
     public UserParameters getUserParametersById() {
         return userParametersService.getUserParametersByUserId(getUserId());
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('USER')")
     public UserParameters addUserParameters(
         @RequestBody UserParameters userParameters
     ) {
@@ -41,24 +38,21 @@ public class UserParametersController {
     }
 
     @PutMapping
-    @PreAuthorize("hasAuthority('USER')")
     public UserParameters updateUserParameters(
         @RequestBody UserParameters userParameters
     ) {
-        return userParametersService.updateUserParametersByUserId(
-            userParameters,
-            getUserId()
+        userParameters.setUserId(getUserId());
+        return userParametersService.updateUserParameters(
+            userParameters
         );
     }
 
     @GetMapping("/calories")
-    @PreAuthorize("hasAuthority('USER')")
     public int getUserCaloriesForDay() {
         return userParametersService.getUserCaloriesForDay(getUserId());
     }
 
     @GetMapping("/calories/{typeOfMeal}")
-    @PreAuthorize("hasAuthority('USER')")
     public int getUserCaloriesByTypeOfMeal(@PathVariable String typeOfMeal) {
         TypeOfMeal type = TypeOfMeal.valueOf(typeOfMeal);
 

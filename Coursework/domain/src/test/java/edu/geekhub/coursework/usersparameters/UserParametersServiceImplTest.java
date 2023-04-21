@@ -50,7 +50,8 @@ class UserParametersServiceImplTest {
     void can_add_userParameters() {
         doNothing().when(validator).validate(any());
         doNothing().when(repository).addUserParameters(any());
-        doReturn(userParameters).when(repository).getUserParametersByUserId(anyInt());
+        doReturn(null, userParameters)
+            .when(repository).getUserParametersByUserId(anyInt());
 
         UserParameters addedUserParameters = userParametersService
             .addUserParameters(userParameters);
@@ -61,6 +62,18 @@ class UserParametersServiceImplTest {
     @Test
     void can_not_add_not_valid_userParameters() {
         doThrow(new IllegalArgumentException()).when(validator).validate(any());
+
+        UserParameters addedUserParameters = userParametersService
+            .addUserParameters(userParameters);
+
+        assertNull(addedUserParameters);
+    }
+
+    @Test
+    void can_not_add_existing_userParameters() {
+        doNothing().when(validator).validate(any());
+        doReturn(userParameters)
+            .when(repository).getUserParametersByUserId(anyInt());
 
         UserParameters addedUserParameters = userParametersService
             .addUserParameters(userParameters);
@@ -88,7 +101,7 @@ class UserParametersServiceImplTest {
         doNothing().when(repository).updateUserParametersByUserId(any(), anyInt());
 
         UserParameters updatedUserParameters = userParametersService
-            .updateUserParametersByUserId(userParameters, 1);
+            .updateUserParameters(userParameters);
 
         assertNotNull(updatedUserParameters);
     }
@@ -99,7 +112,7 @@ class UserParametersServiceImplTest {
         doReturn(null).when(userParametersService).getUserParametersByUserId(anyInt());
 
         UserParameters updatedUserParameters = userParametersService
-            .updateUserParametersByUserId(userParameters, 1);
+            .updateUserParameters(userParameters);
 
         assertNull(updatedUserParameters);
     }
@@ -111,7 +124,7 @@ class UserParametersServiceImplTest {
         doThrow(new IllegalArgumentException()).when(validator).validate(any());
 
         UserParameters updatedUserParameters = userParametersService
-            .updateUserParametersByUserId(userParameters, 1);
+            .updateUserParameters(userParameters);
 
         assertNull(updatedUserParameters);
     }
@@ -125,7 +138,7 @@ class UserParametersServiceImplTest {
         }).when(repository).updateUserParametersByUserId(any(), anyInt());
 
         UserParameters updatedUserParameters = userParametersService
-            .updateUserParametersByUserId(userParameters, 1);
+            .updateUserParameters(userParameters);
 
         assertNull(updatedUserParameters);
     }

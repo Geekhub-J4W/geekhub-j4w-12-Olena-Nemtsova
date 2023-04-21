@@ -3,7 +3,6 @@ package edu.geekhub.coursework;
 import edu.geekhub.coursework.allergics.UserAllergicProduct;
 import edu.geekhub.coursework.allergics.interfaces.UserAllergicProductService;
 import edu.geekhub.coursework.security.SecurityUser;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,15 +23,14 @@ public class UserAllergicProductController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('USER')")
     public UserAllergicProduct addUserAllergicProduct(
         @RequestBody UserAllergicProduct userAllergicProduct
     ) {
+        userAllergicProduct.setUserId(getUserId());
         return userAllergicProductService.addRelation(userAllergicProduct);
     }
 
     @DeleteMapping("/{productId}")
-    @PreAuthorize("hasAuthority('USER')")
     public boolean deleteUserAllergicProduct(@PathVariable int productId) {
         return userAllergicProductService.deleteRelationByUserAndProductId(
             getUserId(),

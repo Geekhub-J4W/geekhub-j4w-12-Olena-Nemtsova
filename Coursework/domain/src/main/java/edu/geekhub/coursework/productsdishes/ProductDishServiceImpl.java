@@ -26,13 +26,15 @@ public class ProductDishServiceImpl implements ProductDishService {
     public ProductDish addRelation(ProductDish productDish) {
         try {
             validator.validate(productDish);
+            int productId = productDish.getProductId();
+            int dishId = productDish.getDishId();
+
+            if (getRelationByProductAndDishId(productId, dishId) != null) {
+                throw new IllegalArgumentException("Relation already exists");
+            }
             productDishRepository.addRelation(productDish);
 
-            productDish = getRelationByProductAndDishId(
-                productDish.getProductId(),
-                productDish.getDishId()
-            );
-
+            productDish = getRelationByProductAndDishId(productId, dishId);
             Logger.info("ProductDish relation was added:\n" + productDish);
             return productDish;
         } catch (IllegalArgumentException | DataAccessException exception) {

@@ -38,4 +38,13 @@ public class ProductDish {
     public void setProductQuantity(int productQuantity) {
         this.productQuantity = productQuantity;
     }
+
+    @Override
+    public String toString() {
+        return "ProductDish{"
+               + "productId=" + productId
+               + ", dishId=" + dishId
+               + ", productQuantity=" + productQuantity
+               + '}';
+    }
 }

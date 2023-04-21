@@ -27,10 +27,12 @@ public class UserParametersServiceImpl implements UserParametersService {
     public UserParameters addUserParameters(UserParameters userParameters) {
         try {
             validator.validate(userParameters);
+            if (getUserParametersByUserId(userParameters.getUserId()) != null) {
+                throw new IllegalArgumentException("User parameters already exists");
+            }
             userParametersRepository.addUserParameters(userParameters);
 
             userParameters = getUserParametersByUserId(userParameters.getUserId());
-
             Logger.info("UserParameters was added:\n" + userParameters);
             return userParameters;
         } catch (IllegalArgumentException | DataAccessException exception) {
@@ -42,8 +44,9 @@ public class UserParametersServiceImpl implements UserParametersService {
     }
 
     @Override
-    public UserParameters updateUserParametersByUserId(UserParameters userParameters, int userId) {
+    public UserParameters updateUserParameters(UserParameters userParameters) {
         try {
+            int userId = userParameters.getUserId();
             if (getUserParametersByUserId(userId) == null) {
                 throw new IllegalArgumentException(
                     "UserParameters with userId '" + userId + "' not found"

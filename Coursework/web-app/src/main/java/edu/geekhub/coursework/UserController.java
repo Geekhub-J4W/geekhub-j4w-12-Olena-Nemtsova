@@ -6,6 +6,7 @@ import edu.geekhub.coursework.users.User;
 import edu.geekhub.coursework.users.interfaces.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collection;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,6 +29,7 @@ import org.tinylog.Logger;
 public class UserController {
     private final UserService userService;
 
+    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -44,15 +46,42 @@ public class UserController {
         return userService.getUserById(id);
     }
 
-    @GetMapping("/all/{role}")
+    @GetMapping("/pages/{role}/{limit}/{input}")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
-    public Collection<User> getUsersByRole(@PathVariable String role) {
-        return userService.getUsersByRole(Role.valueOf(role));
+    public int getCountOfUsersPages(
+        @PathVariable String role,
+        @PathVariable int limit,
+        @PathVariable String input
+    ) {
+        input = input.equals("null") ? "" : input;
+        return userService.getCountOfPages(Role.valueOf(role), limit, input);
+    }
+
+    @GetMapping("/{role}/{limit}/{pageNumber}/{input}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
+    public Collection<User> getUsersOfPageByRoleAndInput(
+        @PathVariable String role,
+        @PathVariable int limit,
+        @PathVariable int pageNumber,
+        @PathVariable String input
+    ) {
+        input = input.equals("null") ? "" : input;
+
+        return userService.getUsersOfRoleByPageAndInput(
+            Role.valueOf(role),
+            limit,
+            pageNumber,
+            input
+        );
     }
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
     public User addUser(@RequestBody User user) {
+        if (userRoleSameToCurrent(user)) {
+            Logger.warn("Add operation not supported");
+            return null;
+        }
         return userService.addUser(user);
     }
 
@@ -67,7 +96,7 @@ public class UserController {
     }
 
     @PostMapping("/google")
-    public String googleRegister(
+    public User googleRegister(
         @AuthenticationPrincipal OAuth2User user,
         HttpServletRequest request
     ) {
@@ -90,11 +119,7 @@ public class UserController {
         }
 
         authWithoutPassword(existsUser, request);
-        if (existsUser.getRole() == Role.USER) {
-            return "/mainUser";
-        } else {
-            return "/mainAdmin";
-        }
+        return existsUser;
     }
 
     @DeleteMapping("/{id}")
@@ -110,8 +135,12 @@ public class UserController {
     }
 
     @PutMapping
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'USER')")
     public User updateUser(@RequestBody User user) {
-        user.setRole(Role.USER);
+        User existsUser = userService.getUserById(getUserId());
+        if (existsUser != null) {
+            user.setRole(existsUser.getRole());
+        }
         return userService.updateUserById(user, getUserId());
     }
 

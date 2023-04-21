@@ -47,7 +47,7 @@ public class UserParametersRepositoryImpl implements UserParametersRepository {
             .addValue("gender", userParameters.getGender().name())
             .addValue("activityLevel", userParameters.getActivityLevel().name())
             .addValue("bodyType", userParameters.getBodyType().name())
-            .addValue("aim", userParameters.getAim());
+            .addValue("aim", userParameters.getAim().name());
 
         jdbcTemplate.update(INSERT_USER_PARAMETERS, mapSqlParameterSource);
     }
@@ -92,7 +92,7 @@ public class UserParametersRepositoryImpl implements UserParametersRepository {
             .addValue("gender", userParameters.getGender().name())
             .addValue("activityLevel", userParameters.getActivityLevel().name())
             .addValue("bodyType", userParameters.getBodyType().name())
-            .addValue("aim", userParameters.getAim())
+            .addValue("aim", userParameters.getAim().name())
             .addValue("userId", userId);
 
         jdbcTemplate.update(UPDATE_USER_PARAMETERS_BY_USER_ID, mapSqlParameterSource);
