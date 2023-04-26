@@ -1,5 +1,7 @@
 package edu.geekhub.coursework.productsdishes;
 
+import java.util.Objects;
+
 public class ProductDish {
     private int productId;
     private int dishId;
@@ -46,5 +48,25 @@ public class ProductDish {
                + ", dishId=" + dishId
                + ", productQuantity=" + productQuantity
                + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ProductDish that = (ProductDish) o;
+
+        return productId == that.productId
+               && dishId == that.dishId
+               && productQuantity == that.productQuantity;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(productId, dishId, productQuantity);
     }
 }

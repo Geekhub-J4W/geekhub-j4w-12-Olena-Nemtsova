@@ -1,5 +1,7 @@
 package edu.geekhub.coursework.allergics;
 
+import java.util.Objects;
+
 public class UserAllergicProduct {
     private int productId;
     private int userId;
@@ -35,5 +37,24 @@ public class UserAllergicProduct {
                + "productId=" + productId
                + ", userId=" + userId
                + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UserAllergicProduct that = (UserAllergicProduct) o;
+
+        return productId == that.productId
+               && userId == that.userId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(productId, userId);
     }
 }

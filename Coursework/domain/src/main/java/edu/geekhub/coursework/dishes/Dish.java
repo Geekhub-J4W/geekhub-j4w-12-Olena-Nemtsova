@@ -1,6 +1,7 @@
 package edu.geekhub.coursework.dishes;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class Dish {
     private int id;
@@ -48,5 +49,27 @@ public class Dish {
                + ", name='" + name + '\''
                + ", image=" + Arrays.toString(image)
                + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Dish dish = (Dish) o;
+
+        return id == dish.id
+               && Objects.equals(name, dish.name)
+               && Arrays.equals(image, dish.image);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(id, name);
+        result = 31 * result + Arrays.hashCode(image);
+        return result;
     }
 }

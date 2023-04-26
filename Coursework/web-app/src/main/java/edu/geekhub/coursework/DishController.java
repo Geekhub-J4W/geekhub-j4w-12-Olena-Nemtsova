@@ -52,10 +52,8 @@ public class DishController {
         Dish dishToUpdate = dishService.getDishById(id);
         if (dishToUpdate != null) {
             dishToUpdate.setImage(file.getBytes());
-            return dishService.updateDishById(dishToUpdate, id);
         }
-
-        return null;
+        return dishService.updateDishById(dishToUpdate, id);
     }
 
     @DeleteMapping("/{id}")
@@ -114,9 +112,6 @@ public class DishController {
             .getAuthentication()
             .getPrincipal();
 
-        if (object.toString().equals("anonymousUser")) {
-            return -1;
-        }
         SecurityUser user = (SecurityUser) object;
         return user.getUserId();
     }

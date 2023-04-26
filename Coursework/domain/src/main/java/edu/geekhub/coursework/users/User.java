@@ -1,5 +1,7 @@
 package edu.geekhub.coursework.users;
 
+import java.util.Objects;
+
 public class User {
     private int id;
     private String firstName;
@@ -97,5 +99,28 @@ public class User {
                + ", email='" + email + '\''
                + ", role=" + role
                + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        User user = (User) o;
+
+        return id == user.id
+               && Objects.equals(firstName, user.firstName)
+               && Objects.equals(lastName, user.lastName)
+               && Objects.equals(password, user.password)
+               && Objects.equals(email, user.email)
+               && role == user.role;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, lastName, password, email, role);
     }
 }

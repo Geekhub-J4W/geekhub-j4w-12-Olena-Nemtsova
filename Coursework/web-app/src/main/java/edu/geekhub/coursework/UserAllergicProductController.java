@@ -44,9 +44,6 @@ public class UserAllergicProductController {
             .getAuthentication()
             .getPrincipal();
 
-        if (object.toString().equals("anonymousUser")) {
-            return -1;
-        }
         SecurityUser user = (SecurityUser) object;
         return user.getUserId();
     }

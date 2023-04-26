@@ -1,5 +1,7 @@
 package edu.geekhub.coursework.usersparameters;
 
+import java.util.Objects;
+
 public class UserParameters {
     private int userId;
     private int age;
@@ -108,5 +110,30 @@ public class UserParameters {
                + ", bodyType=" + bodyType
                + ", aim=" + aim
                + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UserParameters that = (UserParameters) o;
+
+        return userId == that.userId
+               && age == that.age
+               && weight == that.weight
+               && height == that.height
+               && gender == that.gender
+               && activityLevel == that.activityLevel
+               && bodyType == that.bodyType
+               && aim == that.aim;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, age, weight, height, gender, activityLevel, bodyType, aim);
     }
 }

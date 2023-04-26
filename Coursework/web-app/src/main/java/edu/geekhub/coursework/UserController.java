@@ -138,9 +138,8 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN', 'USER')")
     public User updateUser(@RequestBody User user) {
         User existsUser = userService.getUserById(getUserId());
-        if (existsUser != null) {
-            user.setRole(existsUser.getRole());
-        }
+        user.setRole(existsUser.getRole());
+
         return userService.updateUserById(user, getUserId());
     }
 
@@ -174,9 +173,6 @@ public class UserController {
             .getAuthentication()
             .getPrincipal();
 
-        if (object.toString().equals("anonymousUser")) {
-            return -1;
-        }
         SecurityUser user = (SecurityUser) object;
         return user.getUserId();
     }
