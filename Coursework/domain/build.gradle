@@ -19,3 +19,11 @@ checkstyleTest{
 dependencies {
     implementation libs.spring.context
 }
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
