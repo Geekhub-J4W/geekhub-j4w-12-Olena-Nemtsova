@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -70,8 +69,7 @@ class UserControllerTest {
     @Test
     void can_not_get_current_user_by_anonymous() throws Exception {
         mockMvc.perform(get("/users"))
-            .andExpect(redirectedUrl("http://localhost/login"))
-            .andExpect(status().isFound())
+            .andExpect(status().isForbidden())
             .andDo(print());
 
         verify(userService, times(0))
@@ -161,8 +159,8 @@ class UserControllerTest {
 
         mockMvc.perform(post("/users").accept(MediaType.APPLICATION_JSON)
                 .content(json).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(content().string(""))
-            .andExpect(status().isOk())
+            .andExpect(content().string("Add operation not supported"))
+            .andExpect(status().isForbidden())
             .andDo(print());
 
         verify(userService, times(0))
@@ -233,8 +231,8 @@ class UserControllerTest {
         doReturn(user).when(userService).getUserById(anyInt());
 
         mockMvc.perform(delete("/users/{id}", 1).accept(MediaType.APPLICATION_JSON))
-            .andExpect(content().string(Boolean.FALSE.toString()))
-            .andExpect(status().isOk())
+            .andExpect(content().string("Delete operation not supported"))
+            .andExpect(status().isForbidden())
             .andDo(print());
 
         verify(userService, times(0))
@@ -272,8 +270,8 @@ class UserControllerTest {
 
         mockMvc.perform(put("/users/{id}", 1).accept(MediaType.APPLICATION_JSON)
                 .content(json).contentType(MediaType.APPLICATION_JSON))
-            .andExpect(content().string(""))
-            .andExpect(status().isOk())
+            .andExpect(content().string("Update operation not supported"))
+            .andExpect(status().isForbidden())
             .andDo(print());
 
         verify(userService, times(0))

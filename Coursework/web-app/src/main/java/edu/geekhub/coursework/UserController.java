@@ -7,6 +7,7 @@ import edu.geekhub.coursework.users.interfaces.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tinylog.Logger;
 
 @RestController
 @RequestMapping("/users")
@@ -79,8 +79,7 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
     public User addUser(@RequestBody User user) {
         if (userRoleSameToCurrent(user)) {
-            Logger.warn("Add operation not supported");
-            return null;
+            throw new AccessDeniedException("Add operation not supported");
         }
         return userService.addUser(user);
     }
@@ -128,8 +127,7 @@ public class UserController {
         User userToDelete = userService.getUserById(id);
 
         if (userRoleSameToCurrent(userToDelete)) {
-            Logger.warn("Delete operation not supported");
-            return false;
+            throw new AccessDeniedException("Delete operation not supported");
         }
         return userService.deleteUserById(id);
     }
@@ -153,8 +151,7 @@ public class UserController {
 
         if (userRoleSameToCurrent(user)
             || userRoleSameToCurrent(userUpdate)) {
-            Logger.warn("Update operation not supported");
-            return null;
+            throw new AccessDeniedException("Update operation not supported");
         }
 
         return userService.updateUserById(user, id);
