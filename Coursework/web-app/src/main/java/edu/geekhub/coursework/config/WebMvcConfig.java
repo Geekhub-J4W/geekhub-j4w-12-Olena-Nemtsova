@@ -25,6 +25,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addViewController("/main/ownDiet");
         registry.addViewController("/login");
         registry.addViewController("/register");
+        registry.addViewController("/personal");
         registry.addViewController("/googleLogin");
         registry.addViewController("/admin/products");
         registry.addViewController("/admin/product");

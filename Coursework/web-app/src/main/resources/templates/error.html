@@ -29,6 +29,11 @@
              onclick="window.location.href = this.getAttribute('action');">
             <p>Admin panel</p>
         </div>
+        <div class="right_navigation_element" sec:authorize="hasAnyAuthority('USER', 'ADMIN', 'SUPER_ADMIN')"
+             th:action="@{/personal}"
+             onclick="window.location.href = this.getAttribute('action');">
+            <p>👤</p>
+        </div>
     </div>
 </div>
 <div id="leftPanel">

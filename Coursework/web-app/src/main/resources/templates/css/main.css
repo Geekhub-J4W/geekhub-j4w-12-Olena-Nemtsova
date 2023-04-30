@@ -31,7 +31,7 @@ body {
     align-items: center;
 }
 
-.navigation_element {
+.navigation_element, .right_navigation_element {
     cursor: pointer;
     height: 100%;
     width: 15vw;
@@ -42,7 +42,15 @@ body {
     text-align: center;
 }
 
-.navigation_element:hover {
+.right_navigation_element {
+    width: 10vw;
+    font-size: 1.8vw;
+    font-weight: normal;
+    border-right: 0;
+    margin-left: auto;
+}
+
+.navigation_element:hover{
     background: rgba(34, 164, 89, 0.4);
 }
 
