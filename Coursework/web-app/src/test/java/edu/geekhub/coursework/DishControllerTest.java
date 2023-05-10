@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -58,7 +59,8 @@ class DishControllerTest {
         String json = gson.toJson(dish);
 
         mockMvc.perform(post("/dishes").accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(content().json(mapper.writeValueAsString(dish)))
             .andExpect(status().isOk())
             .andDo(print());
@@ -68,13 +70,29 @@ class DishControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
+    void can_not_add_dish_without_csrf() throws Exception {
+        Gson gson = new Gson();
+        String json = gson.toJson(dish);
+
+        mockMvc.perform(post("/dishes").accept(MediaType.APPLICATION_JSON)
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+
+        verify(dishService, times(0))
+            .addDish(any());
+    }
+
+    @Test
     @WithMockUser(authorities = "USER")
     void can_not_add_dish_by_user() throws Exception {
         Gson gson = new Gson();
         String json = gson.toJson(dish);
 
         mockMvc.perform(post("/dishes").accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(status().isForbidden())
             .andDo(print());
 
@@ -90,7 +108,8 @@ class DishControllerTest {
         String json = gson.toJson(dish);
 
         mockMvc.perform(put("/dishes/{id}", 1).accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(content().json(mapper.writeValueAsString(dish)))
             .andExpect(status().isOk())
             .andDo(print());
@@ -100,13 +119,29 @@ class DishControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
+    void can_not_update_dish_without_csrf() throws Exception {
+        Gson gson = new Gson();
+        String json = gson.toJson(dish);
+
+        mockMvc.perform(put("/dishes/{id}", 1).accept(MediaType.APPLICATION_JSON)
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+
+        verify(dishService, times(0))
+            .updateDishById(any(), anyInt());
+    }
+
+    @Test
     @WithMockUser(authorities = "USER")
     void can_not_update_dish_by_user() throws Exception {
         Gson gson = new Gson();
         String json = gson.toJson(dish);
 
         mockMvc.perform(put("/dishes/{id}", 1).accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(status().isForbidden())
             .andDo(print());
 
@@ -131,7 +166,8 @@ class DishControllerTest {
 
         mockMvc.perform(builder
                 .file(someImage)
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(content().json(mapper.writeValueAsString(dish)))
             .andExpect(status().isOk())
             .andDo(print());
@@ -145,7 +181,8 @@ class DishControllerTest {
     void can_delete_dish() throws Exception {
         doReturn(true).when(dishService).deleteDishById(anyInt());
 
-        mockMvc.perform(delete("/dishes/{id}", 1))
+        mockMvc.perform(delete("/dishes/{id}", 1)
+                .with(csrf()))
             .andExpect(content().string(Boolean.TRUE.toString()))
             .andExpect(status().isOk())
             .andDo(print());

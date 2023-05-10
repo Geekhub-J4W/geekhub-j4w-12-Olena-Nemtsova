@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -58,7 +59,8 @@ class UserParametersControllerTest {
         String json = gson.toJson(userParameters);
 
         mockMvc.perform(post("/parameters").accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(content().json(mapper.writeValueAsString(userParameters)))
             .andExpect(status().isOk())
             .andDo(print());
@@ -68,12 +70,28 @@ class UserParametersControllerTest {
     }
 
     @Test
-    void can_not_add_user_parameters_by_anonymous() throws Exception {
+    @WithUserDetails("user@gmail.com")
+    void can_not_add_user_parameters_without_csrf() throws Exception {
         Gson gson = new Gson();
         String json = gson.toJson(userParameters);
 
         mockMvc.perform(post("/parameters").accept(MediaType.APPLICATION_JSON)
                 .content(json).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+
+        verify(userParametersService, times(0))
+            .addUserParameters(any());
+    }
+
+    @Test
+    void can_not_add_user_parameters_by_anonymous() throws Exception {
+        Gson gson = new Gson();
+        String json = gson.toJson(userParameters);
+
+        mockMvc.perform(post("/parameters").accept(MediaType.APPLICATION_JSON)
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(redirectedUrl("http://localhost/login"))
             .andExpect(status().isFound())
             .andDo(print());
@@ -90,7 +108,8 @@ class UserParametersControllerTest {
         String json = gson.toJson(userParameters);
 
         mockMvc.perform(put("/parameters").accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(content().json(mapper.writeValueAsString(userParameters)))
             .andExpect(status().isOk())
             .andDo(print());
@@ -100,12 +119,28 @@ class UserParametersControllerTest {
     }
 
     @Test
-    void can_not_update_user_parameters_by_anonymous() throws Exception {
+    @WithUserDetails("user@gmail.com")
+    void can_not_update_user_parameters_without_csrf() throws Exception {
         Gson gson = new Gson();
         String json = gson.toJson(userParameters);
 
         mockMvc.perform(put("/parameters").accept(MediaType.APPLICATION_JSON)
                 .content(json).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+
+        verify(userParametersService, times(0))
+            .updateUserParameters(any());
+    }
+
+    @Test
+    void can_not_update_user_parameters_by_anonymous() throws Exception {
+        Gson gson = new Gson();
+        String json = gson.toJson(userParameters);
+
+        mockMvc.perform(put("/parameters").accept(MediaType.APPLICATION_JSON)
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(redirectedUrl("http://localhost/login"))
             .andExpect(status().isFound())
             .andDo(print());

@@ -237,6 +237,16 @@ INSERT INTO UsersParameters(age, weight, height, gender, activityLevel, bodyType
 INSERT INTO UsersAllergicProducts(userId, productId) VALUES
                                                          (3, 40);
 
+INSERT INTO Chats(userId, adminId) VALUES
+                                       (3, 2);
+
+INSERT INTO Chats(userId) VALUES
+                              (2);
+
+INSERT INTO Messages(text, chatId, senderId) VALUES
+                                                 ('message #1', 1, 3),
+                                                 ('message #2', 1, 2);
+
 
 
 

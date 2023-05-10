@@ -4,6 +4,8 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta th:name="_csrf" th:content="${_csrf.token}"/>
+    <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
     <script defer="defer" src="js/main.js"></script>
     <link rel="stylesheet" href="css/main.css">
     <title>Nutritionist online</title>

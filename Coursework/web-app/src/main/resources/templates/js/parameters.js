@@ -30,12 +30,16 @@ function saveParameters() {
     if (!checked()) {
         return;
     }
+    let token = document.querySelector('meta[name="_csrf"]').content;
+    let header = document.querySelector('meta[name="_csrf_header"]').content;
+
     let request = initRequest();
     if (isNewParameters) {
         request.open("POST", "/parameters");
     } else {
         request.open("PUT", "/parameters");
     }
+    request.setRequestHeader(header, token);
 
     request.setRequestHeader("Accept", "application/json");
     request.setRequestHeader("Content-Type", "application/json");

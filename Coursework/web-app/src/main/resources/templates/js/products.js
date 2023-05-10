@@ -48,8 +48,12 @@ function searchProducts(limit = 10, currentPage = 1, input = "") {
 }
 
 function addToAllergic(productId) {
+    let token = document.querySelector('meta[name="_csrf"]').content;
+    let header = document.querySelector('meta[name="_csrf_header"]').content;
+
     let request = initRequest();
     request.open("POST", "/allergic");
+    request.setRequestHeader(header, token);
     request.setRequestHeader("Accept", "application/json");
     request.setRequestHeader("Content-Type", "application/json");
     request.onreadystatechange = function () {

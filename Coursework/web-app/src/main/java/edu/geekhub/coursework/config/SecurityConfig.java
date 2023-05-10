@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableMethodSecurity
@@ -27,13 +28,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf().disable()
             .authorizeHttpRequests()
             .requestMatchers("/dishes/**", "/products/**", "/users/**",
                 "/productsDishes/**", "/css/**", "/js/**", "/register",
                 "/main/products", "/main/dishes", "/main/dish"
             ).permitAll()
-            .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "SUPER_ADMIN")
+            .requestMatchers("/admin/**", "/chats/**").hasAnyAuthority("ADMIN", "SUPER_ADMIN")
             .anyRequest().authenticated()
             .and()
             .formLogin()
@@ -46,7 +46,7 @@ public class SecurityConfig {
             .defaultSuccessUrl("/googleLogin")
             .and()
             .logout()
-            .logoutUrl("/logout")
+            .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
             .logoutSuccessUrl("/login?logout").permitAll()
             .deleteCookies("JSESSIONID")
             .and()

@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -139,13 +140,29 @@ class UserControllerTest {
         String json = gson.toJson(user);
 
         mockMvc.perform(post("/users").accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(content().json(mapper.writeValueAsString(user)))
             .andExpect(status().isOk())
             .andDo(print());
 
         verify(userService, times(1))
             .addUser(user);
+    }
+
+    @Test
+    @WithUserDetails("admin@gmail.com")
+    void can_not_add_user_without_csrf() throws Exception {
+        Gson gson = new Gson();
+        String json = gson.toJson(user);
+
+        mockMvc.perform(post("/users").accept(MediaType.APPLICATION_JSON)
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+
+        verify(userService, times(0))
+            .addUser(any());
     }
 
     @Test
@@ -158,7 +175,8 @@ class UserControllerTest {
         String json = gson.toJson(user);
 
         mockMvc.perform(post("/users").accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(content().string("Add operation not supported"))
             .andExpect(status().isForbidden())
             .andDo(print());
@@ -174,7 +192,8 @@ class UserControllerTest {
         String json = gson.toJson(user);
 
         mockMvc.perform(post("/users/register").accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(content().json(mapper.writeValueAsString(user)))
             .andExpect(status().isOk())
             .andDo(print());
@@ -199,7 +218,8 @@ class UserControllerTest {
             "email");
 
         mockMvc.perform(post("/users/google")
-                .with(oauth2Login().oauth2User(oauth2User)).accept(MediaType.APPLICATION_JSON))
+                .with(oauth2Login().oauth2User(oauth2User)).accept(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(content().json(mapper.writeValueAsString(user)))
             .andExpect(status().isOk())
             .andDo(print());
@@ -216,7 +236,8 @@ class UserControllerTest {
         doReturn(user, admin).when(userService).getUserById(anyInt());
         doReturn(true).when(userService).deleteUserById(anyInt());
 
-        mockMvc.perform(delete("/users/{id}", 1))
+        mockMvc.perform(delete("/users/{id}", 1)
+                .with(csrf()))
             .andExpect(content().string(Boolean.TRUE.toString()))
             .andExpect(status().isOk())
             .andDo(print());
@@ -227,10 +248,22 @@ class UserControllerTest {
 
     @Test
     @WithUserDetails("admin@gmail.com")
+    void can_not_delete_user_by_id_without_csrf() throws Exception {
+        mockMvc.perform(delete("/users/{id}", 1))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+
+        verify(userService, times(0))
+            .deleteUserById(anyInt());
+    }
+
+    @Test
+    @WithUserDetails("admin@gmail.com")
     void can_not_delete_user_by_id_same_with_role_to_current() throws Exception {
         doReturn(user).when(userService).getUserById(anyInt());
 
-        mockMvc.perform(delete("/users/{id}", 1).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete("/users/{id}", 1)
+                .with(csrf()))
             .andExpect(content().string("Delete operation not supported"))
             .andExpect(status().isForbidden())
             .andDo(print());
@@ -251,13 +284,29 @@ class UserControllerTest {
         String json = gson.toJson(user);
 
         mockMvc.perform(put("/users/{id}", 1).accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(content().json(mapper.writeValueAsString(user)))
             .andExpect(status().isOk())
             .andDo(print());
 
         verify(userService, times(1))
             .updateUserById(user, 1);
+    }
+
+    @Test
+    @WithUserDetails("admin@gmail.com")
+    void can_not_update_user_by_id_without_csrf() throws Exception {
+        Gson gson = new Gson();
+        String json = gson.toJson(user);
+
+        mockMvc.perform(put("/users/{id}", 1).accept(MediaType.APPLICATION_JSON)
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+
+        verify(userService, times(0))
+            .updateUserById(any(), anyInt());
     }
 
     @Test
@@ -269,7 +318,8 @@ class UserControllerTest {
         String json = gson.toJson(user);
 
         mockMvc.perform(put("/users/{id}", 1).accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(content().string("Update operation not supported"))
             .andExpect(status().isForbidden())
             .andDo(print());
@@ -288,12 +338,28 @@ class UserControllerTest {
         String json = gson.toJson(user);
 
         mockMvc.perform(put("/users").accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(content().json(mapper.writeValueAsString(user)))
             .andExpect(status().isOk())
             .andDo(print());
 
         verify(userService, times(1))
             .updateUserById(user, 1);
+    }
+
+    @Test
+    @WithUserDetails("user@gmail.com")
+    void can_not_update_current_user_without_csrf() throws Exception {
+        Gson gson = new Gson();
+        String json = gson.toJson(user);
+
+        mockMvc.perform(put("/users").accept(MediaType.APPLICATION_JSON)
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+
+        verify(userService, times(0))
+            .updateUserById(any(), anyInt());
     }
 }

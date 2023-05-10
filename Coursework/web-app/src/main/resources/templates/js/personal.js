@@ -20,6 +20,9 @@ function submit() {
     if (!checked()) {
         return;
     }
+    let token = document.querySelector('meta[name="_csrf"]').content;
+    let header = document.querySelector('meta[name="_csrf_header"]').content;
+
     let user = {
         firstName: document.getElementById("firstName").value,
         lastName: document.getElementById("lastName").value,
@@ -32,6 +35,7 @@ function submit() {
     let request = initRequest();
     request.open("PUT", "/users");
 
+    request.setRequestHeader(header, token);
     request.setRequestHeader("Accept", "application/json");
     request.setRequestHeader("Content-Type", "application/json");
 

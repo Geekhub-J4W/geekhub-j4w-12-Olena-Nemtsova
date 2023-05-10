@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -45,7 +46,8 @@ class UserAllergicProductControllerTest {
         String json = gson.toJson(relation);
 
         mockMvc.perform(post("/allergic").accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(content().json(mapper.writeValueAsString(relation)))
             .andExpect(status().isOk())
             .andDo(print());
@@ -55,13 +57,30 @@ class UserAllergicProductControllerTest {
     }
 
     @Test
-    void can_not_add_userAllergicProduct_relation_by_anonymous() throws Exception {
+    @WithUserDetails("user@gmail.com")
+    void can_not_add_userAllergicProduct_relation_without_csrf() throws Exception {
         UserAllergicProduct relation = new UserAllergicProduct(1, 1);
         Gson gson = new Gson();
         String json = gson.toJson(relation);
 
         mockMvc.perform(post("/allergic").accept(MediaType.APPLICATION_JSON)
                 .content(json).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+
+        verify(userAllergicProductService, times(0))
+            .addRelation(any());
+    }
+
+    @Test
+    void can_not_add_userAllergicProduct_relation_by_anonymous() throws Exception {
+        UserAllergicProduct relation = new UserAllergicProduct(1, 1);
+        Gson gson = new Gson();
+        String json = gson.toJson(relation);
+
+        mockMvc.perform(post("/allergic").accept(MediaType.APPLICATION_JSON)
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(redirectedUrl("http://localhost/login"))
             .andExpect(status().isFound())
             .andDo(print());
@@ -77,7 +96,8 @@ class UserAllergicProductControllerTest {
             .when(userAllergicProductService)
             .deleteRelationByUserAndProductId(anyInt(), anyInt());
 
-        mockMvc.perform(delete("/allergic/{productId}", 1))
+        mockMvc.perform(delete("/allergic/{productId}", 1)
+                .with(csrf()))
             .andExpect(content().string(Boolean.TRUE.toString()))
             .andExpect(status().isOk())
             .andDo(print());
@@ -87,8 +107,20 @@ class UserAllergicProductControllerTest {
     }
 
     @Test
+    @WithUserDetails("user@gmail.com")
+    void can_not_delete_userAllergicProduct_relation_without_csrf() throws Exception {
+        mockMvc.perform(delete("/allergic/{productId}", 1))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+
+        verify(userAllergicProductService, times(0))
+            .deleteRelationByUserAndProductId(anyInt(), anyInt());
+    }
+
+    @Test
     void can_not_delete_userAllergicProduct_relation_by_anonymous() throws Exception {
-        mockMvc.perform(delete("/allergic/{productId}", 1).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete("/allergic/{productId}", 1)
+                .with(csrf()))
             .andExpect(redirectedUrl("http://localhost/login"))
             .andExpect(status().isFound())
             .andDo(print());

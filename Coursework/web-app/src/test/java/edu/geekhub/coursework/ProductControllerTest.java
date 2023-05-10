@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -54,7 +55,8 @@ class ProductControllerTest {
         String json = gson.toJson(product);
 
         mockMvc.perform(post("/products").accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(content().json(mapper.writeValueAsString(product)))
             .andExpect(status().isOk())
             .andDo(print());
@@ -64,13 +66,29 @@ class ProductControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
+    void can_not_add_product_without_csrf() throws Exception {
+        Gson gson = new Gson();
+        String json = gson.toJson(product);
+
+        mockMvc.perform(post("/products").accept(MediaType.APPLICATION_JSON)
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+
+        verify(productService, times(0))
+            .addProduct(any());
+    }
+
+    @Test
     @WithMockUser(authorities = "USER")
     void can_not_add_product_by_user() throws Exception {
         Gson gson = new Gson();
         String json = gson.toJson(product);
 
         mockMvc.perform(post("/products").accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(status().isForbidden())
             .andDo(print());
 
@@ -86,7 +104,8 @@ class ProductControllerTest {
         String json = gson.toJson(product);
 
         mockMvc.perform(put("/products/{id}", 1).accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(content().json(mapper.writeValueAsString(product)))
             .andExpect(status().isOk())
             .andDo(print());
@@ -96,13 +115,29 @@ class ProductControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
+    void can_not_update_product_without_csrf() throws Exception {
+        Gson gson = new Gson();
+        String json = gson.toJson(product);
+
+        mockMvc.perform(put("/products/{id}", 1).accept(MediaType.APPLICATION_JSON)
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+
+        verify(productService, times(0))
+            .updateProductById(any(), anyInt());
+    }
+
+    @Test
     @WithMockUser(authorities = "USER")
     void can_not_update_product_by_user() throws Exception {
         Gson gson = new Gson();
         String json = gson.toJson(product);
 
         mockMvc.perform(put("/products/{id}", 1).accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(status().isForbidden())
             .andDo(print());
 
@@ -115,7 +150,8 @@ class ProductControllerTest {
     void can_delete_product() throws Exception {
         doReturn(true).when(productService).deleteProductById(anyInt());
 
-        mockMvc.perform(delete("/products/{id}", 1))
+        mockMvc.perform(delete("/products/{id}", 1)
+                .with(csrf()))
             .andExpect(content().string(Boolean.TRUE.toString()))
             .andExpect(status().isOk())
             .andDo(print());

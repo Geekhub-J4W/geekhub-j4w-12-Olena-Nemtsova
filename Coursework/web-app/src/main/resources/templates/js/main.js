@@ -51,6 +51,10 @@ function createPages(pagesCount, currentPage, limit, input, functionSearch, role
         }
         page.innerText = i + "";
         page.onclick = function () {
+            if (input === null) {
+                functionSearch(limit, currentPage, document.getElementById("chat_select").value);
+                return;
+            }
             if (role === null) {
                 functionSearch(limit, i, input);
             } else {
@@ -111,8 +115,12 @@ function checkPasswordConfirm() {
 }
 
 function googleLogin() {
+    let token = document.querySelector('meta[name="_csrf"]').content;
+    let header = document.querySelector('meta[name="_csrf_header"]').content;
+
     let request = initRequest();
     request.open("POST", "users/google");
+    request.setRequestHeader(header, token);
     request.onreadystatechange = function () {
         if (request.readyState === 4 && request.status === 200) {
             window.location.replace("/main/products");
@@ -151,9 +159,34 @@ function cleanContainer() {
     while (container_elements.length !== 0) {
         container.removeChild(container_elements[container_elements.length - 1]);
     }
+    if (document.getElementById("empty") != null) {
+        container.removeChild(document.getElementById("empty"));
+    }
     if (document.getElementById("pages") !== null) {
         container.removeChild(document.getElementById("pages"));
     }
+}
+
+function getNow() {
+    let now = new Date(Date.now());
+    let day = now.getDate();
+    if (day < 10) {
+        day = "0" + day;
+    }
+    let month = now.getMonth() + 1;
+    if (month < 10) {
+        month = "0" + month;
+    }
+    let hours = now.getHours();
+    if (hours < 10) {
+        hours = "0" + hours;
+    }
+    let minutes = now.getMinutes();
+    if (minutes < 10) {
+        minutes = "0" + minutes;
+    }
+    return day + "." + month + "." + now.getFullYear()
+        + " " + hours + ":" + minutes;
 }
 
 

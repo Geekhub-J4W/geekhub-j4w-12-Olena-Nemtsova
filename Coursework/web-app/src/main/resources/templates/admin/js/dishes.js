@@ -72,8 +72,12 @@ function editDish(dishId) {
 }
 
 function removeDish(dishId, limit, currentPage, input) {
+    let token = document.querySelector('meta[name="_csrf"]').content;
+    let header = document.querySelector('meta[name="_csrf_header"]').content;
+
     let requestDel = initRequest();
     requestDel.open("DELETE", "/dishes/" + dishId);
+    requestDel.setRequestHeader(header, token);
     requestDel.onreadystatechange = function () {
         if (requestDel.readyState === 4 && requestDel.status === 200) {
             searchDishes(limit, currentPage, input);
@@ -215,12 +219,16 @@ function submit() {
         name: document.getElementById("name").value
     };
 
+    let token = document.querySelector('meta[name="_csrf"]').content;
+    let header = document.querySelector('meta[name="_csrf_header"]').content;
+
     let request = initRequest();
     if (dishId === "new") {
         request.open("POST", "/dishes");
     } else {
         request.open("PUT", "/dishes/" + dishId);
     }
+    request.setRequestHeader(header, token);
     request.setRequestHeader("Accept", "application/json");
     request.setRequestHeader("Content-Type", "application/json");
     request.responseType = "json";
@@ -234,6 +242,7 @@ function submit() {
             }
             let requestImg = initRequest();
             requestImg.open("PUT", "/dishes/image/" + dish.id);
+            requestImg.setRequestHeader(header, token);
 
             let formData = new FormData();
             fetch(document.getElementById("icon").src)
@@ -306,8 +315,12 @@ function searchProducts() {
 }
 
 function editIngredient(productId, dishId, quantity) {
+    let token = document.querySelector('meta[name="_csrf"]').content;
+    let header = document.querySelector('meta[name="_csrf_header"]').content;
+
     let request = initRequest();
     request.open("PUT", "/productsDishes");
+    request.setRequestHeader(header, token);
     request.setRequestHeader("Accept", "application/json");
     request.setRequestHeader("Content-Type", "application/json");
 
@@ -329,8 +342,12 @@ function editIngredient(productId, dishId, quantity) {
 }
 
 function removeIngredient(productId, dishId) {
+    let token = document.querySelector('meta[name="_csrf"]').content;
+    let header = document.querySelector('meta[name="_csrf_header"]').content;
+
     let request = initRequest();
     request.open("DELETE", "/productsDishes/" + productId + "/" + dishId);
+    request.setRequestHeader(header, token);
 
     request.onreadystatechange = function () {
         if (request.readyState === 4 && request.status === 200) {
@@ -344,8 +361,12 @@ function addIngredient(productId, quantity) {
     const urlParams = new URLSearchParams(window.location.search);
     let dishId = urlParams.get("dishId");
 
+    let token = document.querySelector('meta[name="_csrf"]').content;
+    let header = document.querySelector('meta[name="_csrf_header"]').content;
+
     let request = initRequest();
     request.open("POST", "/productsDishes");
+    request.setRequestHeader(header, token);
     request.setRequestHeader("Accept", "application/json");
     request.setRequestHeader("Content-Type", "application/json");
 

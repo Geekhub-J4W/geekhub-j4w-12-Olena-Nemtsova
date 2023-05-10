@@ -50,7 +50,7 @@ body {
     margin-left: auto;
 }
 
-.navigation_element:hover{
+.navigation_element:hover {
     background: rgba(34, 164, 89, 0.4);
 }
 
@@ -352,3 +352,111 @@ img {
     border-right: 25px solid red;
     transform: translate(-100%, -50%);
 }
+
+#chat_container {
+    height: 50vh;
+    width: 100%;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    list-style: none;
+    float: top;
+    margin: 0;
+    padding: 0;
+    background-color: rgb(154, 208, 183);
+}
+
+.message_own {
+    width: 60%;
+    float: right;
+    margin: 1vh 1vw;
+    padding: 1vh 0.5vw 0.5vh 1vw;
+    background-color: white;
+    border-radius: 20px;
+    position: relative;
+}
+
+.message_date {
+    font-size: 0.7vw;
+    color: gray;
+    text-align: right;
+    margin-right: 0.5vw;
+}
+
+.own:before {
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    border-left: 10px solid white;
+    border-right: 10px solid transparent;
+    border-top: 10px solid white;
+    border-bottom: 10px solid transparent;
+    right: -12px;
+    top: 8px;
+}
+
+.not_own:before {
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    border-left: 10px solid transparent;
+    border-right: 10px solid aquamarine;
+    border-top: 10px solid aquamarine;
+    border-bottom: 10px solid transparent;
+    left: -12px;
+    top: 8px;
+}
+
+.message {
+    width: 60%;
+    float: left;
+    margin: 1vh 1vw;
+    padding: 1vh 0.5vw 0.5vh 1vw;
+    background-color: aquamarine;
+    border-radius: 20px;
+    position: relative;
+}
+
+#newMessage {
+    width: 50%;
+    font-size: 1.2vw;
+    border-radius: 5px;
+    font-family: Rockwell, sans-serif;
+    padding: 0.5vh 0.5vw;
+}
+
+.owner_label {
+    float: left;
+    font-size: 1.2vw;
+    background-color: darkviolet;
+    color: white;
+    padding: 0.5vh 0.5vw;
+    margin: 0 0.5vw;
+    border-radius: 4px;
+}
+
+.from_label {
+    float: left;
+    font-size: 1.2vw;
+    margin: 0.5vh 0.5vw;
+}
+
+.message_label {
+    color: darkslategray;
+    font-style: italic;
+    font-size: 1.2vw;
+    margin: 0.5vh 0.5vw;
+    float: right;
+}
+
+.owner_add {
+    float: right;
+    margin: 0 0.5vw;
+}
+
+.chat:hover {
+    background-color: rgb(250, 255, 250);
+    cursor: pointer;
+}
+

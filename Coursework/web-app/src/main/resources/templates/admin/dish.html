@@ -5,6 +5,8 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta th:name="_csrf" th:content="${_csrf.token}"/>
+    <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
     <script defer="defer" src="js/dishes.js"></script>
     <script defer="defer" src="js/admin.js"></script>
     <script defer="defer" src="../js/main.js"></script>
@@ -31,6 +33,7 @@
     <div id="products" class="left_element"><span class="icon">🍎</span><span class="name">Products</span></div>
     <div id="dishes" class="left_element"><span class="icon">🥗</span><span class="name">Dishes</span></div>
     <div id="diet" class="left_element"><span class="icon">👥</span><span class="name">Users</span></div>
+    <div id="chats" class="left_element"><span class="icon">✉️</span><span class="name">Chats</span></div>
 </div>
 <div id="content">
     <p id="headline">Add dish</p>

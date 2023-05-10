@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -52,7 +53,8 @@ class ProductDishControllerTest {
         String json = gson.toJson(productDish);
 
         mockMvc.perform(post("/productsDishes").accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(content().json(mapper.writeValueAsString(productDish)))
             .andExpect(status().isOk())
             .andDo(print());
@@ -62,13 +64,29 @@ class ProductDishControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "ADMIN")
+    void can_not_add_productDish_relation_without_csrf() throws Exception {
+        Gson gson = new Gson();
+        String json = gson.toJson(productDish);
+
+        mockMvc.perform(post("/productsDishes").accept(MediaType.APPLICATION_JSON)
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+
+        verify(productDishService, times(0))
+            .addRelation(any());
+    }
+
+    @Test
     @WithMockUser(authorities = "USER")
     void can_not_add_productDish_relation_by_user() throws Exception {
         Gson gson = new Gson();
         String json = gson.toJson(productDish);
 
         mockMvc.perform(post("/productsDishes").accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(status().isForbidden())
             .andDo(print());
 
@@ -84,7 +102,8 @@ class ProductDishControllerTest {
         String json = gson.toJson(productDish);
 
         mockMvc.perform(put("/productsDishes").accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
             .andExpect(content().json(mapper.writeValueAsString(productDish)))
             .andExpect(status().isOk())
             .andDo(print());
@@ -94,8 +113,8 @@ class ProductDishControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = "USER")
-    void can_not_update_productDish_relation_by_user() throws Exception {
+    @WithMockUser(authorities = "ADMIN")
+    void can_not_update_productDish_relation_without_csrf() throws Exception {
         Gson gson = new Gson();
         String json = gson.toJson(productDish);
 
@@ -109,12 +128,29 @@ class ProductDishControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "USER")
+    void can_not_update_productDish_relation_by_user() throws Exception {
+        Gson gson = new Gson();
+        String json = gson.toJson(productDish);
+
+        mockMvc.perform(put("/productsDishes").accept(MediaType.APPLICATION_JSON)
+                .content(json).contentType(MediaType.APPLICATION_JSON)
+                .with(csrf()))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+
+        verify(productDishService, times(0))
+            .updateRelation(any());
+    }
+
+    @Test
     @WithMockUser(authorities = "ADMIN")
     void can_delete_productDish_relation() throws Exception {
         doReturn(true)
             .when(productDishService).deleteRelationByProductAndDishId(anyInt(), anyInt());
 
-        mockMvc.perform(delete("/productsDishes/{productId}/{dishId}", 1, 1))
+        mockMvc.perform(delete("/productsDishes/{productId}/{dishId}", 1, 1)
+                .with(csrf()))
             .andExpect(content().string(Boolean.TRUE.toString()))
             .andExpect(status().isOk())
             .andDo(print());

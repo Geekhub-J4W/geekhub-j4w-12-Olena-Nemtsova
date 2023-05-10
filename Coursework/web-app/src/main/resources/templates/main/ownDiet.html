@@ -8,6 +8,8 @@
     <meta charset="UTF-8">
     <script defer="defer" src="../js/ownDiet.js"></script>
     <script defer="defer" src="../js/main.js"></script>
+    <script src="https://unpkg.com/docx@5.0.0/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
     <link rel="stylesheet" href="../css/main.css">
     <title>Nutritionist online</title>
 </head>
@@ -45,6 +47,7 @@
     <div id="params" class="left_element"><span class="icon">📐️</span><span class="name">Parameters</span>
         <span id="tooltip">Add own parameters first</span></div>
     <div id="allergic" class="left_element"><span class="icon">🧬</span><span class="name">Allergic</span></div>
+    <div id="help" class="left_element"><span class="icon">❓</span><span class="name">Help</span></div>
 </div>
 <div id="content">
     <p id="headline">Own diet</p>
@@ -75,6 +78,7 @@
             <p>Supper dishes variants:</p>
             <div class="carousel" id="supperDishes"></div>
         </div>
+        <button id="saveToFileBtn" style="display: none" onclick="saveFile()">Save to file</button>
     </div>
 </div>
 </body>

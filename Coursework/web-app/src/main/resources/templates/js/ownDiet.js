@@ -70,6 +70,11 @@ function loadDishesByTypeOfMeal(typeOfMeal, element) {
             if (dishes == null) {
                 return;
             }
+            document.getElementById("saveToFileBtn").style.display = "inline-block";
+            dishesData[dishesData.length] = {
+                typeOfMeal: typeOfMeal + " dishes variants",
+                dishes: dishes
+            };
 
             let buttonPrev = document.createElement("button");
             buttonPrev.className = "carousel_arrow";
@@ -115,7 +120,7 @@ function loadDishesByTypeOfMeal(typeOfMeal, element) {
 
                 let calories = document.createElement("p");
                 dish.append(img, name, calories);
-                loadDishCalories(dishes[i].id, calories);
+                loadDishCalories(dishes[i].id, calories, i, typeOfMeal);
 
                 carouselElement.appendChild(dish);
             }
@@ -134,13 +139,246 @@ function prev(container) {
     container.scrollLeft -= width;
 }
 
-function loadDishCalories(dishId, element) {
+function loadDishCalories(dishId, element, i, typeOfMeal) {
     let request = initRequest();
     request.open("GET", "/dishes/calories/" + dishId);
     request.onreadystatechange = function () {
         if (request.readyState === 4 && request.status === 200) {
             element.innerText = "Calories: " + request.responseText;
+
+            dishesData.find(el => el.typeOfMeal.includes(typeOfMeal))
+                .dishes[i].calories = request.responseText;
         }
     }
     request.send();
+}
+
+let dishesData = [];
+
+function saveFile() {
+    const doc = new docx.Document({
+        styles: {
+            paragraphStyles: [
+                {
+                    id: "tableTitle1",
+                    name: "TableTitle1",
+                    basedOn: "Normal",
+                    next: "Normal",
+                    run: {
+                        size: 26,
+                        bold: true,
+                        font: "Rockwell",
+                        color: "F2FFF9",
+                        underline: {
+                            type: docx.UnderlineType.SINGLE,
+                        }
+                    },
+                    paragraph: {
+                        alignment: docx.AlignmentType.CENTER,
+                        spacing: {
+                            line: 300,
+                        }
+                    }
+                },
+                {
+                    id: "tableTitle2",
+                    name: "TableTitle2",
+                    basedOn: "Normal",
+                    next: "Normal",
+                    run: {
+                        size: 26,
+                        bold: true,
+                        font: "Rockwell",
+                        color: "F4FFF9",
+                    },
+                    paragraph: {
+                        alignment: docx.AlignmentType.CENTER,
+                        spacing: {
+                            line: 280,
+                        }
+                    }
+                },
+                {
+                    id: "title",
+                    name: "Title",
+                    basedOn: "Normal",
+                    next: "Normal",
+                    run: {
+                        size: 36,
+                        bold: true,
+                        font: "Rockwell",
+                        color: "22A159",
+                        underline: {
+                            type: docx.UnderlineType.SINGLE,
+                        }
+                    },
+                    paragraph: {
+                        alignment: docx.AlignmentType.CENTER,
+                        spacing: {
+                            line: 500,
+                        }
+                    }
+                },
+                {
+                    id: "common",
+                    name: "Common",
+                    basedOn: "Normal",
+                    next: "Normal",
+                    run: {
+                        size: 26,
+                        font: "Rockwell",
+                        color: "03682E"
+                    },
+                    paragraph: {
+                        spacing: {
+                            line: 300,
+                        },
+                        indent: {
+                            left: 400,
+                        },
+                    }
+                },
+                {
+                    id: "tableRow",
+                    name: "TableRow",
+                    basedOn: "Normal",
+                    next: "Normal",
+                    run: {
+                        size: 24,
+                        font: "Rockwell",
+                        color: "034B22"
+                    },
+                    paragraph: {
+                        spacing: {
+                            line: 300,
+                        },
+                        indent: {
+                            left: 100,
+                        },
+                    }
+                }
+            ]
+        }
+    });
+
+    const title = new docx.Paragraph({
+        text: "Own diet",
+        style: "title"
+    });
+    const totalCalories = new docx.Paragraph({
+        text: "Total calories: " + document.getElementById("totalCalories").innerText + "cal",
+        style: "common",
+        spacing: {
+            after: 300,
+        }
+    });
+    const breakfastCalories = new docx.Paragraph({
+        text: "Breakfast calories: " + document.getElementById("breakfastCalories").innerText + "cal",
+        style: "common"
+    });
+    const dinnerCalories = new docx.Paragraph({
+        text: "Dinner calories: " + document.getElementById("dinnerCalories").innerText + "cal",
+        style: "common"
+    });
+    const lunchCalories = new docx.Paragraph({
+        text: "Lunch calories: " + document.getElementById("lunchCalories").innerText + "cal",
+        style: "common"
+    });
+    const supperCalories = new docx.Paragraph({
+        text: "Supper calories: " + document.getElementById("supperCalories").innerText + "cal",
+        style: "common",
+        spacing: {
+            after: 300,
+        }
+    });
+
+    dishesData.sort(function (a, b) {
+        if (a.typeOfMeal < b.typeOfMeal) {
+            return -1;
+        }
+        return 1;
+    });
+
+    let children = [];
+
+    for (let i = 0; i < dishesData.length; i++) {
+        let rows = dishesData[i].dishes.map(dish =>
+            new docx.TableRow({
+                children: [
+                    new docx.TableCell({
+                        children: [new docx.Paragraph({
+                            text: dish.name,
+                            style: "tableRow"
+                        })],
+                    }),
+                    new docx.TableCell({
+                        children: [new docx.Paragraph({
+                            text: dish.calories,
+                            style: "tableRow"
+                        })],
+                    }),
+                ]
+            })
+        );
+        rows.unshift(
+            new docx.TableRow({
+                children: [
+                    new docx.TableCell({
+                        children: [new docx.Paragraph({
+                            text: dishesData[i].typeOfMeal,
+                            style: "tableTitle1"
+                        })],
+                        columnSpan: 2,
+                        shading: {
+                            fill: "22A159"
+                        }
+                    })
+                ]
+            }),
+            new docx.TableRow({
+                children: [
+                    new docx.TableCell({
+                        children: [new docx.Paragraph({
+                            text: "Dish",
+                            style: "tableTitle2"
+                        })],
+                        shading: {
+                            fill: "22A159"
+                        }
+                    }),
+                    new docx.TableCell({
+                        children: [new docx.Paragraph({
+                            text: "Calories",
+                            style: "tableTitle2"
+                        })],
+                        shading: {
+                            fill: "22A159"
+                        }
+                    })
+                ]
+            })
+        );
+
+        children[i] = new docx.Table({
+            alignment: docx.AlignmentType.CENTER,
+            rows: rows,
+            width: {
+                size: 8640,
+                type: docx.WidthType.DXA
+            },
+            margins: {
+                top: 100,
+                bottom: 100
+            }
+        });
+    }
+
+    children.unshift(title, totalCalories, breakfastCalories, dinnerCalories, lunchCalories, supperCalories);
+    doc.addSection({
+        children: children
+    });
+
+    docx.Packer.toBlob(doc).then(blob => {
+        saveAs(blob, "ownDiet.docx");
+    });
 }

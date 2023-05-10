@@ -45,8 +45,12 @@ function allergicProducts() {
 }
 
 function deleteAllergic(productId) {
+    let token = document.querySelector('meta[name="_csrf"]').content;
+    let header = document.querySelector('meta[name="_csrf_header"]').content;
+
     let request = initRequest();
     request.open("DELETE", "/allergic/" + productId);
+    request.setRequestHeader(header, token);
     request.responseType = "json";
     request.onreadystatechange = function () {
         if (request.readyState === 4 && request.status === 200) {

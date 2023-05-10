@@ -93,8 +93,12 @@ function editUser(userId) {
 }
 
 function removeUser(userId, role, limit, currentPage, input) {
+    let token = document.querySelector('meta[name="_csrf"]').content;
+    let header = document.querySelector('meta[name="_csrf_header"]').content;
+
     let requestDel = initRequest();
     requestDel.open("DELETE", "/users/" + userId);
+    requestDel.setRequestHeader(header, token);
     requestDel.onreadystatechange = function () {
         if (requestDel.readyState === 4 && requestDel.status === 200) {
             searchUsers(role, limit, currentPage, input);
@@ -140,6 +144,9 @@ function submit() {
         return;
     }
 
+    let token = document.querySelector('meta[name="_csrf"]').content;
+    let header = document.querySelector('meta[name="_csrf_header"]').content;
+
     let user = {
         firstName: document.getElementById("firstName").value,
         lastName: document.getElementById("lastName").value,
@@ -156,6 +163,7 @@ function submit() {
     } else {
         request.open("PUT", "/users/" + userId);
     }
+    request.setRequestHeader(header, token);
     request.setRequestHeader("Accept", "application/json");
     request.setRequestHeader("Content-Type", "application/json");
 

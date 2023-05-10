@@ -23,6 +23,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addViewController("/main/allergic");
         registry.addViewController("/main/parameters");
         registry.addViewController("/main/ownDiet");
+        registry.addViewController("/main/help");
         registry.addViewController("/login");
         registry.addViewController("/register");
         registry.addViewController("/personal");
@@ -33,5 +34,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addViewController("/admin/dish");
         registry.addViewController("/admin/users");
         registry.addViewController("/admin/user");
+        registry.addViewController("/admin/chats");
+        registry.addViewController("/admin/chat");
     }
 }

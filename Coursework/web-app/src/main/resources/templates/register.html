@@ -6,6 +6,8 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta th:name="_csrf" th:content="${_csrf.token}"/>
+    <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
     <script defer="defer" src="js/register.js"></script>
     <script defer="defer" src="js/main.js"></script>
     <link rel="stylesheet" href="css/main.css">
@@ -39,6 +41,7 @@
     <div id="diet" class="left_element"><span class="icon">🧮</span><span class="name">Own diet</span></div>
     <div id="params" class="left_element"><span class="icon">📐️</span><span class="name">Parameters</span></div>
     <div id="allergic" class="left_element"><span class="icon">🧬</span><span class="name">Allergic</span></div>
+    <div id="help" class="left_element"><span class="icon">❓</span><span class="name">Help</span></div>
 </div>
 <div id="content">
     <p id="headline">Register</p>
