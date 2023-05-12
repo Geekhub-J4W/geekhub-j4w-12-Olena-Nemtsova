@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -90,8 +91,18 @@ class UserRepositoryImplTest {
 
         int newUserId = userRepository.addUser(expectedUser);
 
-        expectedUser.setId(4);
+        expectedUser.setId(newUserId);
         assertEquals(expectedUser, userRepository.getUserById(newUserId));
+    }
+
+    @Test
+    void can_not_add_product_with_not_unique_email() {
+        User user = new User(-1, "Finn", "Human", "pass", "user@gmail.com", Role.USER);
+
+        assertThrows(
+            DuplicateKeyException.class,
+            () -> userRepository.addUser(user)
+        );
     }
 
     @Test

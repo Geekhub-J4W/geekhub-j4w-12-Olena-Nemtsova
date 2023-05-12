@@ -37,7 +37,7 @@ public class Message {
     }
 
     public void setText(String text) {
-        this.text = text;
+        this.text = text.trim();
     }
 
     public LocalDateTime getDateTime() {

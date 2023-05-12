@@ -237,7 +237,7 @@ function submit() {
         if (request.readyState === 4 && request.status === 200) {
             let dish = request.response;
             if (request.response === null) {
-                alert("Something went wrong :(");
+                document.getElementById("error_name").innerText = "Dish with the same name already exists";
                 return;
             }
             let requestImg = initRequest();

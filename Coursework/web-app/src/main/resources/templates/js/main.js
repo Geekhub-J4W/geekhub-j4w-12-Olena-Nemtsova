@@ -70,8 +70,13 @@ function resetErrorById(id) {
 
 function checkFirstName() {
     let regExp = /\b([A-Z][a-z]+)/;
-    if (!regExp.test(document.getElementById("firstName").value)) {
+    let firstName = document.getElementById("firstName").value;
+    if (!regExp.test(firstName)) {
         document.getElementById("error_firstName").innerHTML = "Please enter valid first name";
+        return false;
+    }
+    if (firstName.length > 50 || firstName.length < 2) {
+        document.getElementById("error_firstName").innerHTML = "Wrong first name length";
         return false;
     }
     return true;
@@ -79,8 +84,13 @@ function checkFirstName() {
 
 function checkLastName() {
     let regExp = /\b([A-Z][a-z]+)/;
-    if (!regExp.test(document.getElementById("lastName").value)) {
+    let lastName = document.getElementById("lastName").value;
+    if (!regExp.test(lastName)) {
         document.getElementById("error_lastName").innerHTML = "Please enter valid last name";
+        return false;
+    }
+    if (lastName.length > 50 || lastName.length < 2) {
+        document.getElementById("error_lastName").innerHTML = "Wrong last name length";
         return false;
     }
     return true;
@@ -88,8 +98,13 @@ function checkLastName() {
 
 function checkEmail() {
     let regExp = /[a-zA-Z0-9-_.]{3,}@[a-z]{3,}\.[a-z]{3,}/;
-    if (!regExp.test(document.getElementById("email").value)) {
+    let email = document.getElementById("email").value;
+    if (!regExp.test(email)) {
         document.getElementById("error_email").innerHTML = "Please enter valid email";
+        return false;
+    }
+    if (email.length > 250) {
+        document.getElementById("error_email").innerHTML = "Wrong email length";
         return false;
     }
     return true;
@@ -97,8 +112,13 @@ function checkEmail() {
 
 function checkPassword() {
     let regExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/;
-    if (!regExp.test(document.getElementById("password").value)) {
+    let pass = document.getElementById("password").value;
+    if (!regExp.test(pass)) {
         document.getElementById("error_pass").innerHTML = "Password is not secure";
+        return false;
+    }
+    if (pass.length > 20) {
+        document.getElementById("error_pass").innerHTML = "Password length must be less than 20";
         return false;
     }
     return true;

@@ -1,12 +1,12 @@
 CREATE TABLE IF NOT EXISTS Products(
     id SERIAL PRIMARY KEY,
-    name VARCHAR NOT NULL,
+    name VARCHAR UNIQUE NOT NULL,
     calories INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Dishes(
     id SERIAL PRIMARY KEY,
-    name VARCHAR NOT NULL,
+    name VARCHAR UNIQUE NOT NULL,
     image bytea
 );
 

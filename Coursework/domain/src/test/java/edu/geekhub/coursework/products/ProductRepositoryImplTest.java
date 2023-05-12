@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -74,8 +75,18 @@ class ProductRepositoryImplTest {
 
         int newProductId = productRepository.addProduct(product);
 
-        product.setId(50);
+        product.setId(newProductId);
         assertEquals(product, productRepository.getProductById(newProductId));
+    }
+
+    @Test
+    void can_not_add_product_with_not_unique_name() {
+        Product product = new Product(-1, "Rice", 20);
+
+        assertThrows(
+            DuplicateKeyException.class,
+            () -> productRepository.addProduct(product)
+        );
     }
 
     @Test

@@ -170,7 +170,7 @@ function submit() {
     request.onreadystatechange = function () {
         if (request.readyState === 4 && request.status === 200) {
             if (request.response === "") {
-                alert("Something went wrong :(");
+                document.getElementById("error_email").innerHTML = "User with this email already exists";
                 return;
             }
 

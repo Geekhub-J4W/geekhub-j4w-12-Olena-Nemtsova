@@ -136,7 +136,7 @@ function submit() {
     request.onreadystatechange = function () {
         if (request.readyState === 4 && request.status === 200) {
             if (request.response === "") {
-                alert("Something went wrong :(");
+                document.getElementById("error_name").innerText = "Product with the same name already exists";
                 return;
             }
 

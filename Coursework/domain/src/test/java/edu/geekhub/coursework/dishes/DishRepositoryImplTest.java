@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -79,10 +80,20 @@ class DishRepositoryImplTest {
 
         int newDishId = dishRepository.addDish(expectedDish);
 
-        expectedDish.setId(21);
+        expectedDish.setId(newDishId);
         assertEquals(
             expectedDish,
             dishRepository.getDishById(newDishId)
+        );
+    }
+
+    @Test
+    void can_not_add_dish_with_not_unique_name() {
+        Dish dish = new Dish(-1, "Borsch", null);
+
+        assertThrows(
+            DuplicateKeyException.class,
+            () -> dishRepository.addDish(dish)
         );
     }
 

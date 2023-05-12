@@ -31,7 +31,7 @@ public class Dish {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name.trim();
     }
 
     public byte[] getImage() {
@@ -47,7 +47,6 @@ public class Dish {
         return "Dish{"
                + "id=" + id
                + ", name='" + name + '\''
-               + ", image=" + Arrays.toString(image)
                + '}';
     }
 
