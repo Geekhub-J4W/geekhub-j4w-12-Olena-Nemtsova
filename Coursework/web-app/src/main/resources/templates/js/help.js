@@ -21,7 +21,8 @@ function connect() {
     let headers = {};
     let header = document.querySelector('meta[name="_csrf_header"]').content;
     headers[header] = document.querySelector('meta[name="_csrf"]').content;
-    let socket = new SockJS('http://localhost:8081/ws');
+    let socket = new SockJS('/ws');
+    //let socket=new WebSocket("ws://localhost:8081/ws")
 
     stompClient = Stomp.over(socket);
     stompClient.connect(headers, function (frame) {
@@ -79,7 +80,7 @@ function getMessages() {
 
 document.getElementById("send").onclick = function () {
     let text = document.getElementById("newMessage").value;
-    if (text === "") {
+    if (text.trim() === "") {
         return;
     }
     stompClient.send("/app/chat", {}, JSON.stringify({

@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.geekhub.coursework.config.SecurityConfig;
 import edu.geekhub.coursework.config.WebSocketConfig;
-import edu.geekhub.coursework.config.WebSocketSecurityConfig;
 import edu.geekhub.coursework.messages.Message;
 import edu.geekhub.coursework.messages.interfaces.MessageService;
 import java.time.LocalDateTime;
@@ -29,7 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(MessageController.class)
 @ContextConfiguration(classes = {SecurityConfig.class, WebSocketConfig.class,
-    WebSocketSecurityConfig.class, MockConfig.class, TestApplication.class})
+    MockConfig.class, TestApplication.class})
 class MessageControllerTest {
     @Autowired
     protected ObjectMapper mapper;

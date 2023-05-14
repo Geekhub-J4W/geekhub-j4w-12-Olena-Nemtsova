@@ -103,7 +103,7 @@ function loadUserName(userId) {
 
     document.getElementById("send").onclick = function () {
         let text = document.getElementById("newMessage").value;
-        if (text === "") {
+        if (text.trim() === "") {
             return;
         }
         stompClient.send("/app/chat/" + userId, {}, JSON.stringify({

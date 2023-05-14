@@ -150,5 +150,5 @@ function submit() {
 
 function checked() {
     return checkName()
-        && checkCalories();
+        & checkCalories();
 }

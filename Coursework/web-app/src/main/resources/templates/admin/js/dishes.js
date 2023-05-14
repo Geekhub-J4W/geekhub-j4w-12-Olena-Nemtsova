@@ -266,7 +266,7 @@ function submit() {
 
 function checked() {
     return checkImage()
-        && checkName();
+        & checkName();
 }
 
 function searchProducts() {

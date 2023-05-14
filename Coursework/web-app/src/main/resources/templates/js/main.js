@@ -51,8 +51,8 @@ function createPages(pagesCount, currentPage, limit, input, functionSearch, role
         }
         page.innerText = i + "";
         page.onclick = function () {
-            if (input === null) {
-                functionSearch(limit, currentPage, document.getElementById("chat_select").value);
+            if (input === null&&document.getElementById("chat_select")!==null) {
+                functionSearch(limit, i, document.getElementById("chat_select").value);
                 return;
             }
             if (role === null) {

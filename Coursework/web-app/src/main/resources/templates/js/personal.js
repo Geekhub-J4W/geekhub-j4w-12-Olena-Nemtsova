@@ -55,12 +55,12 @@ function submit() {
 function checked() {
     return document.getElementById("password").value !== ""
         ? checkFirstName()
-        && checkLastName()
-        && checkEmail()
-        && checkPassword()
-        && checkPasswordConfirm()
+        & checkLastName()
+        & checkEmail()
+        & checkPassword()
+        & checkPasswordConfirm()
 
         : checkFirstName()
-        && checkLastName()
-        && checkEmail();
+        & checkLastName()
+        & checkEmail();
 }

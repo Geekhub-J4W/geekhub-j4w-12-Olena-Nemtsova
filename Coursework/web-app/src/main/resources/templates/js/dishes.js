@@ -1,12 +1,12 @@
 document.getElementById("show").onclick = function () {
-    searchProducts(
+    searchDishes(
         document.getElementById("limit_select").value,
         1,
         document.getElementById("search_input").value
     );
 }
 
-function loadDishes(){
+function loadDishes() {
     searchDishes();
     loadPages();
 }

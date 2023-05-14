@@ -34,9 +34,9 @@ function submit() {
 
 function checked() {
     return checkFirstName()
-        && checkLastName()
-        && checkEmail()
-        && checkPassword()
-        && checkPasswordConfirm();
+        & checkLastName()
+        & checkEmail()
+        & checkPassword()
+        & checkPasswordConfirm();
 }
 

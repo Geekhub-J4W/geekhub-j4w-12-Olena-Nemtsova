@@ -31,6 +31,7 @@ public class MessageController {
 
     @MessageMapping("/chat/{userId}")
     @SendTo("/topic/refresh")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'ADMIN')")
     public Message sendMessageToUser(@DestinationVariable int userId, Message message) {
         messagingTemplate.convertAndSend("/topic/reply/" + userId, message);
         return messageService.addMessage(message, userId);

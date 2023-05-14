@@ -62,8 +62,8 @@ function saveParameters() {
 
 function checked() {
     return checkAge()
-        && checkWeight()
-        && checkHeight();
+        & checkWeight()
+        & checkHeight();
 }
 
 function checkAge() {

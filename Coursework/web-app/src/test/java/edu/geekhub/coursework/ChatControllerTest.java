@@ -14,7 +14,6 @@ import edu.geekhub.coursework.chats.Chat;
 import edu.geekhub.coursework.chats.intefaces.ChatService;
 import edu.geekhub.coursework.config.SecurityConfig;
 import edu.geekhub.coursework.config.WebSocketConfig;
-import edu.geekhub.coursework.config.WebSocketSecurityConfig;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(ChatController.class)
 @ContextConfiguration(classes = {SecurityConfig.class, WebSocketConfig.class,
-    WebSocketSecurityConfig.class, MockConfig.class, TestApplication.class})
+    MockConfig.class, TestApplication.class})
 class ChatControllerTest {
     @Autowired
     protected ObjectMapper mapper;

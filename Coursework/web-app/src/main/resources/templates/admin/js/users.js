@@ -185,14 +185,14 @@ function submit() {
 function checked(userId) {
     return document.getElementById("password").value !== "" || userId === "new"
         ? checkFirstName()
-        && checkLastName()
-        && checkEmail()
-        && checkPassword()
-        && checkPasswordConfirm()
+        & checkLastName()
+        & checkEmail()
+        & checkPassword()
+        & checkPasswordConfirm()
 
         : checkFirstName()
-        && checkLastName()
-        && checkEmail();
+        & checkLastName()
+        & checkEmail();
 }
 
 
