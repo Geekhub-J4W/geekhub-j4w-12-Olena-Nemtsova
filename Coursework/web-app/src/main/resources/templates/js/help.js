@@ -43,7 +43,9 @@ function connect() {
             } else {
                 messageDiv.className = "message not_own";
             }
-            document.getElementById("chat_container").appendChild(messageDiv);
+            let chatContainer = document.getElementById("chat_container");
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         });
     });
 }
@@ -55,6 +57,8 @@ function getMessages() {
     request.onreadystatechange = function () {
         if (request.readyState === 4 && request.status === 200) {
             let messages = request.response;
+            let chatContainer = document.getElementById("chat_container");
+
             for (let i = 0; i < messages.length; i++) {
                 let messageDiv = document.createElement("div");
                 let dateDiv = document.createElement("div");
@@ -70,8 +74,9 @@ function getMessages() {
                 } else {
                     messageDiv.className = "message not_own";
                 }
-                document.getElementById("chat_container").appendChild(messageDiv);
+                chatContainer.appendChild(messageDiv);
             }
+            chatContainer.scrollTop = chatContainer.scrollHeight;
             connect();
         }
     }
