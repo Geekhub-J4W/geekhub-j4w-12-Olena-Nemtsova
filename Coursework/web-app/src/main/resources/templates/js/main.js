@@ -51,7 +51,7 @@ function createPages(pagesCount, currentPage, limit, input, functionSearch, role
         }
         page.innerText = i + "";
         page.onclick = function () {
-            if (input === null&&document.getElementById("chat_select")!==null) {
+            if (input === null && document.getElementById("chat_select") !== null) {
                 functionSearch(limit, i, document.getElementById("chat_select").value);
                 return;
             }
@@ -119,6 +119,10 @@ function checkPassword() {
     }
     if (pass.length > 20) {
         document.getElementById("error_pass").innerHTML = "Password length must be less than 20";
+        return false;
+    }
+    if (pass === "Temporary1") {
+        document.getElementById("error_pass").innerHTML = "Please enter another password";
         return false;
     }
     return true;
